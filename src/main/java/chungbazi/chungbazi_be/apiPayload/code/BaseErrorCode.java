@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.apiPayload;
+package chungbazi.chungbazi_be.apiPayload.code;
 
 public interface BaseErrorCode {
 

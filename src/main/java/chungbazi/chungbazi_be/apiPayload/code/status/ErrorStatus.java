@@ -1,7 +1,7 @@
-package chungbazi.chungbazi_be.apiPayload.code;
+package chungbazi.chungbazi_be.apiPayload.code.status;
 
-import chungbazi.chungbazi_be.apiPayload.BaseErrorCode;
-import chungbazi.chungbazi_be.apiPayload.ErrorReasonDTO;
+import chungbazi.chungbazi_be.apiPayload.code.BaseErrorCode;
+import chungbazi.chungbazi_be.apiPayload.code.ErrorReasonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

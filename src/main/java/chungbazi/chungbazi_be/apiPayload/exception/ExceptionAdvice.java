@@ -1,8 +1,8 @@
 package chungbazi.chungbazi_be.apiPayload.exception;
 
 import chungbazi.chungbazi_be.apiPayload.ApiResponse;
-import chungbazi.chungbazi_be.apiPayload.ErrorReasonDTO;
-import chungbazi.chungbazi_be.apiPayload.code.ErrorStatus;
+import chungbazi.chungbazi_be.apiPayload.code.ErrorReasonDTO;
+import chungbazi.chungbazi_be.apiPayload.code.status.ErrorStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

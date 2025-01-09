@@ -1,7 +1,7 @@
 package chungbazi.chungbazi_be.apiPayload.exception;
 
-import chungbazi.chungbazi_be.apiPayload.BaseErrorCode;
-import chungbazi.chungbazi_be.apiPayload.ErrorReasonDTO;
+import chungbazi.chungbazi_be.apiPayload.code.BaseErrorCode;
+import chungbazi.chungbazi_be.apiPayload.code.ErrorReasonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,6 +10,10 @@ import lombok.Getter;
 public class GeneralException extends RuntimeException {
 
     private BaseErrorCode code;
+
+    public GeneralException() {
+        super();
+    }
 
     public ErrorReasonDTO getErrorReason(){
         return this.code.getReason();

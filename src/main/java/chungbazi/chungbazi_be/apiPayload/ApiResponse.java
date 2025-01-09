@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.apiPayload;
 
-import chungbazi.chungbazi_be.apiPayload.code.SuccessStatus;
+import chungbazi.chungbazi_be.apiPayload.code.BaseCode;
+import chungbazi.chungbazi_be.apiPayload.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -35,5 +36,4 @@ public class ApiResponse<T> {
     }
 
 
-    //실패한 경우 응답 생성
 }
