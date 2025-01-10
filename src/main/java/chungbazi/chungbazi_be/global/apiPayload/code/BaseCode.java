@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.apiPayload.code;
+package chungbazi.chungbazi_be.global.apiPayload.code;
 
 public interface BaseCode {
 

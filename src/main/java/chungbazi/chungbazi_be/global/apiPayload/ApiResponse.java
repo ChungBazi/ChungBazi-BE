@@ -1,7 +1,7 @@
-package chungbazi.chungbazi_be.apiPayload;
+package chungbazi.chungbazi_be.global.apiPayload;
 
-import chungbazi.chungbazi_be.apiPayload.code.BaseCode;
-import chungbazi.chungbazi_be.apiPayload.code.status.SuccessStatus;
+import chungbazi.chungbazi_be.global.apiPayload.code.BaseCode;
+import chungbazi.chungbazi_be.global.apiPayload.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.apiPayload.code;
+package chungbazi.chungbazi_be.global.apiPayload.code;
 
 import lombok.Builder;
 import lombok.Getter;
