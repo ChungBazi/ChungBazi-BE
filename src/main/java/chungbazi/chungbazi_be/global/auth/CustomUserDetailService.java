@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.config;
+package chungbazi.chungbazi_be.global.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
