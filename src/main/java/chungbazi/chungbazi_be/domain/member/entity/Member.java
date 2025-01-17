@@ -37,7 +37,6 @@ public class Member {
     private Gender gender;
 
     private String birthYear;
-
     private String birthDay;
 
     @Enumerated(EnumType.STRING)
@@ -69,6 +68,8 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL})
     private List<MemberInterest> memberInterestList = new ArrayList<>();
+
+
 }
 
 
