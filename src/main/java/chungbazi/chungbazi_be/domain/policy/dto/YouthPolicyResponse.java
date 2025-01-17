@@ -30,12 +30,7 @@ public class YouthPolicyResponse {
     @JacksonXmlProperty(localName = "sporCn")
     private String sporCn; // 지원내용
 
-    /*
-    @JacksonXmlProperty(localName = "rqutPrdCn")
-    private String rqutPrdCn; // 신청 기간 (텍스트 형태)
-*/
     private String rqutPrdCn;
-
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -73,23 +68,13 @@ public class YouthPolicyResponse {
     private String rfcSiteUrla2; // 참고 사이트 URL2
 
 
-    /*  public void assignStartDate(LocalDate startDate) {
-          this.startDate = startDate;
-      }
-
-      public void assignEndDate(LocalDate endDate) {
-          this.endDate = endDate;
-      }
-  */
-    @JsonSetter("rqutPrdCn") // Jackson이 XML에서 rqutPrdCn 태그를 찾고 setRqutPrdCn 메서드를 호출하여 값을 설정
+    @JsonSetter("rqutPrdCn") // Jackson이 XML에서 rqutPrdCn 태그를 찾고 setRqutPrdCn 메서드를 호출하여 startDate, endDate 설정
     public void setRqutPrdCn(String rqutPrdCn) {
-        System.out.println("setter 테스트: " + rqutPrdCn);
         this.rqutPrdCn = rqutPrdCn; // XML 데이터 매핑
         parseDatesFromRqutPrdCn(rqutPrdCn); // 매핑 중에 날짜 파싱
     }
 
     private void parseDatesFromRqutPrdCn(String rqutPrdCn) {
-        System.out.println("프라이빗 테스트: " + rqutPrdCn);
         if (rqutPrdCn == null || rqutPrdCn.isEmpty()) {
             return;
         }
@@ -103,7 +88,6 @@ public class YouthPolicyResponse {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                     this.startDate = LocalDate.parse(dateSplit[0].trim(), formatter);
                     this.endDate = LocalDate.parse(dateSplit[1].trim(), formatter);
-                    System.out.println("endDate: " + endDate);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

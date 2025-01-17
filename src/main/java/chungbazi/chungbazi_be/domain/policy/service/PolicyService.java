@@ -6,6 +6,7 @@ import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,7 @@ public class PolicyService {
     private String openApiVlak;
 
 
-    @Scheduled(cron = "0 5 22 * * *") // 매일 오후 12시 25분에 실행
+    @Scheduled(cron = "0 20 23 * * *") // 매일 오후 12시 25분에 실행
     @Transactional
     public void schedulePolicyFetch() {
         getPolicy();
@@ -51,12 +52,16 @@ public class PolicyService {
                 break;
             }
 
-            // 날짜 유효한 것만 DTO -> Entity
-            List<Policy> validPolicies = policies.getYouthPolicyList().stream()
-                    .filter(dto -> isDateAvail(dto, twoMonthAgo))
-                    .map(Policy::toEntity)
-                    .toList();
-
+            // DB에 이미 존재하는 bizId가 있는지 확인 & 날짜 유효한 것만 DTO -> Entity
+            List<Policy> validPolicies = new ArrayList<>();
+            for (YouthPolicyResponse response : policies.getYouthPolicyList()) {
+                if (policyRepository.existsByBizId(response.getBizId())) {
+                    break;
+                }
+                if (isDateAvail(response, twoMonthAgo)) {
+                    validPolicies.add(Policy.toEntity(response));
+                }
+            }
             if (!validPolicies.isEmpty()) {
                 policyRepository.saveAll(validPolicies);
             }
@@ -96,8 +101,6 @@ public class PolicyService {
         // text/plain-> XML
         try {
             XmlMapper xmlMapper = new XmlMapper();
-            //xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-            //       false); //YouthPolicyResponse에 명시하지 않은 필드의 응답은 무시
 
             return xmlMapper.readValue(responseBody, YouthPolicyListResponse.class); // XML 매핑
         } catch (Exception e) {
