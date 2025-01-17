@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/chungBazi?serverTimezone=UTC
+    username: root
+    password: nsh0311~^^
 
   jpa:
     hibernate:
@@ -23,3 +23,6 @@ springdoc:
     groups-order: DESC
     tags-sorter: alpha
     operations-sorter: method
+
+webclient:
+  openApiVlak: 5b6755911393e15f5d5fafa8

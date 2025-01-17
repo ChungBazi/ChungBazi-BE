@@ -1,5 +1,7 @@
 package chungbazi.chungbazi_be.domain.policy.entity;
 
+import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyResponse;
+import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-public class Policy {
+public class Policy extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,9 +39,11 @@ public class Policy {
     private String name;
 
     //정책소개
+    @Column(length = 1000)
     private String intro;
 
     //지원내용
+    @Column(length = 1000)
     private String content;
 
     // 신청시작 날짜
@@ -49,18 +53,23 @@ public class Policy {
     private LocalDate endDate;
 
     // 연령 정보
+    @Column(length = 1000)
     private String age;
 
     // 전공 요건 내용
+    @Column(length = 1000)
     private String major;
 
     // 취업 상태 내용
+    @Column(length = 1000)
     private String employment;
 
     // 거주지 및 소득 조건 내용
+    @Column(length = 1000)
     private String residenceIncome;
 
     // 학력 요건 내용
+    @Column(length = 1000)
     private String education;
 
     // 신청 사이트 주소
@@ -71,12 +80,15 @@ public class Policy {
     private String bizId;
 
     // 제출 서류 내용
+    @Column(length = 1000)
     private String document;
 
     // 심사 발표 내용
+    @Column(length = 1000)
     private String result;
 
     // 신청 절차 내용
+    @Column(length = 1000)
     private String applyProcedure;
 
     // 참고 사이트 URL1
@@ -84,6 +96,43 @@ public class Policy {
 
     // 참고 사이트 URL2
     private String referenceUrl2;
+
+
+    public static Policy toEntity(YouthPolicyResponse dto) {
+
+        String code = dto.getPolyRlmCd();
+        System.out.println("코드는 " + code);
+        Category dtoCategory = Category.fromCode(code);
+
+        String date = dto.getRqutPrdCn();
+        System.out.println("받은 날짜 형태:" + date);
+
+        LocalDate startDate = dto.getStartDate();
+        System.out.println("받은 시작 날짜:" + startDate);
+        LocalDate endDate = dto.getEndDate();
+        System.out.println("받은 끝나는 날짜:" + endDate);
+
+        return Policy.builder()
+                .category(dtoCategory)
+                .name(dto.getPolyBizSjnm())
+                .intro(dto.getPolyItcnCn())
+                .content(dto.getSporCn())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
+                .age(dto.getAgeInfo())
+                .major(dto.getMajrRqisCn())
+                .employment(dto.getEmpmSttsCn())
+                .residenceIncome(dto.getPrcpCn())
+                .education(dto.getAccrRqisCn())
+                .registerUrl(dto.getRqutUrla())
+                .bizId(dto.getBizId())
+                .document(dto.getPstnPaprCn())
+                .result(dto.getJdgnPresCn())
+                .applyProcedure(dto.getRqutProcCn())
+                .referenceUrl1(dto.getRfcSiteUrla1())
+                .referenceUrl2(dto.getRfcSiteUrla2())
+                .build();
+    }
 }
 
 
