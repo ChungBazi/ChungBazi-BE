@@ -14,6 +14,12 @@ public class Addition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String name;
+
+    public static Addition of(String name) {
+        return Addition.builder()
+                .name(name)
+                .build();
+    }
 }

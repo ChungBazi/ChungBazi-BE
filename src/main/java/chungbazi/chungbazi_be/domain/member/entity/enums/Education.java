@@ -9,5 +9,13 @@ public enum Education {
     COLLEGE_GRADUATING,      // 대졸 예정
     COLLEGE_GRADUATED,       // 대학 졸업
     MASTER_DEGREE,           // 석사
-    DOCTORAL_DEGREE          // 박사
+    DOCTORAL_DEGREE;        // 박사
+
+    public static Education fromString(String value) {
+        try {
+            return Education.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new RuntimeException("Invalid education value: " + value);
+        }
+    }
 }
