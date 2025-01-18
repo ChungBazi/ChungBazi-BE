@@ -1,5 +1,7 @@
 package chungbazi.chungbazi_be.domain.member.entity.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Region {
     GANGNAM("강남구"),
     GANGDONG("강동구"),
@@ -34,5 +36,10 @@ public enum Region {
 
     public String getKoreanName() {
         return koreanName;
+    }
+
+    @JsonValue
+    public String toJson() {
+        return name(); // Enum 이름을 String으로 반환
     }
 }
