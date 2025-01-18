@@ -70,6 +70,18 @@ public class Member {
     private List<MemberInterest> memberInterestList = new ArrayList<>();
 
 
+    public void updateEducation(Education education) {
+        this.education = education;
+    }
+    public void updateEmployment(Employment employment) {
+        this.employment = employment;
+    }
+    public void updateIncome(Income income) {
+        this.income = income;
+    }
+    public void updateRegion(Region region) {
+        this.region = region;
+    }
 }
 
 

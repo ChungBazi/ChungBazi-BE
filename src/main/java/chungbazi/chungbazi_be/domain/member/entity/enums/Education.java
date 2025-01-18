@@ -1,5 +1,7 @@
 package chungbazi.chungbazi_be.domain.member.entity.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Education {
     LESS_THAN_HIGH_SCHOOL,   // 고졸 미만
     HIGH_SCHOOL_ENROLLED,    // 고교 재학
@@ -11,11 +13,9 @@ public enum Education {
     MASTER_DEGREE,           // 석사
     DOCTORAL_DEGREE;        // 박사
 
-    public static Education fromString(String value) {
-        try {
-            return Education.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException | NullPointerException e) {
-            throw new RuntimeException("Invalid education value: " + value);
-        }
+    @JsonValue
+    public String toJson() {
+        return name(); // Enum 이름을 String으로 반환
     }
+
 }

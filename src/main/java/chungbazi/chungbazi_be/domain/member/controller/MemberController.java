@@ -2,6 +2,10 @@ package chungbazi.chungbazi_be.domain.member.controller;
 
 import chungbazi.chungbazi_be.domain.auth.AuthTokensGenerator;
 import chungbazi.chungbazi_be.domain.member.dto.MemberRequestDTO;
+import chungbazi.chungbazi_be.domain.member.entity.enums.Education;
+import chungbazi.chungbazi_be.domain.member.entity.enums.Employment;
+import chungbazi.chungbazi_be.domain.member.entity.enums.Income;
+import chungbazi.chungbazi_be.domain.member.entity.enums.Region;
 import chungbazi.chungbazi_be.domain.member.service.MemberService;
 import chungbazi.chungbazi_be.domain.member.repository.MemberRepository;
 import chungbazi.chungbazi_be.domain.member.entity.Member;
@@ -10,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,8 +44,13 @@ public class MemberController {
     ) {
         String token = accessToken.replace("Bearer ", "");
         Long memberId = authTokensGenerator.extractMemberId(token);
-        String message = memberService.updateEducationForCurrentUser(memberId, requestDto);
-        return ResponseEntity.ok(ApiResponse.onSuccess(message));
+
+        Education updatedEducation = memberService.updateEducationForCurrentUser(memberId, requestDto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedEducation", updatedEducation);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 
     @PostMapping("/employment")
@@ -49,8 +60,13 @@ public class MemberController {
     ) {
         String token = accessToken.replace("Bearer ", "");
         Long memberId = authTokensGenerator.extractMemberId(token);
-        String message = memberService.updateEmploymentForCurrentUser(memberId, requestDto);
-        return ResponseEntity.ok(ApiResponse.onSuccess(message));
+
+        Employment updatedEmployment = memberService.updateEmploymentForCurrentUser(memberId, requestDto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedEmployment", updatedEmployment);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 
     @PostMapping("/income")
@@ -60,8 +76,13 @@ public class MemberController {
     ) {
         String token = accessToken.replace("Bearer ", "");
         Long memberId = authTokensGenerator.extractMemberId(token);
-        String message = memberService.updateIncomeForCurrentUser(memberId, requestDto);
-        return ResponseEntity.ok(ApiResponse.onSuccess(message));
+
+        Income updatedIncome = memberService.updateIncomeForCurrentUser(memberId, requestDto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedIncome", updatedIncome);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 
     @PostMapping("/region")
@@ -71,8 +92,13 @@ public class MemberController {
     ) {
         String token = accessToken.replace("Bearer ", "");
         Long memberId = authTokensGenerator.extractMemberId(token);
-        String message = memberService.updateRegionForCurrentUser(memberId, requestDto);
-        return ResponseEntity.ok(ApiResponse.onSuccess(message));
+
+        Region updatedRegion = memberService.updateRegionForCurrentUser(memberId, requestDto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedRegion", updatedRegion);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 
     @PostMapping("/interest")
@@ -82,8 +108,13 @@ public class MemberController {
     ) {
         String token = accessToken.replace("Bearer ", "");
         Long memberId = authTokensGenerator.extractMemberId(token);
-        String message = memberService.updateInterestForCurrentUser(memberId, requestDto);
-        return ResponseEntity.ok(ApiResponse.onSuccess(message));
+
+        List<String> updatedInterests = memberService.updateInterestForCurrentUser(memberId, requestDto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedInterests", updatedInterests);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 
     @PostMapping("/addition")
@@ -93,7 +124,12 @@ public class MemberController {
     ) {
         String token = accessToken.replace("Bearer ", "");
         Long memberId = authTokensGenerator.extractMemberId(token);
-        String message = memberService.updateAdditionForCurrentUser(memberId, requestDto);
-        return ResponseEntity.ok(ApiResponse.onSuccess(message));
+
+        List<String> updatedAdditions = memberService.updateAdditionForCurrentUser(memberId, requestDto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedAdditions", updatedAdditions);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 }

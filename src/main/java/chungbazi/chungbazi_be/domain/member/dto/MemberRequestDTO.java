@@ -39,18 +39,17 @@ public class MemberRequestDTO {
         private Region region;
 
     }
-    @Getter
-    @NoArgsConstructor
-    public static class AdditionDto {
-        @JsonProperty("addition")
-        private List<String> addition;
-    }
 
     @Getter
     @NoArgsConstructor
     public static class InterestDto {
-        @JsonProperty("interest")
-        private List<String> interest;
+        private List<String> interests; // 관심사 목록 (예: ["음악", "스포츠", "영화"])
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class AdditionDto {
+        private List<String> additionInfo; // 추가 정보 목록 (예: ["중소기업", "여성"])
     }
 
 }
