@@ -18,7 +18,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 멤버 관련 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
-    NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다.");
+    NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
+    INVALID_GENDER(HttpStatus.BAD_REQUEST,"MEMBER","유효하지않은 성별입니다.");
 
     //등등..
 

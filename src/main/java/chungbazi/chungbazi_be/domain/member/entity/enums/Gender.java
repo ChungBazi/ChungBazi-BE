@@ -1,5 +1,8 @@
 package chungbazi.chungbazi_be.domain.member.entity.enums;
 
+import chungbazi.chungbazi_be.domain.member.MemberHandler;
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+
 public enum Gender {
     FEMALE, MALE, NONE;
 
@@ -9,6 +12,6 @@ public enum Gender {
         } else if ("female".equalsIgnoreCase(gender)) {
             return FEMALE;
         }
-        throw new IllegalArgumentException("Invalid gender: " + gender);
+        throw new MemberHandler(ErrorStatus.INVALID_GENDER);
     }
 }

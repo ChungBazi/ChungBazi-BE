@@ -17,7 +17,7 @@ public class Addition {
     @Column(nullable = false,unique = true)
     private String name;
 
-    public static Addition of(String name) {
+    public static Addition from(String name) {
         return Addition.builder()
                 .name(name)
                 .build();

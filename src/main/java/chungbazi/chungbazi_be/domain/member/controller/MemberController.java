@@ -6,9 +6,8 @@ import chungbazi.chungbazi_be.domain.member.entity.enums.Education;
 import chungbazi.chungbazi_be.domain.member.entity.enums.Employment;
 import chungbazi.chungbazi_be.domain.member.entity.enums.Income;
 import chungbazi.chungbazi_be.domain.member.entity.enums.Region;
-import chungbazi.chungbazi_be.domain.member.service.MemberService;
 import chungbazi.chungbazi_be.domain.member.repository.MemberRepository;
-import chungbazi.chungbazi_be.domain.member.entity.Member;
+import chungbazi.chungbazi_be.domain.member.service.MemberService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,17 +24,6 @@ public class MemberController {
     private final MemberRepository memberRepository;
     private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
-
-    @GetMapping
-    public ResponseEntity<List<Member>> findAll() {
-        return ResponseEntity.ok(memberRepository.findAll());
-    }
-
-    @GetMapping("/{accessToken}")
-    public ResponseEntity<Member> findByAccessToken(@PathVariable String accessToken) {
-        Long memberId = authTokensGenerator.extractMemberId(accessToken);
-        return ResponseEntity.ok(memberRepository.findById(memberId).get());
-    }
 
     @PostMapping("/education")
     public ResponseEntity<ApiResponse<?>> updateEducation(

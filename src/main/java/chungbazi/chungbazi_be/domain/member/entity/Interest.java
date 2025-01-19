@@ -17,7 +17,7 @@ public class Interest {
     @Column(nullable = false,unique = true)
     private String name;
 
-    public static Interest of(String name) {
+    public static Interest from(String name) {
         return Interest.builder()
                 .name(name)
                 .build();
