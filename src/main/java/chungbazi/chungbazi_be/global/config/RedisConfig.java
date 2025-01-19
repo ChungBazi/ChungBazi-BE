@@ -10,7 +10,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-@EnableRedisRepositories  // Redis를 사용한다고 명시해 주는 annotation
+@EnableRedisRepositories  // Spring Data Redis 리포지토리를 활성화(Redis를 사용한다고 명시해 주는 annotation)
 public class RedisConfig {
 
     @Value("${spring.data.redis.host}")

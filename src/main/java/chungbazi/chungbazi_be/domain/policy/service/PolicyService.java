@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,11 +89,6 @@ public class PolicyService {
 
     }
 
-    // 인기 검색어 조회
-    public PopularSearchResponse getPopularSearch() {
-
-    }
-
     // 정책 검색
     public PolicySearchResponse getSearchPolicy(String name, String cursor, int size) {
 
@@ -132,6 +128,20 @@ public class PolicyService {
         // 검색 결과 반환
 
     }
+
+    // 인기 검색어 조회
+    public PopularSearchResponse getPopularSearch() {
+
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
+        String key = "ranking:" + LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+
+        //상위 6개 검색어 반환
+        Set<String> result = zSetOperations.reverseRange(key, 0, 5);
+        List<String> resultList = result.stream().toList();
+        return PopularSearchResponse.from(resultList);
+
+    }
+
 
     // XML -> DTO
     private YouthPolicyListResponse fetchPolicy(int display, int pageIndex, String srchPolyBizSecd) {
