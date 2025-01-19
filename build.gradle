@@ -44,6 +44,9 @@ dependencies {
 
     //ARM 기반의 칩에 네이티브 라이브러리 설정
     runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.104.Final:osx-aarch_64'
+
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {

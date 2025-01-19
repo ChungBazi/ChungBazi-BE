@@ -21,7 +21,8 @@ public enum ErrorStatus implements BaseErrorCode {
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
 
     //Policy
-    CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "CATEGORY5001", "존재하지 않는 정책 코드 입니다.");
+    CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5001", "존재하지 않는 정책 코드 입니다."),
+    NO_SEARCH_NAME(HttpStatus.BAD_REQUEST, "POLICY5002", "검색어를 입력해주세요.");
 
     private final HttpStatus httpStatus;
     private final String code;

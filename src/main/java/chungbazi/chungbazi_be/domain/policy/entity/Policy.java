@@ -101,16 +101,12 @@ public class Policy extends BaseTimeEntity {
     public static Policy toEntity(YouthPolicyResponse dto) {
 
         String code = dto.getPolyRlmCd();
-        System.out.println("코드는 " + code);
         Category dtoCategory = Category.fromCode(code);
 
         String date = dto.getRqutPrdCn();
-        System.out.println("받은 날짜 형태:" + date);
 
         LocalDate startDate = dto.getStartDate();
-        System.out.println("받은 시작 날짜:" + startDate);
         LocalDate endDate = dto.getEndDate();
-        System.out.println("받은 끝나는 날짜:" + endDate);
 
         return Policy.builder()
                 .category(dtoCategory)
