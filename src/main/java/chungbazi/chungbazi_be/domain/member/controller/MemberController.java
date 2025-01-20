@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.domain.member.controller;
 
 //import chungbazi.chungbazi_be.domain.auth.AuthTokensGenerator;
 import chungbazi.chungbazi_be.domain.member.dto.MemberRequestDTO;
+import chungbazi.chungbazi_be.domain.member.dto.MemberResponseDTO;
 import chungbazi.chungbazi_be.domain.member.entity.enums.Education;
 import chungbazi.chungbazi_be.domain.member.entity.enums.Employment;
 import chungbazi.chungbazi_be.domain.member.entity.enums.Income;
@@ -9,6 +10,7 @@ import chungbazi.chungbazi_be.domain.member.entity.enums.Region;
 import chungbazi.chungbazi_be.domain.member.repository.MemberRepository;
 import chungbazi.chungbazi_be.domain.member.service.MemberService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,12 @@ public class MemberController {
     private final MemberRepository memberRepository;
     //private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
+
+    @GetMapping("/profile")
+    @Operation(summary = "프로필 조회 API", description = "마이페이지 프로필 조회")
+    public ApiResponse<MemberResponseDTO.ProfileDto> getProfile(){
+        return ApiResponse.onSuccess(memberService.getProfile());
+    }
 
     @PostMapping("/education")
     public ResponseEntity<ApiResponse<?>> updateEducation(

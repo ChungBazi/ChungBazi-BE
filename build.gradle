@@ -42,7 +42,7 @@ dependencies {
     // WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     // Jackson XML (XML->Java)
-	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.0'
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2'
     // ARM 기반의 칩에 네이티브 라이브러리 설정
 	runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.96.Final:osx-aarch_64'
 	// Test

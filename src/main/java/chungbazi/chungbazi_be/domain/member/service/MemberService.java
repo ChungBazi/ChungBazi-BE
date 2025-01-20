@@ -2,7 +2,9 @@ package chungbazi.chungbazi_be.domain.member.service;
 
 
 import chungbazi.chungbazi_be.domain.member.MemberHandler;
+import chungbazi.chungbazi_be.domain.member.converter.MemberConverter;
 import chungbazi.chungbazi_be.domain.member.dto.MemberRequestDTO;
+import chungbazi.chungbazi_be.domain.member.dto.MemberResponseDTO;
 import chungbazi.chungbazi_be.domain.member.entity.Addition;
 import chungbazi.chungbazi_be.domain.member.entity.Interest;
 import chungbazi.chungbazi_be.domain.member.entity.Member;
@@ -30,6 +32,16 @@ public class MemberService {
     private final MemberAdditionRepository memberAdditionRepository;
     private final InterestRepository interestRepository;
     private final MemberInterestRepository memberInterestRepository;
+
+    public MemberResponseDTO.ProfileDto getProfile() {
+        // 추후 시큐리티로 id 가져오기 (하드 코딩된 상태)
+        Long userId = 1L;
+
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        return MemberConverter.toProfileDto(member);
+    }
 
 
     public Education updateEducationForCurrentUser(Long memberId, MemberRequestDTO.EducationDto requestDto) {
