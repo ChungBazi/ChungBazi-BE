@@ -20,10 +20,11 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
-                .oauth2Login(oauth -> oauth
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/")
-                );
+//                .oauth2Login(oauth -> oauth
+//                        .loginPage("/login")
+//                        .defaultSuccessUrl("/")
+//                )
+        ;
 
         return http.build();
     }
