@@ -1,14 +1,10 @@
 package chungbazi.chungbazi_be.domain.member.controller;
 
 //import chungbazi.chungbazi_be.domain.auth.AuthTokensGenerator;
-import chungbazi.chungbazi_be.domain.member.dto.MemberRequestDTO;
-import chungbazi.chungbazi_be.domain.member.dto.MemberResponseDTO;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Education;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Employment;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Income;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Region;
-import chungbazi.chungbazi_be.domain.member.repository.MemberRepository;
-import chungbazi.chungbazi_be.domain.member.service.MemberService;
+import chungbazi.chungbazi_be.domain.member.dto.UserRequestDTO;
+import chungbazi.chungbazi_be.domain.member.dto.UserResponseDTO;
+import chungbazi.chungbazi_be.domain.member.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.member.service.UserService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -16,26 +12,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
-public class MemberController {
-    private final MemberRepository memberRepository;
+public class UserController {
+    private final UserRepository userRepository;
     //private final AuthTokensGenerator authTokensGenerator;
-    private final MemberService memberService;
+    private final UserService userService;
 
     @GetMapping("/profile")
     @Operation(summary = "프로필 조회 API", description = "마이페이지 프로필 조회")
-    public ApiResponse<MemberResponseDTO.ProfileDto> getProfile(){
-        return ApiResponse.onSuccess(memberService.getProfile());
+    public ApiResponse<UserResponseDTO.ProfileDto> getProfile(){
+        return ApiResponse.onSuccess(userService.getProfile());
     }
 
     @PostMapping("/education")
     public ResponseEntity<ApiResponse<?>> updateEducation(
-            @RequestBody MemberRequestDTO.EducationDto requestDto,
+            @RequestBody UserRequestDTO.EducationDto requestDto,
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
@@ -51,7 +46,7 @@ public class MemberController {
 
     @PostMapping("/employment")
     public ResponseEntity<ApiResponse<?>> updateEmployment(
-            @RequestBody MemberRequestDTO.EmploymentDto requestDto,
+            @RequestBody UserRequestDTO.EmploymentDto requestDto,
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
@@ -67,7 +62,7 @@ public class MemberController {
 
     @PostMapping("/income")
     public ResponseEntity<ApiResponse<?>> updateIncome(
-            @RequestBody MemberRequestDTO.IncomeDto requestDto,
+            @RequestBody UserRequestDTO.IncomeDto requestDto,
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
@@ -83,7 +78,7 @@ public class MemberController {
 
     @PostMapping("/region")
     public ResponseEntity<ApiResponse<?>> updateRegion(
-            @RequestBody MemberRequestDTO.RegionDto requestDto,
+            @RequestBody UserRequestDTO.RegionDto requestDto,
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
@@ -99,7 +94,7 @@ public class MemberController {
 
     @PostMapping("/interest")
     public ResponseEntity<ApiResponse<?>> updateInterest(
-            @RequestBody MemberRequestDTO.InterestDto requestDto,
+            @RequestBody UserRequestDTO.InterestDto requestDto,
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
@@ -115,7 +110,7 @@ public class MemberController {
 
     @PostMapping("/addition")
     public ResponseEntity<ApiResponse<?>> updateAddition(
-            @RequestBody MemberRequestDTO.AdditionDto requestDto,
+            @RequestBody UserRequestDTO.AdditionDto requestDto,
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");

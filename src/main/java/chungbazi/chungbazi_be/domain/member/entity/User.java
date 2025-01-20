@@ -1,8 +1,8 @@
 package chungbazi.chungbazi_be.domain.member.entity;
 
 import chungbazi.chungbazi_be.domain.member.entity.enums.*;
-import chungbazi.chungbazi_be.domain.member.entity.mapping.MemberAddition;
-import chungbazi.chungbazi_be.domain.member.entity.mapping.MemberInterest;
+import chungbazi.chungbazi_be.domain.member.entity.mapping.UserAddition;
+import chungbazi.chungbazi_be.domain.member.entity.mapping.UserInterest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Member {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,10 +64,10 @@ public class Member {
     private String imageUrl;
 
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL})
-    private List<MemberAddition> memberAdditionList = new ArrayList<>();
+    private List<UserAddition> userAdditionList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL})
-    private List<MemberInterest> memberInterestList = new ArrayList<>();
+    private List<UserInterest> userInterestList = new ArrayList<>();
 
 
     public void updateEducation(Education education) {

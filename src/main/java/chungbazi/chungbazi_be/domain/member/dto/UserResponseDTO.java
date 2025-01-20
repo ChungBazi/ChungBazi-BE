@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-public class MemberResponseDTO {
+public class UserResponseDTO {
     public static class EducationDto{
         private Long memberId;
         private Education education;

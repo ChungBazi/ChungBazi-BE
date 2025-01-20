@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-public class MemberRequestDTO {
+public class UserRequestDTO {
     @Getter
     @NoArgsConstructor
     public static class EducationDto{
