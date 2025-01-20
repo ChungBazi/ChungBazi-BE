@@ -38,7 +38,7 @@ public class UserService {
         Long userId = 1L;
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
 
         return UserConverter.toProfileDto(user);
     }
@@ -46,28 +46,28 @@ public class UserService {
 
     public Education updateEducationForCurrentUser(Long memberId, UserRequestDTO.EducationDto requestDto) {
         User user = userRepository.findById(memberId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
         user.updateEducation(requestDto.getEducation());
         return user.getEducation();
     }
 
     public Employment updateEmploymentForCurrentUser(Long memberId, UserRequestDTO.EmploymentDto requestDto) {
         User user = userRepository.findById(memberId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
         user.updateEmployment(requestDto.getEmployment());
         return user.getEmployment();
     }
 
     public Income updateIncomeForCurrentUser(Long memberId, UserRequestDTO.IncomeDto requestDto) {
         User user = userRepository.findById(memberId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
         user.updateIncome(requestDto.getIncome());
         return user.getIncome();
     }
 
     public Region updateRegionForCurrentUser(Long memberId, UserRequestDTO.RegionDto requestDto) {
         User user = userRepository.findById(memberId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
         user.updateRegion(requestDto.getRegion());
         return user.getRegion();
     }
@@ -76,7 +76,7 @@ public class UserService {
     public List<String> updateInterestForCurrentUser(Long memberId, UserRequestDTO.InterestDto requestDto) {
         List<String> interests = requestDto.getInterests();
         User user = userRepository.findById(memberId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
 
         // 기존 관심사 삭제
         userInterestRepository.deleteByMember(user);
@@ -100,7 +100,7 @@ public class UserService {
     public List<String> updateAdditionForCurrentUser(Long memberId, UserRequestDTO.AdditionDto requestDto) {
         List<String> additionalInfo = requestDto.getAdditionInfo();
         User user = userRepository.findById(memberId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
 
         // 기존 추가 정보 삭제
         userAdditionRepository.deleteByMember(user);
