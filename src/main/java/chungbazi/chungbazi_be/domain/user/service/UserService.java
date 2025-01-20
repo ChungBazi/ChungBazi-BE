@@ -18,10 +18,12 @@ import chungbazi.chungbazi_be.domain.user.repository.*;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -43,80 +45,120 @@ public class UserService {
         return UserConverter.toProfileDto(user);
     }
 
+    public Education updateEducation(Long userId, UserRequestDTO.EducationDto requestDto) {
+        log.debug("Finding user by id: {}", userId);
 
-    public Education updateEducationForCurrentUser(Long memberId, UserRequestDTO.EducationDto requestDto) {
-        User user = userRepository.findById(memberId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
+        log.debug("Found user: {}", user);
+
         user.updateEducation(requestDto.getEducation());
-        return user.getEducation();
+        userRepository.save(user);
+
+        log.debug("Education updated to: {}", requestDto.getEducation());
+        return requestDto.getEducation();
     }
 
-    public Employment updateEmploymentForCurrentUser(Long memberId, UserRequestDTO.EmploymentDto requestDto) {
-        User user = userRepository.findById(memberId)
+    public Employment updateEmployment(Long userId, UserRequestDTO.EmploymentDto requestDto) {
+        log.debug("Finding user by id: {}", userId);
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
+        log.debug("Found user: {}", user);
+
         user.updateEmployment(requestDto.getEmployment());
+        userRepository.save(user);
+
+        log.debug("Employment updated to: {}", requestDto.getEmployment());
         return user.getEmployment();
     }
 
-    public Income updateIncomeForCurrentUser(Long memberId, UserRequestDTO.IncomeDto requestDto) {
-        User user = userRepository.findById(memberId)
+    public Income updateIncome(Long userId, UserRequestDTO.IncomeDto requestDto) {
+        log.debug("Finding user by id: {}", userId);
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
+        log.debug("Found user: {}", user);
+
         user.updateIncome(requestDto.getIncome());
+        userRepository.save(user);
+
+        log.debug("Income updated to: {}", requestDto.getIncome());
         return user.getIncome();
     }
 
-    public Region updateRegionForCurrentUser(Long memberId, UserRequestDTO.RegionDto requestDto) {
-        User user = userRepository.findById(memberId)
+    public Region updateRegion(Long userId, UserRequestDTO.RegionDto requestDto) {
+        log.debug("Finding user by id: {}", userId);
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
+        log.debug("Found user: {}", user);
+
         user.updateRegion(requestDto.getRegion());
+        userRepository.save(user);
+
+        log.debug("Region updated to: {}", requestDto.getRegion());
         return user.getRegion();
     }
 
 
-    public List<String> updateInterestForCurrentUser(Long memberId, UserRequestDTO.InterestDto requestDto) {
-        List<String> interests = requestDto.getInterests();
-        User user = userRepository.findById(memberId)
-                .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
+    public List<String> updateInterest(Long userId, UserRequestDTO.InterestDto requestDto) {
+        log.debug("Finding user by id: {}", userId);
 
-        // 기존 관심사 삭제
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
+        log.debug("Found user: {}", user);
+
+        log.debug("Deleting existing interests for user: {}", userId);
         userInterestRepository.deleteByUser(user);
 
-        // 새로운 관심사 저장
+        List<String> interests = requestDto.getInterests();
         for (String interestName : interests) {
             Interest interest = interestRepository.findByName(interestName)
-                    .orElseGet(() -> interestRepository.save(Interest.from(interestName)));
+                    .orElseGet(() -> {
+                        log.debug("Creating new interest: {}", interestName);
+                        return interestRepository.save(Interest.from(interestName));
+                    });
 
             UserInterest userInterest = UserInterest.builder()
                     .user(user)
                     .interest(interest)
                     .build();
             userInterestRepository.save(userInterest);
+            log.debug("Saved interest: {} for user: {}", interestName, userId);
         }
 
+        log.debug("Updated interests for user: {} to {}", userId, interests);
         return interests;
     }
 
+    public List<String> updateAddition(Long userId, UserRequestDTO.AdditionDto requestDto) {
+        log.debug("Finding user by id: {}", userId);
 
-    public List<String> updateAdditionForCurrentUser(Long memberId, UserRequestDTO.AdditionDto requestDto) {
-        List<String> additionalInfo = requestDto.getAdditionInfo();
-        User user = userRepository.findById(memberId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
+        log.debug("Found user: {}", user);
 
-        // 기존 추가 정보 삭제
+        log.debug("Deleting existing additional info for user: {}", userId);
         userAdditionRepository.deleteByUser(user);
 
-        // 새로운 추가 정보 저장
+        List<String> additionalInfo = requestDto.getAdditionInfo();
         for (String additionName : additionalInfo) {
             Addition addition = additionRepository.findByName(additionName)
-                    .orElseGet(() -> additionRepository.save(Addition.from(additionName)));
+                    .orElseGet(() -> {
+                        log.debug("Creating new addition: {}", additionName);
+                        return additionRepository.save(Addition.from(additionName));
+                    });
 
             UserAddition userAddition = UserAddition.builder()
                     .user(user)
                     .addition(addition)
                     .build();
             userAdditionRepository.save(userAddition);
+            log.debug("Saved addition: {} for user: {}", additionName, userId);
         }
 
+        log.debug("Updated additional info for user: {} to {}", userId, additionalInfo);
         return additionalInfo;
     }
 }
