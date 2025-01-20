@@ -1,20 +1,20 @@
-package chungbazi.chungbazi_be.domain.member.service;
+package chungbazi.chungbazi_be.domain.user.service;
 
 
-import chungbazi.chungbazi_be.domain.member.UserHandler;
-import chungbazi.chungbazi_be.domain.member.converter.UserConverter;
-import chungbazi.chungbazi_be.domain.member.dto.UserRequestDTO;
-import chungbazi.chungbazi_be.domain.member.dto.UserResponseDTO;
-import chungbazi.chungbazi_be.domain.member.entity.Addition;
-import chungbazi.chungbazi_be.domain.member.entity.Interest;
-import chungbazi.chungbazi_be.domain.member.entity.User;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Education;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Employment;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Income;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Region;
-import chungbazi.chungbazi_be.domain.member.entity.mapping.UserAddition;
-import chungbazi.chungbazi_be.domain.member.entity.mapping.UserInterest;
-import chungbazi.chungbazi_be.domain.member.repository.*;
+import chungbazi.chungbazi_be.domain.user.UserHandler;
+import chungbazi.chungbazi_be.domain.user.converter.UserConverter;
+import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
+import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
+import chungbazi.chungbazi_be.domain.user.entity.Addition;
+import chungbazi.chungbazi_be.domain.user.entity.Interest;
+import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.entity.enums.Education;
+import chungbazi.chungbazi_be.domain.user.entity.enums.Employment;
+import chungbazi.chungbazi_be.domain.user.entity.enums.Income;
+import chungbazi.chungbazi_be.domain.user.entity.enums.Region;
+import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
+import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
+import chungbazi.chungbazi_be.domain.user.repository.*;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -79,7 +79,7 @@ public class UserService {
                 .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
 
         // 기존 관심사 삭제
-        userInterestRepository.deleteByMember(user);
+        userInterestRepository.deleteByUser(user);
 
         // 새로운 관심사 저장
         for (String interestName : interests) {
@@ -103,7 +103,7 @@ public class UserService {
                 .orElseThrow(() -> new UserHandler(ErrorStatus.NOT_FOUND_USER));
 
         // 기존 추가 정보 삭제
-        userAdditionRepository.deleteByMember(user);
+        userAdditionRepository.deleteByUser(user);
 
         // 새로운 추가 정보 저장
         for (String additionName : additionalInfo) {

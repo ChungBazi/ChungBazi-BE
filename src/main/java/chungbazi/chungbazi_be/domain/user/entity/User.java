@@ -1,8 +1,8 @@
-package chungbazi.chungbazi_be.domain.member.entity;
+package chungbazi.chungbazi_be.domain.user.entity;
 
-import chungbazi.chungbazi_be.domain.member.entity.enums.*;
-import chungbazi.chungbazi_be.domain.member.entity.mapping.UserAddition;
-import chungbazi.chungbazi_be.domain.member.entity.mapping.UserInterest;
+import chungbazi.chungbazi_be.domain.user.entity.enums.*;
+import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
+import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -63,10 +63,10 @@ public class User {
 
     private String imageUrl;
 
-    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<UserAddition> userAdditionList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<UserInterest> userInterestList = new ArrayList<>();
 
 

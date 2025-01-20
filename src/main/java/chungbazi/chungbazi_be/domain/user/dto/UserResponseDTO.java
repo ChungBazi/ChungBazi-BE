@@ -1,6 +1,6 @@
-package chungbazi.chungbazi_be.domain.member.dto;
+package chungbazi.chungbazi_be.domain.user.dto;
 
-import chungbazi.chungbazi_be.domain.member.entity.enums.Education;
+import chungbazi.chungbazi_be.domain.user.entity.enums.Education;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

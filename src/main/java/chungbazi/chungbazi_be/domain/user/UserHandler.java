@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.domain.member;
+package chungbazi.chungbazi_be.domain.user;
 
 import chungbazi.chungbazi_be.global.apiPayload.code.BaseErrorCode;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;

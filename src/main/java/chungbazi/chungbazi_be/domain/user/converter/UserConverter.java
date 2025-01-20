@@ -1,7 +1,7 @@
-package chungbazi.chungbazi_be.domain.member.converter;
+package chungbazi.chungbazi_be.domain.user.converter;
 
-import chungbazi.chungbazi_be.domain.member.dto.UserResponseDTO;
-import chungbazi.chungbazi_be.domain.member.entity.User;
+import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
+import chungbazi.chungbazi_be.domain.user.entity.User;
 
 public class UserConverter {
     public static UserResponseDTO.ProfileDto toProfileDto(User user) {

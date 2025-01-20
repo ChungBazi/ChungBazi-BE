@@ -1,7 +1,7 @@
-package chungbazi.chungbazi_be.domain.member.entity.mapping;
+package chungbazi.chungbazi_be.domain.user.entity.mapping;
 
-import chungbazi.chungbazi_be.domain.member.entity.User;
-import chungbazi.chungbazi_be.domain.member.entity.Addition;
+import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.entity.Addition;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +16,7 @@ public class UserAddition {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id",nullable = false)
+    @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

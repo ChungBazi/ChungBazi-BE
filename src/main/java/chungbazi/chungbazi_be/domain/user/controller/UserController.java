@@ -1,10 +1,10 @@
-package chungbazi.chungbazi_be.domain.member.controller;
+package chungbazi.chungbazi_be.domain.user.controller;
 
 //import chungbazi.chungbazi_be.domain.auth.AuthTokensGenerator;
-import chungbazi.chungbazi_be.domain.member.dto.UserRequestDTO;
-import chungbazi.chungbazi_be.domain.member.dto.UserResponseDTO;
-import chungbazi.chungbazi_be.domain.member.repository.UserRepository;
-import chungbazi.chungbazi_be.domain.member.service.UserService;
+import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
+import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
+import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.user.service.UserService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

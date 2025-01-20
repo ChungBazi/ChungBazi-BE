@@ -1,6 +1,6 @@
-package chungbazi.chungbazi_be.domain.member.repository;
+package chungbazi.chungbazi_be.domain.user.repository;
 
-import chungbazi.chungbazi_be.domain.member.entity.User;
+import chungbazi.chungbazi_be.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
