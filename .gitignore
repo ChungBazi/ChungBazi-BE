@@ -1,3 +1,6 @@
+application.yml
+serviceAccountKey.json
+
 HELP.md
 .gradle
 build/
@@ -35,3 +38,4 @@ out/
 
 ### VS Code ###
 .vscode/
+src/main/resources/serviceAccountKey.json
