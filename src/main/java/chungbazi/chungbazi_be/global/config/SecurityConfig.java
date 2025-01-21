@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**", "/api/user/profile").permitAll()
+                        .requestMatchers( "/**").permitAll()
                         .anyRequest().authenticated());
 
 //        추후 토큰 필터 적용
