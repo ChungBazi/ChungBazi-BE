@@ -25,6 +25,12 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //Policy
     CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "CATEGORY5001", "존재하지 않는 정책 코드 입니다."),
+
+    //인증 관련 에러
+    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "TOKEN4011", "유효하지 않은 토큰입니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN4012", "만료된 토큰입니다."),
+    TOKEN_MISSING_SUBJECT(HttpStatus.UNAUTHORIZED, "TOKEN4013", "토큰에서 사용자 정보를 찾을 수 없습니다."),
+    AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED,"COMMON401", "인증에 실패하였습니다."),
     ;
 
     private final HttpStatus httpStatus;
