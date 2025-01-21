@@ -1,7 +1,7 @@
-package chungbazi.chungbazi_be.domain.member.entity.mapping;
+package chungbazi.chungbazi_be.domain.user.entity.mapping;
 
-import chungbazi.chungbazi_be.domain.member.entity.Member;
-import chungbazi.chungbazi_be.domain.member.entity.Addition;
+import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.entity.Addition;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,14 +10,14 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class MemberAddition {
+public class UserAddition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id",nullable = false)
-    private Member member;
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "addition_id",nullable = false)

@@ -1,6 +1,6 @@
-package chungbazi.chungbazi_be.domain.member.repository;
+package chungbazi.chungbazi_be.domain.user.repository;
 
-import chungbazi.chungbazi_be.domain.member.entity.Interest;
+import chungbazi.chungbazi_be.domain.user.entity.Interest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

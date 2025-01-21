@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.domain.member.entity.enums;
+package chungbazi.chungbazi_be.domain.user.entity.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

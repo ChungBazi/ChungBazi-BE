@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.domain.member.entity;
+package chungbazi.chungbazi_be.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
