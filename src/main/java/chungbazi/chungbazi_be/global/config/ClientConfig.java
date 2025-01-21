@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.domain.auth.config;
+package chungbazi.chungbazi_be.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
