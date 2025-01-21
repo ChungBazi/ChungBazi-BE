@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.domain.auth;
+package chungbazi.chungbazi_be.domain.auth.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,13 +9,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthTokens {
+public class TokenResponse {
     private String accessToken;
     private String refreshToken;
     private String grantType;
     private Long expiresIn;
 
-    public static AuthTokens of(String accessToken, String refreshToken, String grantType, Long expiresIn) {
-        return new AuthTokens(accessToken, refreshToken, grantType, expiresIn);
+    public static TokenResponse of(String accessToken, String refreshToken, String grantType, Long expiresIn) {
+        return new TokenResponse(accessToken, refreshToken, grantType, expiresIn);
     }
 }
