@@ -27,7 +27,7 @@ public class Policy extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "policy_id")
-    private Long policyId;
+    private Long id;
 
     //카테고리
     @Enumerated(EnumType.STRING)

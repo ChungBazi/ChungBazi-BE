@@ -1,14 +1,17 @@
 package chungbazi.chungbazi_be.domain.policy.service;
 
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyListOneResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicySearchResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyListResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
+import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.querydsl.core.Tuple;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -90,7 +93,7 @@ public class PolicyService {
     }
 
     // 정책 검색
-    public PolicySearchResponse getSearchPolicy(String name, String cursor, int size) {
+    public PolicySearchResponse getSearchPolicy(String name, String cursor, int size, String order) {
 
         if (name == null) {
             throw new GeneralException(ErrorStatus.NO_SEARCH_NAME);
@@ -125,8 +128,30 @@ public class PolicyService {
                 zSetOperations.add(key, normalizedName, cnt + num);
             }
         }
-        // 검색 결과 반환
 
+        // 검색 결과 반환
+        List<Tuple> policies = policyRepository.searchPolicyWithName(name, cursor, size + 1, order);
+
+        boolean hasNext = policies.size() > size;
+
+        if (hasNext) {
+            policies.subList(0, size);
+        }
+
+        List<PolicyListOneResponse> policyDtoList = new ArrayList<>();
+        for (Tuple tuple : policies) {
+            Policy policy = tuple.get(QPolicy.policy);
+            policyDtoList.add(PolicyListOneResponse.from(policy));
+        }
+
+        if (policies.isEmpty()) {
+            return PolicySearchResponse.of(policyDtoList, null, false);
+        }
+
+        Tuple lastTuple = policies.get(policies.size() - 1);
+        String nextCursor = policyRepository.generateNextCursor(lastTuple, name);
+
+        return PolicySearchResponse.of(policyDtoList, nextCursor, hasNext);
     }
 
     // 인기 검색어 조회

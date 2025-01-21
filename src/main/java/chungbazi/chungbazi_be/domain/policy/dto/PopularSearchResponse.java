@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PopularSearchResponse {
 
-    List<String> keywords;
+    private List<String> keywords;
 
     public static PopularSearchResponse from(List<String> result) {
         return new PopularSearchResponse(result);

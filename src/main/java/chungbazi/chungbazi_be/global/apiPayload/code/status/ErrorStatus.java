@@ -19,11 +19,13 @@ public enum ErrorStatus implements BaseErrorCode {
     // 멤버 관련 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
-    INVALID_GENDER(HttpStatus.BAD_REQUEST,"MEMBER","유효하지않은 성별입니다."),
+    INVALID_GENDER(HttpStatus.BAD_REQUEST, "MEMBER", "유효하지않은 성별입니다."),
 
     //Policy
     CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5001", "존재하지 않는 정책 코드 입니다."),
-    NO_SEARCH_NAME(HttpStatus.BAD_REQUEST, "POLICY5002", "검색어를 입력해주세요.");
+    NO_SEARCH_NAME(HttpStatus.BAD_REQUEST, "POLICY5002", "검색어를 입력해주세요."),
+    POLICY_NOT_FOUND(HttpStatus.NOT_FOUND, "POLICY5003", "존재하지 않는 정책입니다."),
+    NO_CURSOR(HttpStatus.BAD_REQUEST, "POLICY5004", "커서가 존재하지않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

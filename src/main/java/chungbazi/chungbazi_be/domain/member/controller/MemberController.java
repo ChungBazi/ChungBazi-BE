@@ -1,28 +1,25 @@
 package chungbazi.chungbazi_be.domain.member.controller;
 
-import chungbazi.chungbazi_be.domain.auth.AuthTokensGenerator;
 import chungbazi.chungbazi_be.domain.member.dto.MemberRequestDTO;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Education;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Employment;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Income;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Region;
 import chungbazi.chungbazi_be.domain.member.repository.MemberRepository;
 import chungbazi.chungbazi_be.domain.member.service.MemberService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class MemberController {
     private final MemberRepository memberRepository;
-    private final AuthTokensGenerator authTokensGenerator;
+    //private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
 
     @PostMapping("/education")
@@ -31,12 +28,12 @@ public class MemberController {
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
-        Long memberId = authTokensGenerator.extractMemberId(token);
+        //Long memberId = authTokensGenerator.extractMemberId(token);
 
-        Education updatedEducation = memberService.updateEducationForCurrentUser(memberId, requestDto);
+        //Education updatedEducation = memberService.updateEducationForCurrentUser(memberId, requestDto);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("updatedEducation", updatedEducation);
+        //result.put("updatedEducation", updatedEducation);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
@@ -47,12 +44,12 @@ public class MemberController {
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
-        Long memberId = authTokensGenerator.extractMemberId(token);
+        //Long memberId = authTokensGenerator.extractMemberId(token);
 
-        Employment updatedEmployment = memberService.updateEmploymentForCurrentUser(memberId, requestDto);
+        //Employment updatedEmployment = memberService.updateEmploymentForCurrentUser(memberId, requestDto);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("updatedEmployment", updatedEmployment);
+        //result.put("updatedEmployment", updatedEmployment);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
@@ -63,12 +60,12 @@ public class MemberController {
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
-        Long memberId = authTokensGenerator.extractMemberId(token);
+        //Long memberId = authTokensGenerator.extractMemberId(token);
 
-        Income updatedIncome = memberService.updateIncomeForCurrentUser(memberId, requestDto);
+        //Income updatedIncome = memberService.updateIncomeForCurrentUser(memberId, requestDto);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("updatedIncome", updatedIncome);
+        //result.put("updatedIncome", updatedIncome);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
@@ -79,12 +76,12 @@ public class MemberController {
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
-        Long memberId = authTokensGenerator.extractMemberId(token);
+        //Long memberId = authTokensGenerator.extractMemberId(token);
 
-        Region updatedRegion = memberService.updateRegionForCurrentUser(memberId, requestDto);
+        //Region updatedRegion = memberService.updateRegionForCurrentUser(memberId, requestDto);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("updatedRegion", updatedRegion);
+        //result.put("updatedRegion", updatedRegion);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
@@ -95,12 +92,12 @@ public class MemberController {
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
-        Long memberId = authTokensGenerator.extractMemberId(token);
+        //Long memberId = authTokensGenerator.extractMemberId(token);
 
-        List<String> updatedInterests = memberService.updateInterestForCurrentUser(memberId, requestDto);
+        //List<String> updatedInterests = memberService.updateInterestForCurrentUser(memberId, requestDto);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("updatedInterests", updatedInterests);
+        //result.put("updatedInterests", updatedInterests);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
@@ -111,12 +108,12 @@ public class MemberController {
             @RequestHeader("Authorization") String accessToken
     ) {
         String token = accessToken.replace("Bearer ", "");
-        Long memberId = authTokensGenerator.extractMemberId(token);
+        //Long memberId = authTokensGenerator.extractMemberId(token);
 
-        List<String> updatedAdditions = memberService.updateAdditionForCurrentUser(memberId, requestDto);
+        //List<String> updatedAdditions = memberService.updateAdditionForCurrentUser(memberId, requestDto);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("updatedAdditions", updatedAdditions);
+        //result.put("updatedAdditions", updatedAdditions);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }

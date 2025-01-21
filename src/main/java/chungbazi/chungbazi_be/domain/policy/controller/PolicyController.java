@@ -24,13 +24,14 @@ public class PolicyController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/search/policy")
+    @GetMapping("/search")
     public ResponseEntity<PolicySearchResponse> getSearchPolicy(
             @RequestParam(value = "name", required = true) String name,
             @RequestParam(value = "cursor", required = false) String cursor,
-            @RequestParam(value = "size", defaultValue = "15", required = false) int size) {
+            @RequestParam(value = "size", defaultValue = "15", required = false) int size,
+            @RequestParam(value = "order", defaultValue = "latest", required = false) String order) {
 
-        PolicySearchResponse response = policyService.getSearchPolicy(name, cursor, size);
+        PolicySearchResponse response = policyService.getSearchPolicy(name, cursor, size, order);
         return ResponseEntity.ok(response);
     }
 
