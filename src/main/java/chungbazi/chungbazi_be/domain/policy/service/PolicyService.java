@@ -92,6 +92,7 @@ public class PolicyService {
 
     }
 
+
     // 정책 검색
     public PolicySearchResponse getSearchPolicy(String name, String cursor, int size, String order) {
 
@@ -100,34 +101,9 @@ public class PolicyService {
         }
 
         String normalizedName = normalizeSearchItem(name);
-        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
 
-        // 인기 검색어에 반영 (오늘 포함 3일치 key에 저장, 오늘+1/내일+0.6/내일모레+0.3
-        for (int i = 0; i < 3; i++) {
-
-            String key = "ranking:" + LocalDate.now().plusDays(i).format(DateTimeFormatter.ISO_DATE);
-
-            // 키 존재 여부 확인, TTL 설정
-            boolean keyExists = Boolean.TRUE.equals(redisTemplate.hasKey(key));
-            if (!keyExists) {
-                redisTemplate.expire(key, 3, TimeUnit.DAYS);
-            }
-
-            Double cnt = zSetOperations.score(key, normalizedName); // score는 double 타입을 반환
-
-            double num = switch (i) {
-                case 0 -> 1;
-                case 1 -> 0.6;
-                case 2 -> 0.3;
-                default -> 0;
-            };
-
-            if (cnt == null) {
-                zSetOperations.add(key, normalizedName, num);
-            } else {
-                zSetOperations.add(key, normalizedName, cnt + num);
-            }
-        }
+        // 인기 검색어에 반영
+        updatePopularSearch(normalizedName);
 
         // 검색 결과 반환
         List<Tuple> policies = policyRepository.searchPolicyWithName(name, cursor, size + 1, order);
@@ -153,6 +129,7 @@ public class PolicyService {
 
         return PolicySearchResponse.of(policyDtoList, nextCursor, hasNext);
     }
+
 
     // 인기 검색어 조회
     public PopularSearchResponse getPopularSearch() {
@@ -200,6 +177,7 @@ public class PolicyService {
 
     }
 
+
     // 날짜 나와있는지 + 2달 이내 정책인지 검증
     private boolean isDateAvail(YouthPolicyResponse response, LocalDate twoMonthAgo) {
 
@@ -228,5 +206,38 @@ public class PolicyService {
         normalized = normalized.replaceAll("\\s+", " ");
 
         return normalized;
+    }
+
+    
+    // 인기 검색어에 반영
+    private void updatePopularSearch(String normalizedName) {
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
+
+        // 인기 검색어에 반영 (오늘 포함 3일치 key에 저장, 오늘+1/내일+0.6/내일모레+0.3
+        for (int i = 0; i < 3; i++) {
+
+            String key = "ranking:" + LocalDate.now().plusDays(i).format(DateTimeFormatter.ISO_DATE);
+
+            // 키 존재 여부 확인, TTL 설정
+            boolean keyExists = Boolean.TRUE.equals(redisTemplate.hasKey(key));
+            if (!keyExists) {
+                redisTemplate.expire(key, 3, TimeUnit.DAYS);
+            }
+
+            Double cnt = zSetOperations.score(key, normalizedName); // score는 double 타입을 반환
+
+            double num = switch (i) {
+                case 0 -> 1;
+                case 1 -> 0.6;
+                case 2 -> 0.3;
+                default -> 0;
+            };
+
+            if (cnt == null) {
+                zSetOperations.add(key, normalizedName, num);
+            } else {
+                zSetOperations.add(key, normalizedName, cnt + num);
+            }
+        }
     }
 }
