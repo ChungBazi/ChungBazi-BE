@@ -1,6 +1,6 @@
 package chungbazi.chungbazi_be.domain.auth.oauth;
 
-import chungbazi.chungbazi_be.domain.member.entity.enums.OAuthProvider;
+import chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,28 +18,11 @@ public class RequestOAuthInfoService {
         );
     }
 
-    public OAuthInfoResponse request(OAuthLoginParams params) {
+    public UserInfoResponse request(LoginRequestParams params) {
         OAuthApiClient client = clients.get(params.oAuthProvider());
         String accessToken = client.requestAccessToken(params);
 
         return client.requestOauthInfo(accessToken);
     }
-
-    public void logout(OAuthProvider provider, String accessToken) {
-        OAuthApiClient client = clients.get(provider);
-
-        System.out.println("Preparing to logout user with token: " + accessToken);
-        client.logout(accessToken);
-        System.out.println("Successfully logged out user for provider: " + provider);
-    }
-
-    public void deleteAccount(OAuthProvider provider, String accessToken) {
-        OAuthApiClient client = clients.get(provider);
-
-        System.out.println("Preparing to delete account for token: " + accessToken);
-        client.deleteAccount(accessToken);
-        System.out.println("Successfully deleted account for provider: " + provider);
-    }
-
 
 }

@@ -1,15 +1,15 @@
-package chungbazi.chungbazi_be.domain.auth.infra.kakao;
+package chungbazi.chungbazi_be.domain.auth.oauth.provider.kakao;
 
-import chungbazi.chungbazi_be.domain.auth.oauth.OAuthInfoResponse;
-import chungbazi.chungbazi_be.domain.member.entity.enums.Gender;
-import chungbazi.chungbazi_be.domain.member.entity.enums.OAuthProvider;
+import chungbazi.chungbazi_be.domain.auth.oauth.UserInfoResponse;
+import chungbazi.chungbazi_be.domain.user.entity.enums.Gender;
+import chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KakaoInfoResponse implements OAuthInfoResponse {
+public class KakaoUserInfoResponse implements UserInfoResponse {
 
     @JsonProperty("kakao_account")
     private KakaoAccount kakaoAccount;
@@ -36,37 +36,30 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
     public String getEmail() {
         return kakaoAccount.email;
     }
-
     @Override
     public String getNickname() {
         return kakaoAccount.profile.nickname;
     }
-
     @Override
     public String getImageUrl() {
         return kakaoAccount.profile.profile_image_url;
     }
-
     @Override
     public String getBirthYear() {
         return kakaoAccount.birthyear;
     }
-
     @Override
     public String getBirthDay() {
         return kakaoAccount.birthday;
     }
-
     @Override
     public Gender getGender() {
-
         return Gender.fromString(kakaoAccount.gender);
     }
     @Override
     public String getName() {
         return kakaoAccount.name;
     }
-
     @Override
     public OAuthProvider getOAuthProvider() {
         return OAuthProvider.KAKAO;

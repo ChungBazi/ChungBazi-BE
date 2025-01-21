@@ -1,10 +1,11 @@
-package chungbazi.chungbazi_be.domain.auth.infra.kakao;
+package chungbazi.chungbazi_be.domain.auth.oauth.provider.kakao;
 
 import chungbazi.chungbazi_be.domain.auth.oauth.OAuthApiClient;
-import chungbazi.chungbazi_be.domain.auth.oauth.OAuthInfoResponse;
-import chungbazi.chungbazi_be.domain.auth.oauth.OAuthLoginParams;
-import chungbazi.chungbazi_be.domain.member.entity.enums.OAuthProvider;
+import chungbazi.chungbazi_be.domain.auth.oauth.UserInfoResponse;
+import chungbazi.chungbazi_be.domain.auth.oauth.LoginRequestParams;
+import chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KakaoApiClient implements OAuthApiClient {
@@ -37,7 +39,7 @@ public class KakaoApiClient implements OAuthApiClient {
     }
 
     @Override
-    public String requestAccessToken(OAuthLoginParams params) {
+    public String requestAccessToken(LoginRequestParams params) {
         String url = authUrl + "/oauth/token";
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -49,14 +51,14 @@ public class KakaoApiClient implements OAuthApiClient {
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
-        KakaoTokens response = restTemplate.postForObject(url, request, KakaoTokens.class);
+        KakaoTokenResponse response = restTemplate.postForObject(url, request, KakaoTokenResponse.class);
 
         assert response != null;
         return response.getAccessToken();
     }
 
     @Override
-    public OAuthInfoResponse requestOauthInfo(String accessToken) {
+    public UserInfoResponse requestOauthInfo(String accessToken) {
         String url = apiUrl + "/v2/user/me";
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -77,40 +79,6 @@ public class KakaoApiClient implements OAuthApiClient {
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
-        return restTemplate.postForObject(url, request, KakaoInfoResponse.class);
-    }
-
-    @Override
-    public String requestAccessTokenWithRefreshToken(String refreshToken) {
-        return null;
-    }
-
-    @Override
-    public void logout(String kakaoAccessToken) {
-        String url = apiUrl + "/v1/user/logout";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + kakaoAccessToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<?> request = new HttpEntity<>(headers);
-
-        System.out.println("Sending logout request to Kakao API for token: " + kakaoAccessToken);
-        restTemplate.postForObject(url, request, Void.class);
-        System.out.println("Logout request completed for Kakao API.");
-    }
-
-    @Override
-    public void deleteAccount(String accessToken) {
-        String url = apiUrl + "/v1/user/unlink";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-
-        HttpEntity<?> request = new HttpEntity<>(headers);
-
-        System.out.println("Sending account deletion request to Kakao API for token: " + accessToken);
-        restTemplate.postForObject(url, request, Void.class);
-        System.out.println("Account deletion request completed for Kakao API.");
+        return restTemplate.postForObject(url, request, KakaoUserInfoResponse.class);
     }
 }
