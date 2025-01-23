@@ -25,9 +25,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //Policy
     CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5001", "존재하지 않는 정책 코드 입니다."),
-    NO_SEARCH_NAME(HttpStatus.BAD_REQUEST, "POLICY5002", "검색어를 입력해주세요."),
-    POLICY_NOT_FOUND(HttpStatus.NOT_FOUND, "POLICY5003", "존재하지 않는 정책입니다."),
-    NO_CURSOR(HttpStatus.BAD_REQUEST, "POLICY5004", "커서가 존재하지않습니다.");
+    CATEGORY_NAME_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5002", "존재하지 않는 정책 카테고리 명입니다."),
+    NO_SEARCH_NAME(HttpStatus.BAD_REQUEST, "POLICY5003", "검색어를 입력해주세요."),
+    POLICY_NOT_FOUND(HttpStatus.NOT_FOUND, "POLICY5004", "존재하지 않는 정책입니다."),
+    NO_CURSOR(HttpStatus.BAD_REQUEST, "POLICY5005", "커서가 존재하지않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

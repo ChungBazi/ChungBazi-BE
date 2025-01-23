@@ -1,10 +1,11 @@
 package chungbazi.chungbazi_be.domain.policy.service;
 
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListOneResponse;
-import chungbazi.chungbazi_be.domain.policy.dto.PolicySearchResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyListResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyResponse;
+import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
@@ -42,7 +43,7 @@ public class PolicyService {
     private String openApiVlak;
 
 
-    @Scheduled(cron = "0 20 3 * * *") // 매일 오전 3시 20분에 실행
+    @Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
     @Transactional
     public void schedulePolicyFetch() {
         getPolicy();
@@ -94,7 +95,7 @@ public class PolicyService {
 
 
     // 정책 검색
-    public PolicySearchResponse getSearchPolicy(String name, String cursor, int size, String order) {
+    public PolicyListResponse getSearchPolicy(String name, String cursor, int size, String order) {
 
         if (name == null) {
             throw new GeneralException(ErrorStatus.NO_SEARCH_NAME);
@@ -108,10 +109,14 @@ public class PolicyService {
         // 검색 결과 반환
         List<Tuple> policies = policyRepository.searchPolicyWithName(name, cursor, size + 1, order);
 
+        String nextCursor = null;
         boolean hasNext = policies.size() > size;
 
         if (hasNext) {
             policies.subList(0, size);
+
+            Tuple lastTuple = policies.get(policies.size() - 1);
+            nextCursor = policyRepository.generateNextCursor(lastTuple, name);
         }
 
         List<PolicyListOneResponse> policyDtoList = new ArrayList<>();
@@ -121,13 +126,10 @@ public class PolicyService {
         }
 
         if (policies.isEmpty()) {
-            return PolicySearchResponse.of(policyDtoList, null, false);
+            return PolicyListResponse.of(policyDtoList, null, false);
         }
 
-        Tuple lastTuple = policies.get(policies.size() - 1);
-        String nextCursor = policyRepository.generateNextCursor(lastTuple, name);
-
-        return PolicySearchResponse.of(policyDtoList, nextCursor, hasNext);
+        return PolicyListResponse.of(policyDtoList, nextCursor, hasNext);
     }
 
 
@@ -142,6 +144,25 @@ public class PolicyService {
         List<String> resultList = result.stream().toList();
         return PopularSearchResponse.from(resultList);
 
+    }
+
+
+    // 카테고리별 정책 조회
+    public PolicyListResponse getCategoryPolicy(String categoryName, Long cursor, int size, String order) {
+
+        Category category = Category.fromKoreanName(categoryName);
+
+        List<Policy> policies = policyRepository.getPolicyWithCategory(category, cursor, size + 1, order);
+
+        boolean hasNext = policies.size() > size;
+
+        if (hasNext) {
+            policies.subList(0, size);
+        }
+
+        List<PolicyListOneResponse> policyDtoList = policies.stream().map(PolicyListOneResponse::from).toList();
+
+        return PolicyListResponse.of(policyDtoList, hasNext);
     }
 
 
@@ -208,7 +229,7 @@ public class PolicyService {
         return normalized;
     }
 
-    
+
     // 인기 검색어에 반영
     private void updatePopularSearch(String normalizedName) {
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
@@ -240,4 +261,5 @@ public class PolicyService {
             }
         }
     }
+
 }
