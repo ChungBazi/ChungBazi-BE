@@ -1,6 +1,6 @@
 package chungbazi.chungbazi_be.domain.user.entity.enums;
 
-import chungbazi.chungbazi_be.domain.user.UserHandler;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.UserHandler;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 
 public enum Gender {

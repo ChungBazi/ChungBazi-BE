@@ -1,7 +1,7 @@
 package chungbazi.chungbazi_be.domain.user.service;
 
 
-import chungbazi.chungbazi_be.domain.user.UserHandler;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.UserHandler;
 import chungbazi.chungbazi_be.domain.user.converter.UserConverter;
 import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
 import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
