@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/policies")
+@RequestMapping("/policies")
 public class PolicyController {
 
     private final PolicyService policyService;
