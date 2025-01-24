@@ -17,11 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-        @RestController
-        @RequiredArgsConstructor
-        @RequestMapping("/api/user")
-        public class UserController {
-            private final UserService userService;
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/user")
+public class UserController {
+    private final UserRepository userRepository;
+    //private final AuthTokensGenerator authTokensGenerator;
+    private final UserService userService;
 
             @GetMapping("/profile")
             @Operation(summary = "프로필 조회 API", description = "마이페이지 프로필 조회")

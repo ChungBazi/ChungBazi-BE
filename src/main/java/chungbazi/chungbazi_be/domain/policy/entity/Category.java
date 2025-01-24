@@ -26,4 +26,13 @@ public enum Category {
         }
         throw new GeneralException(ErrorStatus.CATEGORY_CODE_NOT_FOUND);
     }
+
+    public static Category fromKoreanName(String koreanName) {
+        for (Category category : Category.values()) {
+            if (category.koreanName.equals(koreanName)) {
+                return category;
+            }
+        }
+        throw new GeneralException(ErrorStatus.CATEGORY_NAME_NOT_FOUND);
+    }
 }
