@@ -1,15 +1,27 @@
 package chungbazi.chungbazi_be.domain.policy.service;
 
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyListOneResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicySearchResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyListResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
+import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.querydsl.core.Tuple;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +35,14 @@ public class PolicyService {
 
     private final WebClient webclient;
     private final PolicyRepository policyRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+
 
     @Value("${webclient.openApiVlak}")
     private String openApiVlak;
 
 
-    @Scheduled(cron = "0 20 23 * * *") // 매일 오후 12시 25분에 실행
+    @Scheduled(cron = "0 20 3 * * *") // 매일 오전 3시 20분에 실행
     @Transactional
     public void schedulePolicyFetch() {
         getPolicy();
@@ -78,6 +92,59 @@ public class PolicyService {
 
     }
 
+
+    // 정책 검색
+    public PolicySearchResponse getSearchPolicy(String name, String cursor, int size, String order) {
+
+        if (name == null) {
+            throw new GeneralException(ErrorStatus.NO_SEARCH_NAME);
+        }
+
+        String normalizedName = normalizeSearchItem(name);
+
+        // 인기 검색어에 반영
+        updatePopularSearch(normalizedName);
+
+        // 검색 결과 반환
+        List<Tuple> policies = policyRepository.searchPolicyWithName(name, cursor, size + 1, order);
+
+        boolean hasNext = policies.size() > size;
+
+        if (hasNext) {
+            policies.subList(0, size);
+        }
+
+        List<PolicyListOneResponse> policyDtoList = new ArrayList<>();
+        for (Tuple tuple : policies) {
+            Policy policy = tuple.get(QPolicy.policy);
+            policyDtoList.add(PolicyListOneResponse.from(policy));
+        }
+
+        if (policies.isEmpty()) {
+            return PolicySearchResponse.of(policyDtoList, null, false);
+        }
+
+        Tuple lastTuple = policies.get(policies.size() - 1);
+        String nextCursor = policyRepository.generateNextCursor(lastTuple, name);
+
+        return PolicySearchResponse.of(policyDtoList, nextCursor, hasNext);
+    }
+
+
+    // 인기 검색어 조회
+    public PopularSearchResponse getPopularSearch() {
+
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
+        String key = "ranking:" + LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+
+        //상위 6개 검색어 반환
+        Set<String> result = zSetOperations.reverseRange(key, 0, 5);
+        List<String> resultList = result.stream().toList();
+        return PopularSearchResponse.from(resultList);
+
+    }
+
+
     // XML -> DTO
     private YouthPolicyListResponse fetchPolicy(int display, int pageIndex, String srchPolyBizSecd) {
 
@@ -110,6 +177,7 @@ public class PolicyService {
 
     }
 
+
     // 날짜 나와있는지 + 2달 이내 정책인지 검증
     private boolean isDateAvail(YouthPolicyResponse response, LocalDate twoMonthAgo) {
 
@@ -125,5 +193,51 @@ public class PolicyService {
         }
 
         return false;
+    }
+
+
+    // 띄어쓰기, 대소문자 구분 X
+    private String normalizeSearchItem(String searchItem) {
+
+        //소문자 변환
+        String normalized = searchItem.toLowerCase();
+
+        //띄어쓰기 제거
+        normalized = normalized.replaceAll("\\s+", " ");
+
+        return normalized;
+    }
+
+    
+    // 인기 검색어에 반영
+    private void updatePopularSearch(String normalizedName) {
+        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
+
+        // 인기 검색어에 반영 (오늘 포함 3일치 key에 저장, 오늘+1/내일+0.6/내일모레+0.3
+        for (int i = 0; i < 3; i++) {
+
+            String key = "ranking:" + LocalDate.now().plusDays(i).format(DateTimeFormatter.ISO_DATE);
+
+            // 키 존재 여부 확인, TTL 설정
+            boolean keyExists = Boolean.TRUE.equals(redisTemplate.hasKey(key));
+            if (!keyExists) {
+                redisTemplate.expire(key, 3, TimeUnit.DAYS);
+            }
+
+            Double cnt = zSetOperations.score(key, normalizedName); // score는 double 타입을 반환
+
+            double num = switch (i) {
+                case 0 -> 1;
+                case 1 -> 0.6;
+                case 2 -> 0.3;
+                default -> 0;
+            };
+
+            if (cnt == null) {
+                zSetOperations.add(key, normalizedName, num);
+            } else {
+                zSetOperations.add(key, normalizedName, cnt + num);
+            }
+        }
     }
 }

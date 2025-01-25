@@ -1,0 +1,46 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          time_zone: Asia/Seoul
+    data:
+      redis:
+        host: localhost
+        port: 6379
+
+server:
+  servlet:
+    context-path: ${API_PREFIX:/api}
+
+springdoc:
+  swagger-ui:
+    path: /swagger
+    groups-order: DESC
+    tags-sorter: alpha
+    operations-sorter: method
+
+webclient:
+  openApiVlak: ${WEBCLIENT}
+
+jwt:
+  secret-key: ${JWT_KEY}
+
+#oauth:
+#  kakao:
+#    client-id: 24aa0d467f6ca3bf34e50e20f2b66183
+#    url:
+#      auth: https://kauth.kakao.com
+#      api: https://kapi.kakao.com

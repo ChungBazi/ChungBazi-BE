@@ -21,17 +21,17 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 멤버 관련 에러
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
-    INVALID_GENDER(HttpStatus.BAD_REQUEST,"MEMBER","유효하지않은 성별입니다."),
+    INVALID_GENDER(HttpStatus.BAD_REQUEST, "MEMBER", "유효하지않은 성별입니다."),
 
     //Policy
-    CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "CATEGORY5001", "존재하지 않는 정책 코드 입니다."),
+    CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5001", "존재하지 않는 정책 코드 입니다."),
+    NO_SEARCH_NAME(HttpStatus.BAD_REQUEST, "POLICY5002", "검색어를 입력해주세요."),
+    POLICY_NOT_FOUND(HttpStatus.NOT_FOUND, "POLICY5003", "존재하지 않는 정책입니다."),
+    NO_CURSOR(HttpStatus.BAD_REQUEST, "POLICY5004", "커서가 존재하지않습니다."),
 
     //Notification
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND,"NOTIFICATION001","알림이 존재하지 않습니다."),
-
-    //firebase access token 발급 에러
     GOOGLE_REQUEST_TOKEN_ERROR(HttpStatus.UNAUTHORIZED,"FCMTOKEN001","firebase 접근 토큰이 유효하지 않습니다."),
-    //fcm 메시지 전송 실패
     FCM_SEND_FAILURE(HttpStatus.BAD_REQUEST,"FCMSEND001", "FCM 메시지 전송에 실패했습니다."),
 
 
