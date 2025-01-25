@@ -1,8 +1,8 @@
-package chungbazi.chungbazi_be.domain.auth.jwt;
+package chungbazi.chungbazi_be.domain.auth.service;
 
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
-import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +22,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .map(member -> new User(member.getEmail(), "", Collections.emptyList()))
-                .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_FOUND_USER));
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
     }
 }

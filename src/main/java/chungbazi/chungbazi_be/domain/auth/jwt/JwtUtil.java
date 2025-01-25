@@ -1,24 +1,23 @@
 package chungbazi.chungbazi_be.domain.auth.jwt;
 
-import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
-import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Collections;
 import java.util.Date;
 
 @Component
-public class TokenProvider {
+public class JwtUtil {
 
     private final Key key;
 
-    public TokenProvider(@Value("${jwt.secret-key}") String secretKey) {
+    public JwtUtil(@Value("${jwt.secret-key}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -52,13 +51,6 @@ public class TokenProvider {
         }
     }
 
-    public Authentication getAuthentication(String token) {
-        String subject = extractSubject(token);
-        if (subject == null) {
-            throw new GeneralException(ErrorStatus.TOKEN_MISSING_SUBJECT);
-        }
-        return new JwtAuthenticationToken(subject, null, Collections.emptyList());
-    }
 
     public String extractSubject(String token) {
         Claims claims = Jwts.parserBuilder()
