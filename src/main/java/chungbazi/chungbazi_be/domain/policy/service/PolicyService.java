@@ -11,7 +11,7 @@ import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.Tuple;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -166,7 +166,7 @@ public class PolicyService {
     }
 
 
-    // XML -> DTO
+    // JSON -> DTO
     private YouthPolicyListResponse fetchPolicy(int display, int pageIndex, String srchPolyBizSecd) {
 
         String responseBody = webclient
@@ -186,11 +186,12 @@ public class PolicyService {
                 .findFirst()
                 .orElse(null);
 
-        // text/plain-> XML
+        // text/plain-> JSON
         try {
-            XmlMapper xmlMapper = new XmlMapper();
-
-            return xmlMapper.readValue(responseBody, YouthPolicyListResponse.class); // XML 매핑
+            //Json 문자열을 자바 객체에 매핑해주는 역할
+            ObjectMapper objectMapper = new ObjectMapper();
+            // JSON -> DTO 매핑
+            return objectMapper.readValue(responseBody, YouthPolicyListResponse.class);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

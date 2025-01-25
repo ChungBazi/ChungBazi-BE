@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Category {
 
-    JOBS("일자리", "023010"),
-    HOUSING("주거", "023020"),
-    EDUCATION("교육", "023030"),
-    WELFARE_CULTURE("복지.문화", "023040"),
-    PARTICIPATION_RIGHTS("참여.권리", "023050");
+    JOBS("일자리", "001"),
+    HOUSING("주거", "002"),
+    EDUCATION("교육", "003"),
+    WELFARE_CULTURE("복지·문화", "004"),
+    PARTICIPATION_RIGHTS("참여·권리", "005");
 
 
     private final String koreanName;
