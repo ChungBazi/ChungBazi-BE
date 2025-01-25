@@ -17,6 +17,10 @@ public class FCMTokenService {
         redisTemplate.opsForValue().set("_"+String.valueOf(userId), fcmToken);
     }
 
+    public String getToken(Long userId){
+        return redisTemplate.opsForValue().get("_"+String.valueOf(userId));
+    }
+
 
 
 }
