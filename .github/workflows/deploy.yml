@@ -55,5 +55,5 @@ jobs:
           script: |
             sudo docker-compose down
             sudo docker pull ${{ secrets.DOCKER_REPO }}/chungbazi_be
-            sudo docker-compose up -d
+            sudo docker-compose -f docker-compose.yml up -d
             sudo docker image prune -f
