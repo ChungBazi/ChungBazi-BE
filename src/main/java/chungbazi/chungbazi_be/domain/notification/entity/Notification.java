@@ -26,7 +26,7 @@ public class Notification extends BaseTimeEntity {
     private NotificationType type;
 
     @Column(length = 1000)
-    private String content;
+    private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -35,5 +35,10 @@ public class Notification extends BaseTimeEntity {
     //댓글이랑 연관관계
 
     //장바구니랑 연관관계
+
+    // Notification 엔티티 내부
+    public void markAsRead() {
+        this.isRead = true;
+    }
 
 }

@@ -4,6 +4,7 @@ import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
+import chungbazi.chungbazi_be.domain.notification.handler.NotificationHandler;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
 import chungbazi.chungbazi_be.domain.user.UserHandler;
 import chungbazi.chungbazi_be.domain.user.entity.User;
@@ -67,6 +68,13 @@ public class NotificationService {
         }catch(FirebaseMessagingException e){
             e.printStackTrace();
         }
+    }
+
+    //알람 읽음 처리
+    public void markAsRead(Long notificationId){
+        Notification notification=notificationRepository.findById(notificationId)
+                .orElseThrow(()->new NotificationHandler(ErrorStatus.NOTIFICATION_NOT_FOUND));
+        notification.markAsRead();
     }
 
 }
