@@ -1,7 +1,7 @@
 package chungbazi.chungbazi_be.domain.user.entity.enums;
 
-import chungbazi.chungbazi_be.global.apiPayload.exception.handler.UserHandler;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 
 public enum Gender {
     FEMALE, MALE, NONE;
@@ -12,6 +12,6 @@ public enum Gender {
         } else if ("female".equalsIgnoreCase(gender)) {
             return FEMALE;
         }
-        throw new UserHandler(ErrorStatus.INVALID_GENDER);
+        throw new BadRequestHandler(ErrorStatus.INVALID_GENDER);
     }
 }
