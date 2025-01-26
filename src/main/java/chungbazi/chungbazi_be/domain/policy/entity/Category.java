@@ -35,6 +35,6 @@ public enum Category {
                 return category;
             }
         }
-        throw new GeneralException(ErrorStatus.CATEGORY_NAME_NOT_FOUND);
+        throw new GeneralException(ErrorStatus.CATEGORY_CODE_NOT_FOUND);
     }
 }
