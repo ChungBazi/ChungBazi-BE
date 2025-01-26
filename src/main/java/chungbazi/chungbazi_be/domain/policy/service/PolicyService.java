@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.policy.service;
 
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListOneResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
@@ -11,6 +12,7 @@ import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.Tuple;
 import java.time.LocalDate;
@@ -69,8 +71,8 @@ public class PolicyService {
 
             // DB에 이미 존재하는 bizId가 있는지 확인 & 날짜 유효한 것만 DTO -> Entity
             List<Policy> validPolicies = new ArrayList<>();
-            for (YouthPolicyResponse response : policies.getYouthPolicyList()) {
-                if (policyRepository.existsByBizId(response.getBizId())) {
+            for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
+                if (policyRepository.existsByBizId(response.getPlcyNo())) {
                     break;
                 }
                 if (isDateAvail(response, twoMonthAgo)) {
@@ -82,8 +84,8 @@ public class PolicyService {
             }
 
             // 마지막 정책 마감날짜
-            YouthPolicyResponse lastPolicy = policies.getYouthPolicyList()
-                    .get(policies.getYouthPolicyList().size() - 1);
+            YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
+                    .get(policies.getResult().getYouthPolicyList().size() - 1);
             if (!isDateAvail(lastPolicy, twoMonthAgo)) {
                 break;
             }
@@ -165,6 +167,13 @@ public class PolicyService {
         return PolicyListResponse.of(policyDtoList, hasNext);
     }
 
+    // 정책상세조회
+    public PolicyDetailsResponse getPolicyDetails(Long policyId) {
+
+        Policy policy = policyRepository.findById(policyId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
+        return PolicyDetailsResponse.from(policy);
+    }
 
     // JSON -> DTO
     private YouthPolicyListResponse fetchPolicy(int display, int pageIndex, String srchPolyBizSecd) {
@@ -173,10 +182,10 @@ public class PolicyService {
                 .get()
                 .uri(uriBuilder -> {
                     return uriBuilder.path("") // 추가 경로 없이 기본 URL 그대로 사용
-                            .queryParam("openApiVlak", openApiVlak) // 인증키
-                            .queryParam("display", display) // 출력 건수
-                            .queryParam("pageIndex", pageIndex) // 조회 페이지
-                            .queryParam("srchPolyBizSecd", srchPolyBizSecd)
+                            .queryParam("apiKeyNum", openApiVlak) // 인증키
+                            .queryParam("pageSize", display) // 출력 건수
+                            .queryParam("pageNum", pageIndex) // 조회 페이지
+                            //.queryParam("srchPolyBizSecd", srchPolyBizSecd)
                             .build();
                 })
                 .retrieve()

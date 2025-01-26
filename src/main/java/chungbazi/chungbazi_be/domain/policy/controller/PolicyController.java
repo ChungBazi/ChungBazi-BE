@@ -1,11 +1,13 @@
 package chungbazi.chungbazi_be.domain.policy.controller;
 
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.service.PolicyService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,6 +48,15 @@ public class PolicyController {
             @RequestParam(value = "order", defaultValue = "latest", required = false) String order) {
 
         PolicyListResponse response = policyService.getCategoryPolicy(category, cursor, size, order);
+        return ApiResponse.onSuccess(response);
+    }
+
+
+    // 정책 상세 조회
+    @GetMapping("/{policyId}")
+    public ApiResponse<PolicyDetailsResponse> getPolicyDetails(@PathVariable Long policyId) {
+
+        PolicyDetailsResponse response = policyService.getPolicyDetails(policyId);
         return ApiResponse.onSuccess(response);
     }
 

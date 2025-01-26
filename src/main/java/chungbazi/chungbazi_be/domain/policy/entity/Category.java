@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.domain.policy.entity;
 
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -14,6 +15,7 @@ public enum Category {
     PARTICIPATION_RIGHTS("참여·권리", "005");
 
 
+    @Getter
     private final String koreanName;
     private final String code;
 

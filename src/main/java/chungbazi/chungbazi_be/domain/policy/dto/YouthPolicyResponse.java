@@ -3,7 +3,6 @@ package chungbazi.chungbazi_be.domain.policy.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
@@ -47,36 +46,51 @@ public class YouthPolicyResponse {
 
     @JsonProperty("ssprtTrgtMaxAge")
     private String sprtTrgtMaxAge;  // 지원대상 최대 연령
+    /*
+        @JacksonXmlProperty(localName = "majrRqisCn")
+        private String majrRqisCn; // 전공 요건 내용
 
-    @JacksonXmlProperty(localName = "majrRqisCn")
-    private String majrRqisCn; // 전공 요건 내용
-
-    @JacksonXmlProperty(localName = "empmSttsCn")
-    private String empmSttsCn; // 취업 상태 내용
+        @JacksonXmlProperty(localName = "empmSttsCn")
+        private String empmSttsCn; // 취업 상태 내용
 
     @JacksonXmlProperty(localName = "prcpCn")
     private String prcpCn; // 거주 및 소득 조건 내용
+     */
+    @JsonProperty("earnCndSeCd")
+    private String earnCndSeCd; // 소득 조건 구분 코드 ("0043001":무관, "0043003":earnEtcCn 참고)
 
-    @JacksonXmlProperty(localName = "accrRqisCn")
-    private String accrRqisCn; // 학력 요건 내용
+    @JsonProperty("earnMinAmt")
+    private String earnMinAmt;  // 소득 최소금액
 
-    @JacksonXmlProperty(localName = "rqutUrla")
-    private String rqutUrla; // 신청 사이트 주소
+    @JsonProperty("earnMaxAmt")
+    private String earnMaxAmt;  // 소득 최대금액
 
-    @JacksonXmlProperty(localName = "pstnPaprCn")
-    private String pstnPaprCn; // 제출 서류 내용
+    @JsonProperty("earnEtcCn")
+    private String earnEtcCn;  // 소득 기타내용 (0043003이면 참고, 0043001이면 비어있음)
 
-    @JacksonXmlProperty(localName = "jdgnPresCn")
-    private String jdgnPresCn; // 심사 발표 내용
+    @JsonProperty("addAplyQlfcCndCn")
+    private String addAplyQlfcCndCn;  // 추가신청 자격조건 내용ㅈ
+    /*
+        @JacksonXmlProperty(localName = "accrRqisCn")
+        private String accrRqisCn; // 학력 요건 내용
+    */
+    @JsonProperty("aplyUrlAddr")
+    private String aplyUrlAddr; // 신청 사이트 주소
 
-    @JacksonXmlProperty(localName = "rqutProcCn")
-    private String rqutProcCn; // 신청 절차 내용
+    @JsonProperty("lsbmsnDcmntCn")
+    private String sbmsnDcmntCn; // 제출 서류 내용
 
-    @JacksonXmlProperty(localName = "rfcSiteUrla1")
-    private String rfcSiteUrla1; // 참고 사이트 URL1
+    @JsonProperty("srngMthdCn")
+    private String srngMthdCn; // 심사 발표 내용
 
-    @JacksonXmlProperty(localName = "rfcSiteUrla2")
-    private String rfcSiteUrla2; // 참고 사이트 URL2
+    @JsonProperty("plcyAplyMthdCn")
+    private String plcyAplyMthdCn; // 정책 신청 방법 내용
+
+    @JsonProperty("refUrlAddr1")
+    private String refUrlAddr1; // 참고 사이트 URL1
+
+    @JsonProperty("refUrlAddr2")
+    private String refUrlAddr2; // 참고 사이트 URL2
 
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");

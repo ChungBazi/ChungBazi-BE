@@ -52,10 +52,15 @@ public class Policy extends BaseTimeEntity {
     // 신청 끝나는 날짜
     private LocalDate endDate;
 
-    // 연령 정보
+    // 최소 연령
     @Column(length = 1000)
-    private String age;
+    private String minAge;
 
+    // 최대 연령
+    @Column(length = 1000)
+    private String maxAge;
+
+    /*
     // 전공 요건 내용
     @Column(length = 1000)
     private String major;
@@ -63,14 +68,28 @@ public class Policy extends BaseTimeEntity {
     // 취업 상태 내용
     @Column(length = 1000)
     private String employment;
+    */
 
-    // 거주지 및 소득 조건 내용
+    // 소득 조건 코드
+    private String incomeCode;
+
+    // 소득 최소 금액
+    private String minIncome;
+
+    // 소득 최대 금액
+    private String maxIncome;
+
+    // 기타내용 (incomeCode가 "0043003"이면 참고, "0043001"이면 비어있음)
     @Column(length = 1000)
-    private String residenceIncome;
+    private String incomeEtc;
 
+    private String additionCondition;
+
+    /*
     // 학력 요건 내용
     @Column(length = 1000)
     private String education;
+    */
 
     // 신청 사이트 주소
     private String registerUrl;
@@ -87,7 +106,7 @@ public class Policy extends BaseTimeEntity {
     @Column(length = 1000)
     private String result;
 
-    // 신청 절차 내용
+    // 정책 신청 방법 내용
     @Column(length = 1000)
     private String applyProcedure;
 
@@ -97,36 +116,36 @@ public class Policy extends BaseTimeEntity {
     // 참고 사이트 URL2
     private String referenceUrl2;
 
+    // 포스터 사진 url
+    private String posterUrl;
+
 
     public static Policy toEntity(YouthPolicyResponse dto) {
 
-        String code = dto.getPolyRlmCd();
+        String code = dto.getBscPlanPlcyWayNo();
         Category dtoCategory = Category.fromCode(code);
-
-        String date = dto.getRqutPrdCn();
-
-        LocalDate startDate = dto.getStartDate();
-        LocalDate endDate = dto.getEndDate();
 
         return Policy.builder()
                 .category(dtoCategory)
-                .name(dto.getPolyBizSjnm())
-                .intro(dto.getPolyItcnCn())
-                .content(dto.getSporCn())
+                .name(dto.getPlcyNm())
+                .intro(dto.getPlcyExplnCn())
+                .content(dto.getPlcySprtCn())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
-                .age(dto.getAgeInfo())
-                .major(dto.getMajrRqisCn())
-                .employment(dto.getEmpmSttsCn())
-                .residenceIncome(dto.getPrcpCn())
-                .education(dto.getAccrRqisCn())
-                .registerUrl(dto.getRqutUrla())
-                .bizId(dto.getBizId())
-                .document(dto.getPstnPaprCn())
-                .result(dto.getJdgnPresCn())
-                .applyProcedure(dto.getRqutProcCn())
-                .referenceUrl1(dto.getRfcSiteUrla1())
-                .referenceUrl2(dto.getRfcSiteUrla2())
+                .minAge(dto.getSprtTrgtMinAge())
+                .maxAge(dto.getSprtTrgtMaxAge())
+                .incomeCode(dto.getEarnCndSeCd())
+                .minIncome(dto.getEarnMinAmt())
+                .maxIncome(dto.getEarnMaxAmt())
+                .incomeEtc(dto.getEarnEtcCn())
+                .additionCondition(dto.getAddAplyQlfcCndCn())
+                .registerUrl(dto.getAplyUrlAddr())
+                .bizId(dto.getPlcyNo())
+                .document(dto.getSbmsnDcmntCn())
+                .result(dto.getSrngMthdCn())
+                .applyProcedure(dto.getPlcyAplyMthdCn())
+                .referenceUrl1(dto.getRefUrlAddr1())
+                .referenceUrl2(dto.getRefUrlAddr2())
                 .build();
     }
 }
