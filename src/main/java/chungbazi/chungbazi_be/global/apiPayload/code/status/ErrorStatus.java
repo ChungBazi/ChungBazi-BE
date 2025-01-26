@@ -33,9 +33,15 @@ public enum ErrorStatus implements BaseErrorCode {
     //Notification
     GOOGLE_REQUEST_TOKEN_ERROR(HttpStatus.UNAUTHORIZED,"FCMTOKEN001","firebase 접근 토큰이 유효하지 않습니다."),
     FCM_SEND_FAILURE(HttpStatus.BAD_REQUEST,"FCMSEND001", "FCM 메시지 전송에 실패했습니다."),
-
-
+  
+      //인증 관련 에러
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN4011", "유효하지 않은 access Token 입니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN4012", "만료된 토큰입니다."),
+    INVALID_OR_EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"TOKEN4014","유효하지 않은 refresh token 입니다."),
+    INVALID_USER_ID_FORMAT(HttpStatus.BAD_REQUEST, "TOKEN4015", "사용자 ID의 형식이 올바르지 않습니다."),
+    INVALID_ARGUMENTS(HttpStatus.BAD_REQUEST,"TOKEN4016","잘못된 인자가 제공되었습니다."),
     ;
+
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -32,14 +32,6 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    private String nickname;
-
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
-    private String birthYear;
-    private String birthDay;
-
     @Enumerated(EnumType.STRING)
     private OAuthProvider oAuthProvider;
 
@@ -64,9 +56,11 @@ public class User {
 
     private String imageUrl;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<UserAddition> userAdditionList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<UserInterest> userInterestList = new ArrayList<>();
 
