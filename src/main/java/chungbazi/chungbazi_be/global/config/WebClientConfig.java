@@ -12,7 +12,7 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
-    private String targetUrl = "https://www.youthcenter.go.kr/opi/youthPlcyList.do";
+    private String targetUrl = "https://www.youthcenter.go.kr";
 
     @Bean
     public WebClient webclient() {
