@@ -122,8 +122,13 @@ public class Policy extends BaseTimeEntity {
 
     public static Policy toEntity(YouthPolicyResponse dto) {
 
-        String code = dto.getBscPlanPlcyWayNo();
+        String code = dto.getPolyRlmCd();
         Category dtoCategory = Category.fromCode(code);
+
+        String date = dto.getRqutPrdCn();
+
+        LocalDate startDate = dto.getStartDate();
+        LocalDate endDate = dto.getEndDate();
 
         return Policy.builder()
                 .category(dtoCategory)

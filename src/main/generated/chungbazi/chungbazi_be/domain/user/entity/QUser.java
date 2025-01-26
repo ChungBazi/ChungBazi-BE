@@ -44,8 +44,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath nickname = createString("nickname");
 
-    public final ListPath<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification> notificationList = this.<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification>createList("notificationList", chungbazi.chungbazi_be.domain.notification.entity.Notification.class, chungbazi.chungbazi_be.domain.notification.entity.QNotification.class, PathInits.DIRECT2);
-
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider> oAuthProvider = createEnum("oAuthProvider", chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider.class);
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Region> region = createEnum("region", chungbazi.chungbazi_be.domain.user.entity.enums.Region.class);
