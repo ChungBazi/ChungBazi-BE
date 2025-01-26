@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.user.entity;
 
+import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.user.entity.enums.*;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
@@ -68,6 +69,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<UserInterest> userInterestList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.ALL})
+    private List<Notification> notificationList = new ArrayList<>();
 
 
     public void updateEducation(Education education) {
