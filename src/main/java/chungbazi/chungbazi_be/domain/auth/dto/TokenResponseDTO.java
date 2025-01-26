@@ -14,9 +14,6 @@ public class TokenResponseDTO {
 
 
     public static TokenResponseDTO of(Long userId, String userName, Boolean isFirst) {
-        if (userId == null || userName == null || isFirst == null) {
-            throw new BadRequestHandler(ErrorStatus.INVALID_ARGUMENTS);
-        }
         return new TokenResponseDTO(userId, userName, isFirst);
     }
 

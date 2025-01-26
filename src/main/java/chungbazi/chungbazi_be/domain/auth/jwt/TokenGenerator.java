@@ -30,7 +30,7 @@ public class TokenGenerator {
                 refreshToken,
                 BEARER_TYPE,
                 ACCESS_TOKEN_EXPIRE_TIME / 1000L,
-                REFRESH_TOKEN_EXPIRE_TIME/1000L,
+                REFRESH_TOKEN_EXPIRE_TIME / 1000L,
                 userId,
                 userName,
                 isFirst);

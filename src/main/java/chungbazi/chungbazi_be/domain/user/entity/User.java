@@ -31,14 +31,6 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    private String nickname;
-
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
-    private String birthYear;
-    private String birthDay;
-
     @Enumerated(EnumType.STRING)
     private OAuthProvider oAuthProvider;
 

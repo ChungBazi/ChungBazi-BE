@@ -1,6 +1,8 @@
 package chungbazi.chungbazi_be.domain.auth.service;
 
 
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.UnAuthorizedHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,7 +22,11 @@ public class RedisTokenService {
     }
 
     public String getToken(String key) {
-        return redisTemplate.opsForValue().get(key);
+        String token = redisTemplate.opsForValue().get(key);
+        if (token == null) {
+            throw new UnAuthorizedHandler(ErrorStatus.INVALID_OR_EXPIRED_REFRESH_TOKEN);
+        }
+        return token;
     }
 
     public void deleteToken(String key) {

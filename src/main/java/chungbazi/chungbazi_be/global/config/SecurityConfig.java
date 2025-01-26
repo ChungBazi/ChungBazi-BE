@@ -43,9 +43,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/kakao-login",
                                 "/api/user/**",
-                                "/kakao/callback",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "api/swagger-ui/**",
+                                "api/v3/api-docs/**"
                         ).permitAll()
                         .anyRequest().permitAll()
                 );
