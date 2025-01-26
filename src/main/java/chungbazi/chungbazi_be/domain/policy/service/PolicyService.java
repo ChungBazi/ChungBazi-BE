@@ -1,18 +1,11 @@
 package chungbazi.chungbazi_be.domain.policy.service;
 
-import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
-import chungbazi.chungbazi_be.domain.policy.dto.PolicyListOneResponse;
-import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
-import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
-import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyListResponse;
-import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyResponse;
-import chungbazi.chungbazi_be.domain.policy.entity.Category;
+import chungbazi.chungbazi_be.domain.policy.dto.*;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
-import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.Tuple;
 import java.time.LocalDate;
@@ -97,7 +90,7 @@ public class PolicyService {
 
 
     // 정책 검색
-    public PolicyListResponse getSearchPolicy(String name, String cursor, int size, String order) {
+    public PolicySearchResponse getSearchPolicy(String name, String cursor, int size, String order) {
 
         if (name == null) {
             throw new GeneralException(ErrorStatus.NO_SEARCH_NAME);
@@ -128,52 +121,24 @@ public class PolicyService {
         }
 
         if (policies.isEmpty()) {
-            return PolicyListResponse.of(policyDtoList, null, false);
+            return PolicySearchResponse.of(policyDtoList, null, false);
         }
 
-        return PolicyListResponse.of(policyDtoList, nextCursor, hasNext);
+        return PolicySearchResponse.of(policyDtoList, nextCursor, hasNext);
     }
 
 
     // 인기 검색어 조회
     public PopularSearchResponse getPopularSearch() {
-
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
         String key = "ranking:" + LocalDate.now().format(DateTimeFormatter.ISO_DATE);
-
         //상위 6개 검색어 반환
         Set<String> result = zSetOperations.reverseRange(key, 0, 5);
         List<String> resultList = result.stream().toList();
         return PopularSearchResponse.from(resultList);
-
     }
 
 
-    // 카테고리별 정책 조회
-    public PolicyListResponse getCategoryPolicy(String categoryName, Long cursor, int size, String order) {
-
-        Category category = Category.fromKoreanName(categoryName);
-
-        List<Policy> policies = policyRepository.getPolicyWithCategory(category, cursor, size + 1, order);
-
-        boolean hasNext = policies.size() > size;
-
-        if (hasNext) {
-            policies.subList(0, size);
-        }
-
-        List<PolicyListOneResponse> policyDtoList = policies.stream().map(PolicyListOneResponse::from).toList();
-
-        return PolicyListResponse.of(policyDtoList, hasNext);
-    }
-
-    // 정책상세조회
-    public PolicyDetailsResponse getPolicyDetails(Long policyId) {
-
-        Policy policy = policyRepository.findById(policyId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
-        return PolicyDetailsResponse.from(policy);
-    }
 
     // JSON -> DTO
     private YouthPolicyListResponse fetchPolicy(int display, int pageIndex, String srchPolyBizSecd) {
