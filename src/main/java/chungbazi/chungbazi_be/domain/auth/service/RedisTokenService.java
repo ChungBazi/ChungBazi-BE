@@ -21,12 +21,11 @@ public class RedisTokenService {
         redisTemplate.opsForValue().set(key, token, durationInSeconds, TimeUnit.SECONDS);
     }
 
-    public String getToken(String key) {
+    public void getToken(String key) {
         String token = redisTemplate.opsForValue().get(key);
         if (token == null) {
             throw new UnAuthorizedHandler(ErrorStatus.INVALID_OR_EXPIRED_REFRESH_TOKEN);
         }
-        return token;
     }
 
     public void deleteToken(String key) {
