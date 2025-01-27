@@ -20,17 +20,11 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
-    public final StringPath birthDay = createString("birthDay");
-
-    public final StringPath birthYear = createString("birthYear");
-
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Education> education = createEnum("education", chungbazi.chungbazi_be.domain.user.entity.enums.Education.class);
 
     public final StringPath email = createString("email");
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Employment> employment = createEnum("employment", chungbazi.chungbazi_be.domain.user.entity.enums.Employment.class);
-
-    public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Gender> gender = createEnum("gender", chungbazi.chungbazi_be.domain.user.entity.enums.Gender.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -41,8 +35,6 @@ public class QUser extends EntityPathBase<User> {
     public final BooleanPath isDeleted = createBoolean("isDeleted");
 
     public final StringPath name = createString("name");
-
-    public final StringPath nickname = createString("nickname");
 
     public final ListPath<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification> notificationList = this.<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification>createList("notificationList", chungbazi.chungbazi_be.domain.notification.entity.Notification.class, chungbazi.chungbazi_be.domain.notification.entity.QNotification.class, PathInits.DIRECT2);
 
