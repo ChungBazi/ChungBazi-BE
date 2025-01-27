@@ -21,7 +21,7 @@ public class QPolicy extends EntityPathBase<Policy> {
 
     public final chungbazi.chungbazi_be.global.entity.QBaseTimeEntity _super = new chungbazi.chungbazi_be.global.entity.QBaseTimeEntity(this);
 
-    public final StringPath age = createString("age");
+    public final StringPath additionCondition = createString("additionCondition");
 
     public final StringPath applyProcedure = createString("applyProcedure");
 
@@ -36,27 +36,33 @@ public class QPolicy extends EntityPathBase<Policy> {
 
     public final StringPath document = createString("document");
 
-    public final StringPath education = createString("education");
-
-    public final StringPath employment = createString("employment");
-
     public final DatePath<java.time.LocalDate> endDate = createDate("endDate", java.time.LocalDate.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final StringPath incomeCode = createString("incomeCode");
+
+    public final StringPath incomeEtc = createString("incomeEtc");
+
     public final StringPath intro = createString("intro");
 
-    public final StringPath major = createString("major");
+    public final StringPath maxAge = createString("maxAge");
+
+    public final StringPath maxIncome = createString("maxIncome");
+
+    public final StringPath minAge = createString("minAge");
+
+    public final StringPath minIncome = createString("minIncome");
 
     public final StringPath name = createString("name");
+
+    public final StringPath posterUrl = createString("posterUrl");
 
     public final StringPath referenceUrl1 = createString("referenceUrl1");
 
     public final StringPath referenceUrl2 = createString("referenceUrl2");
 
     public final StringPath registerUrl = createString("registerUrl");
-
-    public final StringPath residenceIncome = createString("residenceIncome");
 
     public final StringPath result = createString("result");
 
