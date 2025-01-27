@@ -89,9 +89,6 @@ public class KakaoAuthService {
     }
 
     public TokenResponseDTO.RefreshTokenResponseDTO createRefreshTokenResponse(TokenDTO token) {
-        if (token.getUserId() == null || token.getUserName() == null || token.getIsFirst() == null) {
-            throw new BadRequestHandler(ErrorStatus.INVALID_ARGUMENTS);
-        }
         return TokenResponseDTO.RefreshTokenResponseDTO.of(
                 token.getAccessToken(),
                 token.getAccessExp());
