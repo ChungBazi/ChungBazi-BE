@@ -45,7 +45,7 @@ jobs:
           docker build -t ${{ secrets.DOCKER_REPO }}:latest .
           docker push ${{ secrets.DOCKER_REPO }}:latest
 
-      # 서버에 배포
+      # 서버 배포
       - name: Deploy to server with Docker
         uses: appleboy/ssh-action@master
         with:
