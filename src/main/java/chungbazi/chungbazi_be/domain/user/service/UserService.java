@@ -38,6 +38,15 @@ public class UserService {
 
         return UserConverter.toProfileDto(user);
     }
+    public UserResponseDTO.ProfileUpdateDto updateProfile(String newName) {
+        Long userId = SecurityUtils.getUserId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+
+        return UserConverter.toProfileUpdateDto(user);
+    }
 
     public void registerUserInfo(Long userId, UserRequestDTO.RegisterDto registerDto) {
         User user = userRepository.findById(userId)

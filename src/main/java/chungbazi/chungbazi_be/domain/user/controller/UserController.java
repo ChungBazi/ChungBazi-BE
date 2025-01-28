@@ -20,6 +20,11 @@ public class UserController {
     public ApiResponse<UserResponseDTO.ProfileDto> getProfile() {
         return ApiResponse.onSuccess(userService.getProfile());
     }
+    @GetMapping("/profile/update")
+    @Operation(summary = "프로필 수정 API", description = "마이페이지 프로필 수정")
+    public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(@PathVariable String newName) {
+        return ApiResponse.onSuccess(userService.updateProfile(newName));
+    }
 
     @PostMapping("/register")
     @Operation(summary = "사용자 정보 등록 API", description = "사용자 정보(지역, 취업상태, 소득, 추가사항, 관심사, 학력) 등록")

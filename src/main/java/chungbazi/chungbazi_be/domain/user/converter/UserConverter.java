@@ -11,4 +11,10 @@ public class UserConverter {
                 .email(user.getEmail())
                 .build();
     }
+    public static UserResponseDTO.ProfileUpdateDto toProfileUpdateDto(User user){
+        return UserResponseDTO.ProfileUpdateDto.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .build();
+    }
 }

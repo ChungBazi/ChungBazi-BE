@@ -14,5 +14,12 @@ public class UserResponseDTO {
         String name;
         String email;
     }
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class ProfileUpdateDto {
+        Long userId;
+        String name;
+    }
 
 }
