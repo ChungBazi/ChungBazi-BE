@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.policy.repository;
 
+import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
@@ -56,6 +57,22 @@ public class PolicyRepositoryImpl implements PolicyRepositoryCustom {
 
         return priority + "-" + policyId;
     }
+
+    // 카테고리별 정책 조회
+    @Override
+    public List<Policy> getPolicyWithCategory(Category category, Long cursor, int size, String order) {
+
+        List<Policy> policies = jpaQueryFactory
+                .select(policy)
+                .from(policy)
+                .where(eqCategory(category, policy), ltCursorId(cursor, policy))
+                .orderBy(orderSpecifiers(order, policy))
+                .limit(size)
+                .fetch();
+
+        return policies;
+    }
+
 
     // 이름 검색
     private BooleanExpression searchName(String name, QPolicy policy) {
@@ -125,5 +142,23 @@ public class PolicyRepositoryImpl implements PolicyRepositoryCustom {
                     new OrderSpecifier<>(Order.DESC, policy.startDate)
             };
         }
+    }
+
+    private BooleanExpression ltCursorId(Long cursor, QPolicy policy) {
+
+        if (cursor == null) {
+            return null;
+        }
+
+        return policy.id.lt(cursor);
+    }
+
+    private BooleanExpression eqCategory(Category category, QPolicy policy) {
+
+        if (category == null) {
+            return null;
+        }
+
+        return policy.category.eq(category);
     }
 }

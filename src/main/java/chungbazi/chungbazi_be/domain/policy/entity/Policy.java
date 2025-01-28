@@ -149,5 +149,3 @@ public class Policy extends BaseTimeEntity {
                 .build();
     }
 }
-
-
