@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.user.service;
 
 
+import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.user.converter.UserConverter;
 import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
 import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
@@ -29,7 +30,9 @@ public class UserService {
     private final InterestRepository interestRepository;
     private final UserInterestRepository userInterestRepository;
 
-    public UserResponseDTO.ProfileDto getProfile(Long userId) {
+    public UserResponseDTO.ProfileDto getProfile() {
+        Long userId = SecurityUtils.getUserId();
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 

@@ -17,9 +17,8 @@ public class UserController {
 
     @GetMapping("/profile")
     @Operation(summary = "프로필 조회 API", description = "마이페이지 프로필 조회")
-    public ApiResponse<UserResponseDTO.ProfileDto> getProfile(@AuthUser Long userId) {
-        UserResponseDTO.ProfileDto profile = userService.getProfile(userId);
-        return ApiResponse.onSuccess(profile);
+    public ApiResponse<UserResponseDTO.ProfileDto> getProfile() {
+        return ApiResponse.onSuccess(userService.getProfile());
     }
 
     @PostMapping("/register")
