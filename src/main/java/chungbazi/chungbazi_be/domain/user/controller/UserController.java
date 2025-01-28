@@ -6,6 +6,7 @@ import chungbazi.chungbazi_be.domain.user.service.UserService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import chungbazi.chungbazi_be.global.validation.annotation.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +21,10 @@ public class UserController {
     public ApiResponse<UserResponseDTO.ProfileDto> getProfile() {
         return ApiResponse.onSuccess(userService.getProfile());
     }
-    @GetMapping("/profile/update")
+    @PostMapping("/profile/update")
     @Operation(summary = "프로필 수정 API", description = "마이페이지 프로필 수정")
-    public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(@PathVariable String newName) {
-        return ApiResponse.onSuccess(userService.updateProfile(newName));
+    public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(@Valid @RequestBody UserRequestDTO.ProfileUpdateDto profileUpdateDto) {
+        return ApiResponse.onSuccess(userService.updateProfile(profileUpdateDto));
     }
 
     @PostMapping("/register")

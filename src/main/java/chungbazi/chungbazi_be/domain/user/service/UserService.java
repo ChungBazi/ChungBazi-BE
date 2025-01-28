@@ -12,6 +12,7 @@ import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
 import chungbazi.chungbazi_be.domain.user.repository.*;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -38,12 +39,19 @@ public class UserService {
 
         return UserConverter.toProfileDto(user);
     }
-    public UserResponseDTO.ProfileUpdateDto updateProfile(String newName) {
+    public UserResponseDTO.ProfileUpdateDto updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto) {
         Long userId = SecurityUtils.getUserId();
+
+        boolean isDuplicateName = userRepository.existsByName(profileUpdateDto.getName());
+        if(isDuplicateName) {
+            throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
+        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
+        user.setName(profileUpdateDto.getName());
+        userRepository.save(user);
 
         return UserConverter.toProfileUpdateDto(user);
     }

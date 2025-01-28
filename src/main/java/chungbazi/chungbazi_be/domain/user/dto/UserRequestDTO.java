@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,14 @@ public class UserRequestDTO {
 
         @Schema(example = "[\"중소기업\", \"여성\", \"저소득층\"]", description = "추가 정보")
         private List<String> additionInfo;
+    }
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProfileUpdateDto {
+        @NotBlank
+        @Size(min = 1, max = 10, message = "닉네임은 10자 이하")
+        String name;
     }
 
 }

@@ -20,9 +20,10 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER404", "해당 유저를 찾을 수 없습니다."),
     NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"NOTIFICATION001","알림이 존재하지 않습니다."),
 
-    // 멤버 관련 에러
-    NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
-    INVALID_GENDER(HttpStatus.BAD_REQUEST, "MEMBER", "유효하지않은 성별입니다."),
+    // User 관련 에러
+    NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "닉네임은 필수입니다."),
+    INVALID_GENDER(HttpStatus.BAD_REQUEST, "USER400", "유효하지않은 성별입니다."),
+    INVALID_NICKNAME(HttpStatus.BAD_REQUEST,"USER400","이미 존재하는 닉네임입니다."),
 
     //Policy
     CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5001", "존재하지 않는 정책 코드 입니다."),
