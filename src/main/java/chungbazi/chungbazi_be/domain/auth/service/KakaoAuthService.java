@@ -5,12 +5,10 @@ import chungbazi.chungbazi_be.domain.auth.dto.TokenRequestDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenResponseDTO;
 import chungbazi.chungbazi_be.domain.auth.jwt.TokenGenerator;
 import chungbazi.chungbazi_be.domain.user.entity.User;
-import chungbazi.chungbazi_be.domain.user.entity.enums.Gender;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
-import chungbazi.chungbazi_be.global.apiPayload.exception.handler.UnAuthorizedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,44 +20,78 @@ public class KakaoAuthService {
     private final TokenGenerator tokenGenerator;
     private final RedisTokenService redisTokenService;
 
-    public TokenDTO registerUser(TokenRequestDTO request) {
+    public TokenDTO loginUser(TokenRequestDTO request) {
         boolean isFirst = !userRepository.existsByEmail(request.getEmail());
         User user = findOrCreateMember(request);
         TokenDTO tokenDTO = tokenGenerator.generate(user.getId(), user.getName(), isFirst);
-        redisTokenService.saveToken("REFRESH_TOKEN:" + user.getId(), tokenDTO.getRefreshToken(), tokenDTO.getAccessExp());
-
+        saveRefreshToken(user.getId(), tokenDTO);
         return tokenDTO;
     }
 
-    public TokenDTO refreshAccessToken(Long userId) {
-        String storedRefreshToken = redisTokenService.getToken("REFRESH_TOKEN:" + userId);
-        if (storedRefreshToken == null) {
-            throw new UnAuthorizedHandler(ErrorStatus.INVALID_OR_EXPIRED_REFRESH_TOKEN);
-        }
+    public TokenDTO recreateAccessToken(Long userId) {
+        redisTokenService.getToken("REFRESH_TOKEN:" + userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
         return tokenGenerator.generate(userId,user.getName(),false);
     }
 
-    private User findOrCreateMember(TokenRequestDTO request) {
-        return userRepository.findByEmail(request.getEmail())
-                .orElseGet(() -> newMember(request));
+    public void logoutUser(Long userId, String token) {
+        addTokenToBlacklist(token, "logout");
+        removeRefreshToken(userId);
     }
 
-    private User newMember(TokenRequestDTO request) {
+    public void deleteUserAccount(Long userId, String token) {
+        addTokenToBlacklist(token, "delete-account");
+        removeRefreshToken(userId);
+        userRepository.findById(userId).ifPresent(user -> {
+            user.updateIsDeleted(true);
+            userRepository.save(user);
+        });
+    }
+
+    private void addTokenToBlacklist(String token, String reason) {
+        redisTokenService.saveToken("BLACKLIST:" + token, reason, 3600L);
+    }
+
+    private void saveRefreshToken(Long userId, TokenDTO tokenDTO) {
+        redisTokenService.saveToken("REFRESH_TOKEN:" + userId, tokenDTO.getRefreshToken(), tokenDTO.getAccessExp());
+    }
+    private void removeRefreshToken(Long userId) {
+        redisTokenService.deleteToken("REFRESH_TOKEN:" + userId);
+    }
+
+
+    private User findOrCreateMember(TokenRequestDTO request) {
+        return userRepository.findByEmail(request.getEmail())
+                .orElseGet(() -> createNewUser(request));
+    }
+
+    private User createNewUser(TokenRequestDTO request) {
         User user = User.builder()
                 .email(request.getEmail())
                 .name(request.getName())
-                .imageUrl(request.getImageUrl())
                 .build();
 
         return userRepository.save(user);
     }
 
-    public TokenResponseDTO createTokenResponse(TokenDTO token) {
+    public TokenResponseDTO.LoginTokenResponseDTO createLoginTokenResponse(TokenDTO token) {
         if (token.getUserId() == null || token.getUserName() == null || token.getIsFirst() == null) {
             throw new BadRequestHandler(ErrorStatus.INVALID_ARGUMENTS);
         }
-        return TokenResponseDTO.of(token.getUserId(), token.getUserName(), token.getIsFirst());
+        return TokenResponseDTO.LoginTokenResponseDTO.of(
+                token.getUserId(),
+                token.getUserName(),
+                token.getIsFirst(),
+                token.getAccessToken(),
+                token.getRefreshToken(),
+                token.getAccessExp());
     }
+
+    public TokenResponseDTO.RefreshTokenResponseDTO createRefreshTokenResponse(TokenDTO token) {
+        return TokenResponseDTO.RefreshTokenResponseDTO.of(
+                token.getAccessToken(),
+                token.getAccessExp());
+    }
+
 }

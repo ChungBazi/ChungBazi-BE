@@ -47,7 +47,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Region region;
 
-
     @ColumnDefault("0")
     private Integer reward;
 
@@ -77,9 +76,8 @@ public class User {
     public void updateIncome(Income income) {
         this.income = income;
     }
-    public void updateRegion(Region region) {
-        this.region = region;
-    }
+    public void updateRegion(Region region) { this.region = region;}
+    public void updateIsDeleted(Boolean isDeleted){this.isDeleted = isDeleted;}
 }
 
 
