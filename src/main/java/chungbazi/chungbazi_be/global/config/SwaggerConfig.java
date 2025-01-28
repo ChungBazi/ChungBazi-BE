@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
+    @Value("${server.servlet.context-path:/}")
+    private String contextPath;
 
     @Bean
     public OpenAPI ChungBaziAPI() {
@@ -32,7 +34,7 @@ public class SwaggerConfig {
                         .bearerFormat("JWT"));
 
         return new OpenAPI()
-                .addServersItem(new Server().url("/api"))
+                .addServersItem(new Server().url(contextPath))
                 .info(info)
                 .addSecurityItem(securityRequirement)
                 .components(components);
