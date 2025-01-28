@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.domain.notification.controller;
 
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
+import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,4 +28,20 @@ public class NotificationController {
         notificationService.markAsRead(notificationId);
         return ApiResponse.onSuccess(null);
     }
+
+    @GetMapping("/{userId}")
+    @Operation(summary = "알림 조회 API",description = "알림을 조회하는 API입니다. 전체 알림을 조회하고 싶으면 type 입력을 안하시면 됩니당. 캘린더 알림 조회 시 type에 POLICY_ALARM을 커뮤니티 알림 조회 시에는 COMMUNITY_ALARM을 선택해주세요")
+    public ApiResponse<NotificationResponseDTO.notificationListDto> getNotifications(
+            @PathVariable Long userId,
+            @RequestParam(required = false) NotificationType type,
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "15") int limit){
+
+        NotificationResponseDTO.notificationListDto response=notificationService.getNotifications(userId,type,cursor,limit);
+
+        return ApiResponse.onSuccess(response);
+    }
+
+
+
 }
