@@ -23,7 +23,7 @@ spring:
 
 server:
   servlet:
-    context-path: /api
+    context-path: ${SPRING_SERVER_SERVLET_CONTEXT_PATH}
 
 springdoc:
   swagger-ui:
