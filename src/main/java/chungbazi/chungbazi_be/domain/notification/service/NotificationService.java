@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.notification.service;
 
+import chungbazi.chungbazi_be.domain.notification.converter.NotificationConverter;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
@@ -7,6 +8,7 @@ import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -15,6 +17,9 @@ import com.google.firebase.messaging.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -75,5 +80,32 @@ public class NotificationService {
                 .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_NOTIFICATION));
         notification.markAsRead();
     }
+
+    //알림 조회
+    public NotificationResponseDTO.notificationListDto getNotifications(Long userId, NotificationType type, Long cursor, int limit) {
+
+        //알림 읽음 처리
+        notificationRepository.markAllAsRead(userId, type);
+
+        List<Notification> notificationList = notificationRepository.findNotificationsByUserIdAndNotificationType(userId, type, cursor, limit + 1);
+
+        Long nextCursor = null;
+        if (notificationList.size() > limit) {
+            Notification lastNotification = notificationList.get(limit - 1);
+            nextCursor = lastNotification.getId();
+            notificationList = notificationList.subList(0, limit);
+        }
+
+        List<NotificationResponseDTO.notificationDto> notificationDtos=notificationList.stream()
+                .map(notification -> NotificationConverter.toNotificationDto(notification))
+                .collect(Collectors.toList());
+
+        return NotificationResponseDTO.notificationListDto.builder()
+                .notifications(notificationDtos)
+                .nextCursor(nextCursor)
+                .build();
+
+    }
+
 
 }
