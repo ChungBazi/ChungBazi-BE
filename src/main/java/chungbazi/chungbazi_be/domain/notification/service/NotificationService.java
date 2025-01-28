@@ -14,6 +14,7 @@ import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandle
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
