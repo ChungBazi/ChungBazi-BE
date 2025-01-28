@@ -9,8 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TokenRequestDTO {
+
     @NotBlank(message = "이름은 필수 입력 항목입니다.")
-    @Schema(example = "김바지", description = "사용자의 이름")
+    @Schema(example = "김바지", description = "사용자의 닉네임")
     private String name;
 
     @NotBlank(message = "이메일은 필수 입력 항목입니다.")
@@ -20,7 +21,4 @@ public class TokenRequestDTO {
     )
     @Schema(example = "chungbazi@example.com", description = "유효한 이메일 주소")
     private String email;
-
-    @Schema(example = "https://example.com/profile.jpg", description = "사용자의 프로필 이미지 URL")
-    private String imageUrl;
 }

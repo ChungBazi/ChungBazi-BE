@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/kakao-login",
                                 "/api/user/**",
+                                "/api/api-docs/**",
                                 "/api/swagger-ui/**",
                                 "/api/v3/api-docs/**"
                         ).permitAll()
