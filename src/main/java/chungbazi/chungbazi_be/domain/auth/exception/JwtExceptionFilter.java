@@ -1,5 +1,6 @@
-package chungbazi.chungbazi_be.domain.auth.jwt;
+package chungbazi.chungbazi_be.domain.auth.exception;
 
+import chungbazi.chungbazi_be.domain.auth.jwt.JwtProvider;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;

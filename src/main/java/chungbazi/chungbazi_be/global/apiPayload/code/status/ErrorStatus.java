@@ -22,7 +22,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND,"TOKEN4021","토큰이 존재하지 않습니다."),
 
     // 멤버 관련 에러
-    NAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "이름은 필수 입니다."),
+    NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "닉네임은 필수 입니다."),
     INVALID_GENDER(HttpStatus.BAD_REQUEST, "USER4003", "유효하지않은 성별입니다."),
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST,"USER4004", "중복된 이메일 입니다."),
 
