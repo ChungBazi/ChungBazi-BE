@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.global.config;
 ;
 import chungbazi.chungbazi_be.domain.auth.jwt.CustomAccessDeniedHandler;
 import chungbazi.chungbazi_be.domain.auth.jwt.CustomAuthenticationEntryPoint;
+import chungbazi.chungbazi_be.domain.auth.jwt.JwtExceptionFilter;
 import chungbazi.chungbazi_be.domain.auth.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtTokenFilter jwtTokenFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,20 +36,25 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 비활성화
-                .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                        .accessDeniedHandler(new CustomAccessDeniedHandler())
-                )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtTokenFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/kakao-login",
+                                "/api/auth/**",
                                 "/api/user/**",
                                 "/api/api-docs/**",
                                 "/api/swagger-ui/**",
                                 "/api/v3/api-docs/**"
+//                                "/auth/**",
+//                                "/user/**",
+//                                "/swagger-ui/**",
+//                                "/v3/api-docs/**"
                         ).permitAll()
                         .anyRequest().permitAll()
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())
                 );
         return http.build();
     }

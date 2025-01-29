@@ -19,10 +19,12 @@ public enum ErrorStatus implements BaseErrorCode {
     // Not Found
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER404", "해당 유저를 찾을 수 없습니다."),
     NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"NOTIFICATION001","알림이 존재하지 않습니다."),
+    NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND,"TOKEN4021","토큰이 존재하지 않습니다."),
 
     // 멤버 관련 에러
-    NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
-    INVALID_GENDER(HttpStatus.BAD_REQUEST, "MEMBER", "유효하지않은 성별입니다."),
+    NAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "이름은 필수 입니다."),
+    INVALID_GENDER(HttpStatus.BAD_REQUEST, "USER4003", "유효하지않은 성별입니다."),
+    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST,"USER4004", "중복된 이메일 입니다."),
 
     //Policy
     CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5001", "존재하지 않는 정책 코드 입니다."),
@@ -34,12 +36,18 @@ public enum ErrorStatus implements BaseErrorCode {
     GOOGLE_REQUEST_TOKEN_ERROR(HttpStatus.UNAUTHORIZED,"FCMTOKEN001","firebase 접근 토큰이 유효하지 않습니다."),
     FCM_SEND_FAILURE(HttpStatus.BAD_REQUEST,"FCMSEND001", "FCM 메시지 전송에 실패했습니다."),
   
-      //인증 관련 에러
-    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN4011", "유효하지 않은 access Token 입니다."),
-    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN4012", "만료된 토큰입니다."),
-    INVALID_OR_EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"TOKEN4014","유효하지 않은 refresh token 입니다."),
-    INVALID_USER_ID_FORMAT(HttpStatus.BAD_REQUEST, "TOKEN4015", "사용자 ID의 형식이 올바르지 않습니다."),
-    INVALID_ARGUMENTS(HttpStatus.BAD_REQUEST,"TOKEN4016","잘못된 인자가 제공되었습니다."),
+    //인증 관련 에러
+    MALFORMED_TOKEN(HttpStatus.BAD_REQUEST,"TOKEN4012","잘못된 형식의 토큰입니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN4011", "유효하지 않은 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN4012", "만료된 토큰입니다."),
+    UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST,"TOKEN4013","지원하지 않는 토큰입니다."),
+    EMPTY_CLAIMS(HttpStatus.BAD_REQUEST,"TOKEN4014","클레임이 비어있습니다."),
+    EMPTY_TOKEN(HttpStatus.BAD_REQUEST,"TOKEN4015","비어있는 토큰입니다."),
+
+    INVALID_USER_ID(HttpStatus.BAD_REQUEST, "TOKEN4017", "사용자 ID의 형식이 올바르지 않습니다."),
+    INVALID_ARGUMENTS(HttpStatus.BAD_REQUEST,"TOKEN4018","잘못된 인자가 제공되었습니다."),
+    BLOCKED_TOKEN(HttpStatus.FORBIDDEN,"TOKEN4019","차단된 사용자의 토큰입니다."),
+    DEACTIVATED_ACCOUNT(HttpStatus.BAD_REQUEST,"TOKEN4020","삭제된 계정입니다."),
     ;
 
 
