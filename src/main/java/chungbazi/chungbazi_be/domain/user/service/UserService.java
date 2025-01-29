@@ -14,6 +14,7 @@ import chungbazi.chungbazi_be.domain.user.repository.*;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
+import chungbazi.chungbazi_be.global.s3.S3Manager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class UserService {
     private final UserAdditionRepository userAdditionRepository;
     private final InterestRepository interestRepository;
     private final UserInterestRepository userInterestRepository;
+    private final S3Manager s3Manager;
 
     public UserResponseDTO.ProfileDto getProfile() {
         Long userId = SecurityUtils.getUserId();
@@ -51,6 +53,8 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
+        String profileUrl = s3Manager.uploadFile(profileImg, "profile-images");
+        user.setProfileImg(profileUrl);
         user.setName(profileUpdateDto.getName());
         userRepository.save(user);
 
