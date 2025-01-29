@@ -22,7 +22,7 @@ public class UserController {
     public ApiResponse<UserResponseDTO.ProfileDto> getProfile() {
         return ApiResponse.onSuccess(userService.getProfile());
     }
-    @PostMapping("/profile/update")
+    @PatchMapping(value = "/profile/update", consumes = "multipart/form-data")
     @Operation(summary = "프로필 수정 API", description = "마이페이지 프로필 수정")
     public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(
             @RequestPart("info") @Valid UserRequestDTO.ProfileUpdateDto profileUpdateDto,

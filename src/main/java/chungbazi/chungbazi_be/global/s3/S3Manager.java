@@ -39,8 +39,7 @@ public class S3Manager {
         objectMetadata.setContentType(multipartFile.getContentType());
 
         try(InputStream inputStream = multipartFile.getInputStream()){
-            amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata).withCannedAcl(
-                    CannedAccessControlList.PublicRead));
+            amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata));
         }catch (IOException e){
             log.error("Error uploading file to S3: {}", e.getMessage());
             throw new RuntimeException("파일 업로드에 실패했습니다.", e);
