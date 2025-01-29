@@ -10,14 +10,17 @@ import chungbazi.chungbazi_be.domain.user.entity.Interest;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
-import chungbazi.chungbazi_be.domain.user.repository.*;
+import chungbazi.chungbazi_be.domain.user.repository.AdditionRepository;
+import chungbazi.chungbazi_be.domain.user.repository.InterestRepository;
+import chungbazi.chungbazi_be.domain.user.repository.UserAdditionRepository;
+import chungbazi.chungbazi_be.domain.user.repository.UserInterestRepository;
+import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -99,5 +102,9 @@ public class UserService {
                     .orElseGet(() -> interestRepository.save(Interest.from(interestName)));
             userInterestRepository.save(UserInterest.builder().user(user).interest(interest).build());
         }
+    }
+
+    public User findByUserId(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
     }
 }

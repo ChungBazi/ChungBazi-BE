@@ -38,4 +38,9 @@ public class Cart extends BaseTimeEntity {
     private User user;
 
 
+    public Cart(Policy policy, User user) {
+        this.policy = policy;
+        this.user = user;
+    }
+
 }

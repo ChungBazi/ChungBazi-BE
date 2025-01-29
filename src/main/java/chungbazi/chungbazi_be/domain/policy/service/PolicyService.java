@@ -272,4 +272,7 @@ public class PolicyService {
         }
     }
 
+    public Policy findByPolicyId(Long policyId) {
+        return policyRepository.findById(policyId).orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
+    }
 }

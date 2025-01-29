@@ -17,7 +17,9 @@ public class CartController {
 
     // 장바구니에 담기
     @PostMapping("/{policyId}")
-    public ApiResponse<String> addPolicyToCart(@PathVariable("policyId") String policyId) {
-        
+    public ApiResponse<String> addPolicyToCart(@PathVariable("policyId") Long policyId) {
+
+        cartService.addPolicyToCart(policyId);
+        return ApiResponse.onSuccess("장바구니에 성공적으로 추가되었습니다.");
     }
 }
