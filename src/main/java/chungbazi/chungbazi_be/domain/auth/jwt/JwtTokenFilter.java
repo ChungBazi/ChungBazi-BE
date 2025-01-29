@@ -17,22 +17,20 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String token = resolveToken(request);
-
-        if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
-            String userId = jwtUtil.extractSubject(token);
-
-            JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(
-                    userId, token, Collections.emptyList()
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        }
+            String token = resolveToken(request);
+            if (StringUtils.hasText(token)) {
+                jwtProvider.validateToken(token);
+                String userId = jwtProvider.extractSubject(token);
+                JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(
+                        userId, token, Collections.emptyList()
+                );
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
         filterChain.doFilter(request, response);
     }
 
@@ -43,4 +41,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+
 }

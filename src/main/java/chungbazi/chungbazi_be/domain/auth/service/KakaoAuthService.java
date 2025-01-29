@@ -1,9 +1,13 @@
 package chungbazi.chungbazi_be.domain.auth.service;
 
+import chungbazi.chungbazi_be.domain.auth.converter.KakaoAuthConverter;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenRequestDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenResponseDTO;
+import chungbazi.chungbazi_be.domain.auth.jwt.JwtProvider;
+import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.auth.jwt.TokenGenerator;
+import chungbazi.chungbazi_be.domain.notification.service.FCMTokenService;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
@@ -18,30 +22,71 @@ public class KakaoAuthService {
 
     private final UserRepository userRepository;
     private final TokenGenerator tokenGenerator;
-    private final RedisTokenService redisTokenService;
+    private final LoginTokenService loginTokenService;
+    private final FCMTokenService fcmTokenService;
+    private final KakaoAuthConverter kakaoAuthConverter;
+    private final JwtProvider jwtProvider;
 
-    public TokenDTO loginUser(TokenRequestDTO request) {
-        boolean isFirst = !userRepository.existsByEmail(request.getEmail());
+
+    // 로그인 및 회원가입 처리
+    public TokenDTO loginUser(TokenRequestDTO.LoginTokenRequestDTO request) {
         User user = findOrCreateMember(request);
+        boolean isFirst = determineIsFirst(user);
         TokenDTO tokenDTO = tokenGenerator.generate(user.getId(), user.getName(), isFirst);
         saveRefreshToken(user.getId(), tokenDTO);
+        fcmTokenService.saveFcmToken(user.getId(), request.getFcmToken());
         return tokenDTO;
     }
 
-    public TokenDTO recreateAccessToken(Long userId) {
-        redisTokenService.getToken("REFRESH_TOKEN:" + userId);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-        return tokenGenerator.generate(userId,user.getName(),false);
+    private User findOrCreateMember(TokenRequestDTO.LoginTokenRequestDTO request) {
+        return userRepository.findByEmail(request.getEmail())
+                .map(existingUser -> {
+                    if (existingUser.isDeleted()) {
+                        throw new BadRequestHandler(ErrorStatus.DEACTIVATED_ACCOUNT);
+                    }
+                    if (!existingUser.getName().equals(request.getName())) {
+                        throw new BadRequestHandler(ErrorStatus.DUPLICATE_EMAIL);
+                    }
+                    return existingUser;
+                })
+                .orElseGet(() -> createNewUser(request));
     }
 
-    public void logoutUser(Long userId, String token) {
-        addTokenToBlacklist(token, "logout");
+    private User createNewUser(TokenRequestDTO.LoginTokenRequestDTO request) {
+        User user = User.builder()
+                .email(request.getEmail())
+                .name(request.getName())
+                .build();
+        return userRepository.save(user);
+    }
+
+    private boolean determineIsFirst(User user) {
+        return !user.isSurveyStatus();
+    }
+
+    // JWT 토큰 관련 처리
+    public TokenDTO recreateAccessToken(String token) {
+        Long userId = jwtProvider.getUserIdFromToken(token);
+        loginTokenService.validateToken("REFRESH_TOKEN:"+userId, token);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        addAccessTokenToBlacklist(token, "expired");
+        return tokenGenerator.generate(userId, user.getName(), false);
+    }
+
+    public void logoutUser(String token) {
+        validateTokenNotBlacklisted(token);
+        Long userId = SecurityUtils.getUserId();
+        addAccessTokenToBlacklist(token, "logout");
         removeRefreshToken(userId);
     }
 
-    public void deleteUserAccount(Long userId, String token) {
-        addTokenToBlacklist(token, "delete-account");
+    public void deleteUserAccount(String token) {
+        validateTokenNotBlacklisted(token);
+        Long userId = SecurityUtils.getUserId();
+        addAccessTokenToBlacklist(token, "delete-account");
         removeRefreshToken(userId);
         userRepository.findById(userId).ifPresent(user -> {
             user.updateIsDeleted(true);
@@ -49,49 +94,38 @@ public class KakaoAuthService {
         });
     }
 
-    private void addTokenToBlacklist(String token, String reason) {
-        redisTokenService.saveToken("BLACKLIST:" + token, reason, 3600L);
+    // 토큰 블랙리스트 및 검증 관련 처리
+    private void validateTokenNotBlacklisted(String token) {
+        if (loginTokenService.isTokenExist("BLACKLIST:"+token)) {
+            String reason = loginTokenService.getToken("BLACKLIST:"+token);
+
+            if ("blocked".equals(reason)) {
+                throw new BadRequestHandler(ErrorStatus.BLOCKED_TOKEN);
+            } else {
+                throw new BadRequestHandler(ErrorStatus.EXPIRED_TOKEN);
+            }
+        }
+    }
+
+    private void addAccessTokenToBlacklist(String token, String reason) {
+        loginTokenService.saveToken("BLACKLIST:" + token, reason, 3600L);
     }
 
     private void saveRefreshToken(Long userId, TokenDTO tokenDTO) {
-        redisTokenService.saveToken("REFRESH_TOKEN:" + userId, tokenDTO.getRefreshToken(), tokenDTO.getAccessExp());
+        loginTokenService.saveToken("REFRESH_TOKEN:" + userId, tokenDTO.getRefreshToken(), tokenDTO.getRefreshExp());
     }
     private void removeRefreshToken(Long userId) {
-        redisTokenService.deleteToken("REFRESH_TOKEN:" + userId);
+        loginTokenService.deleteToken("REFRESH_TOKEN:" + userId);
     }
 
-
-    private User findOrCreateMember(TokenRequestDTO request) {
-        return userRepository.findByEmail(request.getEmail())
-                .orElseGet(() -> createNewUser(request));
-    }
-
-    private User createNewUser(TokenRequestDTO request) {
-        User user = User.builder()
-                .email(request.getEmail())
-                .name(request.getName())
-                .build();
-
-        return userRepository.save(user);
-    }
-
+    // 응답
     public TokenResponseDTO.LoginTokenResponseDTO createLoginTokenResponse(TokenDTO token) {
-        if (token.getUserId() == null || token.getUserName() == null || token.getIsFirst() == null) {
-            throw new BadRequestHandler(ErrorStatus.INVALID_ARGUMENTS);
-        }
-        return TokenResponseDTO.LoginTokenResponseDTO.of(
-                token.getUserId(),
-                token.getUserName(),
-                token.getIsFirst(),
-                token.getAccessToken(),
-                token.getRefreshToken(),
-                token.getAccessExp());
+        return kakaoAuthConverter.toLoginTokenResponse(token);
     }
 
     public TokenResponseDTO.RefreshTokenResponseDTO createRefreshTokenResponse(TokenDTO token) {
-        return TokenResponseDTO.RefreshTokenResponseDTO.of(
-                token.getAccessToken(),
-                token.getAccessExp());
+        return kakaoAuthConverter.toRefreshTokenResponse(token);
     }
+
 
 }

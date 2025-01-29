@@ -13,7 +13,7 @@ public class TokenGenerator {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;            // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
 
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
 
     public TokenDTO generate(Long userId, String userName, Boolean isFirst) {
 
@@ -22,8 +22,8 @@ public class TokenGenerator {
         Date refreshTokenExpiredAt = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
 
         String subject = userId.toString();
-        String accessToken = jwtUtil.accessTokenGenerate(subject, accessTokenExpiredAt);
-        String refreshToken = jwtUtil.refreshTokenGenerate(refreshTokenExpiredAt);
+        String accessToken = jwtProvider.accessTokenGenerate(subject, accessTokenExpiredAt);
+        String refreshToken = jwtProvider.refreshTokenGenerate(subject, refreshTokenExpiredAt);
 
         return TokenDTO.of(
                 accessToken,
