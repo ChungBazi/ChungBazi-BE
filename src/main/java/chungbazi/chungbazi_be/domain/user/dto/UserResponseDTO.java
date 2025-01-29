@@ -13,6 +13,7 @@ public class UserResponseDTO {
         Long userId;
         String name;
         String email;
+        String profileImg;
     }
     @Getter
     @Builder
