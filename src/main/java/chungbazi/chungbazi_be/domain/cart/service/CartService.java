@@ -32,4 +32,15 @@ public class CartService {
         Cart cart = new Cart(policy, user);
         cartRepository.save(cart);
     }
+
+    @Transactional
+    public void deletePolicyFromCart(Long policyId) {
+
+        Policy policy = policyService.findByPolicyId(policyId);
+
+        Long userId = SecurityUtils.getUserId();
+        User user = userService.findByUserId(userId);
+
+        cartRepository.deleteByPolicy_IdAndUser_Id(policyId, userId);
+    }
 }
