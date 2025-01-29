@@ -1,14 +1,19 @@
 package chungbazi.chungbazi_be.global.s3;
 
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.config.S3Confing;
 import chungbazi.chungbazi_be.global.entity.Uuid;
 import chungbazi.chungbazi_be.global.repository.UuidRepository;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class S3Manager {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+    @Value("${cloud.aws.region.static}")
+    private String region;
 
     private final AmazonS3 amazonS3;
     private final UuidRepository uuidRepository;
@@ -29,7 +36,12 @@ public class S3Manager {
         Uuid savedUuid = Uuid.createAndSave(uuidRepository);
 
         String originalFileName = multipartFile.getOriginalFilename();
-        String uniqueFileName = savedUuid.getUuid() + "_" + (originalFileName != null ? originalFileName.replaceAll("\\s","_") : "unknown");
+
+        if (originalFileName == null || originalFileName.isEmpty()) {
+            throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
+        }
+
+        String uniqueFileName = savedUuid.getUuid() + "_" + originalFileName.replaceAll("\\s","_");
         String fileName = dirName + "/" + uniqueFileName;
 
         log.info("Uploading file: {}", fileName);
@@ -37,6 +49,8 @@ public class S3Manager {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(multipartFile.getSize());
         objectMetadata.setContentType(multipartFile.getContentType());
+
+        validateImageExtension(originalFileName);
 
         try(InputStream inputStream = multipartFile.getInputStream()){
             amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata));
@@ -53,11 +67,35 @@ public class S3Manager {
             return;
         }
         try{
-            log.info("Deleting file: {}", fileName);
-            amazonS3.deleteObject(bucket, fileName);
+            String bucketUrl = "https://" + bucket + ".s3." + region + ".amazonaws.com/"; // 버킷 URL
+            if (!fileName.startsWith(bucketUrl)) {
+                log.error("Invalid file URL: {}", fileName);
+                throw new IllegalArgumentException("잘못된 S3 URL입니다.");
+            }
+
+            // URL에서 파일 키 추출
+            String fileKey = fileName.substring(bucketUrl.length());
+            log.info("Extracted file key: {}", fileKey);
+
+            // DeleteObjectRequest를 사용해 파일 삭제
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
+            log.info("Successfully deleted file: {}", fileKey);
         } catch (Exception e){
             log.error("Error deleting file from S3: {}", e.getMessage());
             throw new RuntimeException("fail to delete file", e);
+        }
+    }
+
+    public void validateImageExtension(String fileName) {
+        int lastDotIndex = fileName.lastIndexOf(".");
+        if (lastDotIndex == -1) {
+            throw new BadRequestHandler(ErrorStatus.NO_FILE_EXTENTION);
+        }
+        String extension = fileName.substring(lastDotIndex + 1).toLowerCase();
+        List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "gif");
+
+        if (!allowedExtensions.contains(extension)) {
+            throw new BadRequestHandler(ErrorStatus.PICTURE_EXTENSION_ERROR);
         }
     }
 

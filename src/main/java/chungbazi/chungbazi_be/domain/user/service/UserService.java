@@ -45,6 +45,7 @@ public class UserService {
     public UserResponseDTO.ProfileUpdateDto updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto, MultipartFile profileImg) {
         final long MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
 
+        //user, nickname handle
         Long userId = SecurityUtils.getUserId();
 
         boolean isDuplicateName = userRepository.existsByName(profileUpdateDto.getName());
@@ -55,11 +56,15 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
+        // profileImg handle
         String profileUrl;
 
         if(profileImg != null){
             if(profileImg.getSize() > MAX_UPLOAD_SIZE){
-                throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
+                throw new BadRequestHandler(ErrorStatus.PAYLOAD_TOO_LARGE);
+            }
+            if(user.getProfileImg() != null){
+                s3Manager.deleteFile(user.getProfileImg());
             }
             profileUrl = s3Manager.uploadFile(profileImg, "profile-images");
 
