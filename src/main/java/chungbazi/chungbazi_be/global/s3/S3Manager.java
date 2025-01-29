@@ -80,10 +80,22 @@ public class S3Manager {
             // DeleteObjectRequest를 사용해 파일 삭제
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
             log.info("Successfully deleted file: {}", fileKey);
+
+            // UUID 엔티티 삭제
+            String uuidString = extractUuidFromFileKey(fileKey); // 파일 키에서 UUID 추출
+            uuidRepository.deleteByUuid(uuidString);
+            log.info("Successfully deleted UUID: {}", uuidString);
         } catch (Exception e){
             log.error("Error deleting file from S3: {}", e.getMessage());
             throw new RuntimeException("fail to delete file", e);
         }
+    }
+    private String extractUuidFromFileKey(String fileKey) {
+        int firstUnderscoreIndex = fileKey.indexOf("_");
+        if (firstUnderscoreIndex == -1) {
+            throw new IllegalArgumentException("Invalid file key format. UUID not found.");
+        }
+        return fileKey.substring(fileKey.lastIndexOf("/") + 1, firstUnderscoreIndex);
     }
 
     public void validateImageExtension(String fileName) {
