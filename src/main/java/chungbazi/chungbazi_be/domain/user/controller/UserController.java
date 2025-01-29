@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,8 +24,10 @@ public class UserController {
     }
     @PostMapping("/profile/update")
     @Operation(summary = "프로필 수정 API", description = "마이페이지 프로필 수정")
-    public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(@Valid @RequestBody UserRequestDTO.ProfileUpdateDto profileUpdateDto) {
-        return ApiResponse.onSuccess(userService.updateProfile(profileUpdateDto));
+    public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(
+            @RequestPart("info") @Valid UserRequestDTO.ProfileUpdateDto profileUpdateDto,
+            @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
+        return ApiResponse.onSuccess(userService.updateProfile(profileUpdateDto, profileImg));
     }
 
     @PostMapping("/register")

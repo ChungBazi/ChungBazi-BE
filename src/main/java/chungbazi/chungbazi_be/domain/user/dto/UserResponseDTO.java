@@ -20,6 +20,7 @@ public class UserResponseDTO {
     public static class ProfileUpdateDto {
         Long userId;
         String name;
+        String profileImg;
     }
 
 }

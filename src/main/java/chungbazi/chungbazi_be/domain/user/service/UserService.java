@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -39,7 +40,7 @@ public class UserService {
 
         return UserConverter.toProfileDto(user);
     }
-    public UserResponseDTO.ProfileUpdateDto updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto) {
+    public UserResponseDTO.ProfileUpdateDto updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto, MultipartFile profileImg) {
         Long userId = SecurityUtils.getUserId();
 
         boolean isDuplicateName = userRepository.existsByName(profileUpdateDto.getName());
