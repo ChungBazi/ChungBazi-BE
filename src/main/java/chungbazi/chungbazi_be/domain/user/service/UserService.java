@@ -14,10 +14,12 @@ import chungbazi.chungbazi_be.domain.user.repository.*;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -39,46 +41,35 @@ public class UserService {
         return UserConverter.toProfileDto(user);
     }
 
-    public void registerUserInfo(Long userId, UserRequestDTO.RegisterDto registerDto) {
+    public void registerUserInfo(UserRequestDTO.RegisterDto registerDto) {
+        Long userId = SecurityUtils.getUserId();
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
-        updateBasicInfo(user, registerDto);
+        user.updateRegion(registerDto.getRegion());
+        user.updateEmployment(registerDto.getEmployment());
+        user.updateIncome(registerDto.getIncome());
+        user.updateEducation(registerDto.getEducation());
         updateInterests(user, registerDto.getInterests());
         updateAdditions(user, registerDto.getAdditionInfo());
+        user.setSurveyStatus(true);
     }
 
-    public void updateUserInfo(Long userId, UserRequestDTO.RegisterDto registerDto) {
+    public void updateUserInfo(UserRequestDTO.UpdateDto updateDto) {
+        Long userId = SecurityUtils.getUserId();
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
-        updateBasicInfo(user, registerDto);
-        updateInterests(user, registerDto.getInterests());
-        updateAdditions(user, registerDto.getAdditionInfo());
-    }
-
-    private void updateBasicInfo(User user, UserRequestDTO.RegisterDto registerDto) {
-        if (registerDto.getRegion() != null) {
-            user.updateRegion(registerDto.getRegion());
-        }
-        if (registerDto.getEmployment() != null) {
-            user.updateEmployment(registerDto.getEmployment());
-        }
-        if (registerDto.getIncome() != null) {
-            user.updateIncome(registerDto.getIncome());
-        }
-        if (registerDto.getEducation() != null) {
-            user.updateEducation(registerDto.getEducation());
-        }
-
-        userRepository.save(user);
+        Optional.ofNullable(updateDto.getRegion()).ifPresent(user::updateRegion);
+        Optional.ofNullable(updateDto.getEmployment()).ifPresent(user::updateEmployment);
+        Optional.ofNullable(updateDto.getIncome()).ifPresent(user::updateIncome);
+        Optional.ofNullable(updateDto.getEducation()).ifPresent(user::updateEducation);
+        Optional.ofNullable(updateDto.getInterests()).ifPresent(interests -> updateInterests(user, interests));
+        Optional.ofNullable(updateDto.getAdditionInfo()).ifPresent(additions -> updateAdditions(user, additions));
     }
 
     private void updateAdditions(User user, List<String> additionalInfo) {
-        if (additionalInfo == null) {
-            return;
-        }
-
         userAdditionRepository.deleteByUser(user);
         for (String additionName : additionalInfo) {
             Addition addition = additionRepository.findByName(additionName)
@@ -89,10 +80,6 @@ public class UserService {
 
 
     private void updateInterests(User user, List<String> interests) {
-        if (interests == null) {
-            return;
-        }
-
         userInterestRepository.deleteByUser(user);
         for (String interestName : interests) {
             Interest interest = interestRepository.findByName(interestName)

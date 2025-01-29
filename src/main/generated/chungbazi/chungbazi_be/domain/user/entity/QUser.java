@@ -44,6 +44,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> reward = createNumber("reward", Integer.class);
 
+    public final BooleanPath surveyStatus = createBoolean("surveyStatus");
+
     public final ListPath<chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserAddition> userAdditionList = this.<chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserAddition>createList("userAdditionList", chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition.class, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserAddition.class, PathInits.DIRECT2);
 
     public final ListPath<chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserInterest> userInterestList = this.<chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserInterest>createList("userInterestList", chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest.class, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserInterest.class, PathInits.DIRECT2);
