@@ -47,4 +47,18 @@ public class S3Manager {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
+    public void deleteFile(String fileName) {
+        if(fileName == null || fileName.isEmpty()){
+            log.warn("fileName is null");
+            return;
+        }
+        try{
+            log.info("Deleting file: {}", fileName);
+            amazonS3.deleteObject(bucket, fileName);
+        } catch (Exception e){
+            log.error("Error deleting file from S3: {}", e.getMessage());
+            throw new RuntimeException("fail to delete file", e);
+        }
+    }
+
 }

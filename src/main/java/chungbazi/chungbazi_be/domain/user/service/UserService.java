@@ -55,13 +55,19 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
-        if(profileImg.getSize() > MAX_UPLOAD_SIZE){
-            throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
+        String profileUrl;
+
+        if(profileImg != null){
+            if(profileImg.getSize() > MAX_UPLOAD_SIZE){
+                throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
+            }
+            profileUrl = s3Manager.uploadFile(profileImg, "profile-images");
+
         } else {
-            String profileUrl = s3Manager.uploadFile(profileImg, "profile-images");
-            user.setProfileImg(profileUrl);
+            profileUrl = user.getProfileImg();
         }
 
+        user.setProfileImg(profileUrl);
         user.setName(profileUpdateDto.getName());
         userRepository.save(user);
 
