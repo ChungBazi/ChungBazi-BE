@@ -60,11 +60,6 @@ public class UserService {
             user.setName(profileUpdateDto.getName()); // 닉네임 변경
         }
 
-        boolean isDuplicateName = userRepository.existsByName(profileUpdateDto.getName());
-        if(isDuplicateName) {
-            throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
-        }
-
         // profileImg handle
         String profileUrl;
 
