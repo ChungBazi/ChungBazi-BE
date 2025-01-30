@@ -77,6 +77,12 @@ public class S3Manager {
             String fileKey = fileName.substring(bucketUrl.length());
             log.info("Extracted file key: {}", fileKey);
 
+            // 객체 존재 여부 확인
+            if (!amazonS3.doesObjectExist(bucket, fileKey)) {
+                log.warn("File does not exist in S3: {}", fileKey);
+                return; // 파일이 존재하지 않으면 삭제하지 않고 종료
+            }
+
             // DeleteObjectRequest를 사용해 파일 삭제
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileKey));
             log.info("Successfully deleted file: {}", fileKey);
