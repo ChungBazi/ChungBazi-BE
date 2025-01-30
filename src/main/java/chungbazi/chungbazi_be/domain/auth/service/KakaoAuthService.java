@@ -44,9 +44,6 @@ public class KakaoAuthService {
                     if (existingUser.isDeleted()) {
                         throw new BadRequestHandler(ErrorStatus.DEACTIVATED_ACCOUNT);
                     }
-                    if (!existingUser.getName().equals(request.getName())) {
-                        throw new BadRequestHandler(ErrorStatus.DUPLICATE_EMAIL);
-                    }
                     return existingUser;
                 })
                 .orElseGet(() -> createNewUser(request));

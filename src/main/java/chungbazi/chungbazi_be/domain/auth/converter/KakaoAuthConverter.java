@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 public class KakaoAuthConverter {
 
     public TokenResponseDTO.LoginTokenResponseDTO toLoginTokenResponse(TokenDTO token) {
-        if (token.getUserId() == null || token.getUserName() == null || token.getIsFirst() == null) {
-            throw new BadRequestHandler(ErrorStatus.INVALID_ARGUMENTS);
-        }
         return TokenResponseDTO.LoginTokenResponseDTO.of(
                 token.getUserId(),
                 token.getUserName(),
