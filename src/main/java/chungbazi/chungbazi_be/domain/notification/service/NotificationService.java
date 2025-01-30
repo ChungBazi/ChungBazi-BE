@@ -1,5 +1,7 @@
 package chungbazi.chungbazi_be.domain.notification.service;
 
+import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.notification.converter.NotificationConverter;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
@@ -12,13 +14,18 @@ import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandle
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
@@ -26,7 +33,7 @@ public class NotificationService {
 
     public NotificationResponseDTO.responseDto sendNotification(NotificationRequestDTO.createDTO dto) {
         //알림 생성
-        User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(SecurityUtils.getUserId())
                 .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
         Notification notification=Notification.builder()
                 .user(user)
@@ -75,5 +82,40 @@ public class NotificationService {
                 .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_NOTIFICATION));
         notification.markAsRead();
     }
+
+    //알림 조회
+    public NotificationResponseDTO.notificationListDto getNotifications(NotificationType type, Long cursor, int limit) {
+
+        Long userId= SecurityUtils.getUserId();
+        if(userId==null || userId <= 0){
+            throw new NotFoundHandler(ErrorStatus.NOT_FOUND_USER);
+        }
+
+        //알림 읽음 처리
+        notificationRepository.markAllAsRead(userId, type);
+
+        List<Notification> notificationList = notificationRepository.findNotificationsByUserIdAndNotificationType(userId, type, cursor, limit + 1);
+
+        Long nextCursor = null;
+        boolean hasNext=notificationList.size() > limit;
+
+        if (hasNext) {
+            Notification lastNotification = notificationList.get(limit - 1);
+            nextCursor = lastNotification.getId();
+            notificationList = notificationList.subList(0, limit);
+        }
+
+        List<NotificationResponseDTO.notificationDto> notificationDtos=notificationList.stream()
+                .map(notification -> NotificationConverter.toNotificationDto(notification))
+                .collect(Collectors.toList());
+
+        return NotificationResponseDTO.notificationListDto.builder()
+                .notifications(notificationDtos)
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
+                .build();
+
+    }
+
 
 }
