@@ -1,11 +1,9 @@
 package chungbazi.chungbazi_be.domain.community.dto;
 
-import chungbazi.chungbazi_be.domain.community.entity.CommunityImages;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

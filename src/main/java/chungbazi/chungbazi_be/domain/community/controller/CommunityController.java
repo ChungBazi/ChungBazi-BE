@@ -6,6 +6,7 @@ import chungbazi.chungbazi_be.domain.community.service.CommunityService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ public class CommunityController {
     @Operation(summary = "게시글 업로드 API", description = "커뮤니티 게시글 업로드")
     public ApiResponse<CommunityResponseDTO.UploadPostDto> uploadPost(
             @RequestPart("info") @Valid CommunityRequestDTO.UploadPostDto uploadPostDto ,
-            @RequestPart(value = "imageList", required = false) MultipartFile imageList) {
+            @RequestPart(value = "imageList", required = false) List<MultipartFile> imageList) {
         return ApiResponse.onSuccess(communityService.uploadPost(uploadPostDto, imageList));
     }
 }

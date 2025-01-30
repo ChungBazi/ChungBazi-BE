@@ -1,6 +1,5 @@
 package chungbazi.chungbazi_be.domain.community.dto;
 
-import chungbazi.chungbazi_be.domain.community.entity.CommunityImages;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,6 @@ public class CommunityResponseDTO {
         Long postId;
         String title;
         String content;
-        List<CommunityImages> communityImagesList;
         Category category;
         String formattedCreatedAt;
 
@@ -25,5 +23,8 @@ public class CommunityResponseDTO {
         String userName;
         Integer reward;
         String characterImg;
+
+        String thumbnailUrl;
+        List<String> imageUrls;
     }
 }
