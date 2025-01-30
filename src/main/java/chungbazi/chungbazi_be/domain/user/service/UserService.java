@@ -48,13 +48,22 @@ public class UserService {
         //user, nickname handle
         Long userId = SecurityUtils.getUserId();
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        // 닉네임 변경 여부 확인
+        if (!user.getName().equals(profileUpdateDto.getName())) { // 기존 닉네임과 입력받은 닉네임이 다를 경우
+            boolean isDuplicateName = userRepository.existsByName(profileUpdateDto.getName());
+            if (isDuplicateName) {
+                throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
+            }
+            user.setName(profileUpdateDto.getName()); // 닉네임 변경
+        }
+
         boolean isDuplicateName = userRepository.existsByName(profileUpdateDto.getName());
         if(isDuplicateName) {
             throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
         }
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
         // profileImg handle
         String profileUrl;
