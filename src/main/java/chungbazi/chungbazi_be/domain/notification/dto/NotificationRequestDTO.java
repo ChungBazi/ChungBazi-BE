@@ -8,7 +8,6 @@ public class NotificationRequestDTO {
 
     @Getter
     public static class createDTO {
-        private Long userId;
         private NotificationType type;
         private String message;
     }

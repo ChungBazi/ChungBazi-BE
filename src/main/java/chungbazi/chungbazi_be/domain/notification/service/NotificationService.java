@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.notification.service;
 
+import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.notification.converter.NotificationConverter;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
@@ -8,7 +9,6 @@ import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
-import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -33,7 +33,7 @@ public class NotificationService {
 
     public NotificationResponseDTO.responseDto sendNotification(NotificationRequestDTO.createDTO dto) {
         //알림 생성
-        User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(SecurityUtils.getUserId())
                 .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
         Notification notification=Notification.builder()
                 .user(user)
@@ -84,7 +84,12 @@ public class NotificationService {
     }
 
     //알림 조회
-    public NotificationResponseDTO.notificationListDto getNotifications(Long userId, NotificationType type, Long cursor, int limit) {
+    public NotificationResponseDTO.notificationListDto getNotifications(NotificationType type, Long cursor, int limit) {
+
+        Long userId= SecurityUtils.getUserId();
+        if(userId==null || userId <= 0){
+            throw new NotFoundHandler(ErrorStatus.NOT_FOUND_USER);
+        }
 
         //알림 읽음 처리
         notificationRepository.markAllAsRead(userId, type);
