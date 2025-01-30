@@ -1,11 +1,13 @@
 package chungbazi.chungbazi_be.domain.cart.controller;
 
+import chungbazi.chungbazi_be.domain.cart.dto.CartRequestDTO;
 import chungbazi.chungbazi_be.domain.cart.service.CartService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,10 +27,10 @@ public class CartController {
     }
 
     // 장바구니 삭제
-    @DeleteMapping("/{policyId}")
-    public ApiResponse<String> deletePolicyFromCart(@PathVariable("policyId") Long policyId) {
+    @DeleteMapping("/delete")
+    public ApiResponse<String> deletePolicyFromCart(@RequestBody CartRequestDTO.CartDeleteList deleteList) {
 
-        cartService.deletePolicyFromCart(policyId);
+        cartService.deletePolicyFromCart(deleteList);
         return ApiResponse.onSuccess("장바구니에서 성공적으로 삭제되었습니다.");
     }
 }

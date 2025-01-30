@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.cart.service;
 
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.cart.dto.CartRequestDTO;
 import chungbazi.chungbazi_be.domain.cart.entity.Cart;
 import chungbazi.chungbazi_be.domain.cart.repository.CartRepository;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
@@ -34,13 +35,11 @@ public class CartService {
     }
 
     @Transactional
-    public void deletePolicyFromCart(Long policyId) {
-
-        Policy policy = policyService.findByPolicyId(policyId);
+    public void deletePolicyFromCart(CartRequestDTO.CartDeleteList deleteListDTO) {
 
         Long userId = SecurityUtils.getUserId();
         User user = userService.findByUserId(userId);
 
-        cartRepository.deleteByPolicy_IdAndUser_Id(policyId, userId);
+        cartRepository.deleteByUser_IdAndPolicyIds(userId, deleteListDTO.getDeleteList());
     }
 }
