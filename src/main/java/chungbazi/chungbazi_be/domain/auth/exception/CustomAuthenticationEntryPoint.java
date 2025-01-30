@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.domain.auth.jwt;
+package chungbazi.chungbazi_be.domain.auth.exception;
 
 
 import jakarta.servlet.http.HttpServletRequest;

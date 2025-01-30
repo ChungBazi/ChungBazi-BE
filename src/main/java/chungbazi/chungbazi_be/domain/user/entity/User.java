@@ -31,7 +31,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -54,6 +54,10 @@ public class User {
 
     @Column(nullable = false)
     private boolean isDeleted;
+
+    @Setter
+    @ColumnDefault("false")
+    private boolean surveyStatus;
 
     @Column
     @Setter
