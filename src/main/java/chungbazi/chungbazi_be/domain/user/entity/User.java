@@ -59,7 +59,6 @@ public class User {
     @ColumnDefault("false")
     private boolean surveyStatus;
 
-    private String imageUrl;
     @Column
     @Setter
     private String profileImg;

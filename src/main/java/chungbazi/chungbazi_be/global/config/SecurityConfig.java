@@ -1,8 +1,8 @@
 package chungbazi.chungbazi_be.global.config;
 ;
-import chungbazi.chungbazi_be.domain.auth.jwt.CustomAccessDeniedHandler;
-import chungbazi.chungbazi_be.domain.auth.jwt.CustomAuthenticationEntryPoint;
-import chungbazi.chungbazi_be.domain.auth.jwt.JwtExceptionFilter;
+import chungbazi.chungbazi_be.domain.auth.exception.CustomAccessDeniedHandler;
+import chungbazi.chungbazi_be.domain.auth.exception.CustomAuthenticationEntryPoint;
+import chungbazi.chungbazi_be.domain.auth.exception.JwtExceptionFilter;
 import chungbazi.chungbazi_be.domain.auth.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
