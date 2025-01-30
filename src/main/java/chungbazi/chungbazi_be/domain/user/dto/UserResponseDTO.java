@@ -13,6 +13,15 @@ public class UserResponseDTO {
         Long userId;
         String name;
         String email;
+        String profileImg;
+    }
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class ProfileUpdateDto {
+        Long userId;
+        String name;
+        String profileImg;
     }
 
 }

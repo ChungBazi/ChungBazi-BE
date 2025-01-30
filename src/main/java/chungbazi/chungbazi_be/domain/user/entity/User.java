@@ -4,6 +4,7 @@ import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.user.entity.enums.*;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
+import chungbazi.chungbazi_be.global.entity.Uuid;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -26,6 +27,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
@@ -58,6 +60,13 @@ public class User {
     private boolean surveyStatus;
 
     private String imageUrl;
+    @Column
+    @Setter
+    private String profileImg;
+
+    @OneToOne
+    @JoinColumn(name = "uuid_id")
+    private Uuid uuid;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})

@@ -12,14 +12,16 @@ import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
 import chungbazi.chungbazi_be.domain.user.repository.*;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
+import chungbazi.chungbazi_be.global.s3.S3Manager;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -31,6 +33,7 @@ public class UserService {
     private final UserAdditionRepository userAdditionRepository;
     private final InterestRepository interestRepository;
     private final UserInterestRepository userInterestRepository;
+    private final S3Manager s3Manager;
 
     public UserResponseDTO.ProfileDto getProfile() {
         Long userId = SecurityUtils.getUserId();
@@ -39,6 +42,46 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
         return UserConverter.toProfileDto(user);
+    }
+    public UserResponseDTO.ProfileUpdateDto updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto, MultipartFile profileImg) {
+        final long MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
+
+        //user, nickname handle
+        Long userId = SecurityUtils.getUserId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        // 닉네임 변경 여부 확인
+        if (!user.getName().equals(profileUpdateDto.getName())) { // 기존 닉네임과 입력받은 닉네임이 다를 경우
+            boolean isDuplicateName = userRepository.existsByName(profileUpdateDto.getName());
+            if (isDuplicateName) {
+                throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
+            }
+            user.setName(profileUpdateDto.getName()); // 닉네임 변경
+        }
+
+        // profileImg handle
+        String profileUrl;
+
+        if(profileImg != null){
+            if(profileImg.getSize() > MAX_UPLOAD_SIZE){
+                throw new BadRequestHandler(ErrorStatus.PAYLOAD_TOO_LARGE);
+            }
+            if(user.getProfileImg() != null){
+                s3Manager.deleteFile(user.getProfileImg());
+            }
+            profileUrl = s3Manager.uploadFile(profileImg, "profile-images");
+
+        } else {
+            profileUrl = user.getProfileImg();
+        }
+
+        user.setProfileImg(profileUrl);
+        user.setName(profileUpdateDto.getName());
+        userRepository.save(user);
+
+        return UserConverter.toProfileUpdateDto(user);
     }
 
     public void registerUserInfo(UserRequestDTO.RegisterDto registerDto) {

@@ -18,6 +18,8 @@ public class QUser extends EntityPathBase<User> {
 
     private static final long serialVersionUID = 305651281L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QUser user = new QUser("user");
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Education> education = createEnum("education", chungbazi.chungbazi_be.domain.user.entity.enums.Education.class);
@@ -27,8 +29,6 @@ public class QUser extends EntityPathBase<User> {
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Employment> employment = createEnum("employment", chungbazi.chungbazi_be.domain.user.entity.enums.Employment.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
-
-    public final StringPath imageUrl = createString("imageUrl");
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Income> income = createEnum("income", chungbazi.chungbazi_be.domain.user.entity.enums.Income.class);
 
@@ -40,6 +40,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider> oAuthProvider = createEnum("oAuthProvider", chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider.class);
 
+    public final StringPath profileImg = createString("profileImg");
+
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Region> region = createEnum("region", chungbazi.chungbazi_be.domain.user.entity.enums.Region.class);
 
     public final NumberPath<Integer> reward = createNumber("reward", Integer.class);
@@ -50,16 +52,27 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserInterest> userInterestList = this.<chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserInterest>createList("userInterestList", chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest.class, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserInterest.class, PathInits.DIRECT2);
 
+    public final chungbazi.chungbazi_be.global.entity.QUuid uuid;
+
     public QUser(String variable) {
-        super(User.class, forVariable(variable));
+        this(User.class, forVariable(variable), INITS);
     }
 
     public QUser(Path<? extends User> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QUser(PathMetadata metadata) {
-        super(User.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QUser(PathMetadata metadata, PathInits inits) {
+        this(User.class, metadata, inits);
+    }
+
+    public QUser(Class<? extends User> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.uuid = inits.isInitialized("uuid") ? new chungbazi.chungbazi_be.global.entity.QUuid(forProperty("uuid")) : null;
     }
 
 }
