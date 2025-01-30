@@ -6,8 +6,10 @@ import chungbazi.chungbazi_be.domain.user.service.UserService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import chungbazi.chungbazi_be.global.validation.annotation.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +21,13 @@ public class UserController {
     @Operation(summary = "프로필 조회 API", description = "마이페이지 프로필 조회")
     public ApiResponse<UserResponseDTO.ProfileDto> getProfile() {
         return ApiResponse.onSuccess(userService.getProfile());
+    }
+    @PatchMapping(value = "/profile/update", consumes = "multipart/form-data")
+    @Operation(summary = "프로필 수정 API", description = "마이페이지 프로필 수정")
+    public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(
+            @RequestPart("info") @Valid UserRequestDTO.ProfileUpdateDto profileUpdateDto,
+            @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
+        return ApiResponse.onSuccess(userService.updateProfile(profileUpdateDto, profileImg));
     }
 
     @PostMapping("/register")
