@@ -39,6 +39,7 @@ public class NotificationResponseDTO {
     public static class notificationListDto{
         private List<notificationDto> notifications;
         private Long nextCursor;
+        private boolean hasNext;
     }
 
 }

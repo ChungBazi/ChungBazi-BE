@@ -97,7 +97,9 @@ public class NotificationService {
         List<Notification> notificationList = notificationRepository.findNotificationsByUserIdAndNotificationType(userId, type, cursor, limit + 1);
 
         Long nextCursor = null;
-        if (notificationList.size() > limit) {
+        boolean hasNext=notificationList.size() > limit;
+
+        if (hasNext) {
             Notification lastNotification = notificationList.get(limit - 1);
             nextCursor = lastNotification.getId();
             notificationList = notificationList.subList(0, limit);
@@ -110,6 +112,7 @@ public class NotificationService {
         return NotificationResponseDTO.notificationListDto.builder()
                 .notifications(notificationDtos)
                 .nextCursor(nextCursor)
+                .hasNext(hasNext)
                 .build();
 
     }
