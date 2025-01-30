@@ -47,7 +47,7 @@ public class QUserAddition extends EntityPathBase<UserAddition> {
     public QUserAddition(Class<? extends UserAddition> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.addition = inits.isInitialized("addition") ? new chungbazi.chungbazi_be.domain.user.entity.QAddition(forProperty("addition")) : null;
-        this.user = inits.isInitialized("user") ? new chungbazi.chungbazi_be.domain.user.entity.QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new chungbazi.chungbazi_be.domain.user.entity.QUser(forProperty("user"), inits.get("user")) : null;
     }
 
 }
