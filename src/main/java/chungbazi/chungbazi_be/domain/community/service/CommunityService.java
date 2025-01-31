@@ -5,6 +5,7 @@ import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
+import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
@@ -25,6 +26,10 @@ public class CommunityService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final S3Manager s3Manager;
+
+    public List<CommunityResponseDTO.PostListDto> getPosts(Category category, Long lastPostId, int size) {
+        return null;
+    }
     public CommunityResponseDTO.UploadPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
 
         // 파일 수 검증
