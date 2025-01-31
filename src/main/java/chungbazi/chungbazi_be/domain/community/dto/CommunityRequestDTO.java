@@ -2,7 +2,6 @@ package chungbazi.chungbazi_be.domain.community.dto;
 
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +20,7 @@ public class CommunityRequestDTO {
         @Size(min = 1, max = 1000, message = "내용은 1000자 이하")
         String content;
 
-        @NotNull(message = "카테고리는 필수입니다.")
+        @NotBlank(message = "카테고리는 필수입니다.")
         Category category;
     }
 }

@@ -21,7 +21,16 @@ public class CommunityController {
     private final CommunityService communityService;
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    @Operation(summary = "게시글 업로드 API", description = "커뮤니티 게시글 업로드")
+    @Operation(summary = "게시글 업로드 API",
+            description = """
+                커뮤니티 게시글 업로드 API
+                - 카테고리 목록:
+                    * JOBS: 일자리
+                    * HOUSING: 주거
+                    * EDUCATION: 교육
+                    * WELFARE_CULTURE: 복지·문화
+                    * PARTICIPATION_RIGHTS: 참여·권리
+                """)
     public ApiResponse<CommunityResponseDTO.UploadPostDto> uploadPost(
             @RequestPart("info") @Valid CommunityRequestDTO.UploadPostDto uploadPostDto ,
             @RequestPart(value = "imageList", required = false) List<MultipartFile> imageList) {
