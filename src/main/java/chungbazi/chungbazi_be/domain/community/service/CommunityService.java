@@ -72,7 +72,9 @@ public class CommunityService {
                 .build();
         postRepository.save(post);
 
-        return CommunityConverter.toUploadAndGetPostDto(post);
+        Long commentCount = commentRepository.countByPostId(post.getId());
+
+        return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
     }
 
     public CommunityResponseDTO.UploadAndGetPostDto getPost(Long postId) {
@@ -85,7 +87,9 @@ public class CommunityService {
             post.incrementViews(); // 조회수 증가
         }
 
-        return CommunityConverter.toUploadAndGetPostDto(post);
+        Long commentCount = commentRepository.countByPostId(postId);
+
+        return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
     }
 
     public CommunityResponseDTO.UploadAndGetCommentDto uploadComment(CommunityRequestDTO.UploadCommentDto uploadCommentDto) {

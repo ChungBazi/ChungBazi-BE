@@ -18,6 +18,7 @@ public class CommunityResponseDTO {
         String formattedCreatedAt;
 
         Integer views;
+        Long commentCount;
 
         Long userId;
         String userName;

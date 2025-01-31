@@ -21,7 +21,7 @@ public class CommunityConverter {
                 .build()).toList();
     }
 
-    public static CommunityResponseDTO.UploadAndGetPostDto toUploadAndGetPostDto(Post post) {
+    public static CommunityResponseDTO.UploadAndGetPostDto toUploadAndGetPostDto(Post post, Long commentCount) {
         return CommunityResponseDTO.UploadAndGetPostDto.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
@@ -29,6 +29,7 @@ public class CommunityConverter {
                 .category(post.getCategory())
                 .formattedCreatedAt(post.getFormattedCreatedAt())
                 .views(post.getViews())
+                .commentCount(commentCount)
                 .userId(post.getAuthor().getId())
                 .userName(post.getAuthor().getName())
                 .reward(post.getAuthor().getReward())
