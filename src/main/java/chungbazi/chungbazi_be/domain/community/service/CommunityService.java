@@ -16,6 +16,8 @@ import chungbazi.chungbazi_be.global.s3.S3Manager;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,16 +31,17 @@ public class CommunityService {
     private final S3Manager s3Manager;
 
     public List<CommunityResponseDTO.PostListDto> getPosts(Category category, Long lastPostId, int size) {
-
+        Pageable pageable = PageRequest.of(0, size);
         List<Post> posts;
+
         if (category == null){ // 전체 게시글 조회
             posts = (lastPostId == null)
-                    ? postRepository.findTopByOrderByIdDesc(size)
-                    : postRepository.findByIdLessThanOrderByIdDesc(lastPostId, size);
+                    ? postRepository.findByOrderByIdDesc(pageable).getContent()
+                    : postRepository.findByIdLessThanOrderByIdDesc(lastPostId, pageable).getContent();
         } else { // 카테고리별 게시글 조회
             posts = (lastPostId == null)
-                    ? postRepository.findByCategoryOrderByIdDesc(category, size)
-                    : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, lastPostId, size);
+                    ? postRepository.findByCategoryOrderByIdDesc(category, pageable).getContent()
+                    : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, lastPostId, pageable).getContent();
         }
         return CommunityConverter.toPostListDto(posts);
     }
