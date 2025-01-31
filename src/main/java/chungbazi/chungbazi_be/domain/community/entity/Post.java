@@ -70,4 +70,7 @@ public class Post extends BaseTimeEntity {
     public String getFormattedCreatedAt() {
         return TimeFormatter.formatCreatedAt(this.getCreatedAt());
     }
+    public void incrementViews() {
+        this.views = this.views + 1;
+    }
 }

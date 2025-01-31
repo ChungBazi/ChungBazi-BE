@@ -75,6 +75,9 @@ public class CommunityService {
     public CommunityResponseDTO.UploadAndGetPostDto getPost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+        post.incrementViews(); // 조회수 증가
+
         return CommunityConverter.toUploadAndGetPostDto(post);
     }
 }
