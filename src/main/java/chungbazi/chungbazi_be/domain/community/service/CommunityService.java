@@ -108,4 +108,17 @@ public class CommunityService {
 
         return CommunityConverter.toUploadAndGetCommentDto(comment);
     }
+
+    public List<CommunityResponseDTO.UploadAndGetCommentDto> getComments(Long postId, Long lastCommentId, int size){
+        Pageable pageable = PageRequest.of(0, size);
+
+        List<Comment> comments;
+        if (lastCommentId == null) {
+            comments = commentRepository.findByPostIdOrderByIdDesc(postId, pageable).getContent();
+        } else {
+            comments = commentRepository.findByPostIdAndIdLessThanOrderByIdDesc(postId, lastCommentId, pageable).getContent();
+        }
+
+        return CommunityConverter.toGetListCommentDto(comments);
+    }
 }

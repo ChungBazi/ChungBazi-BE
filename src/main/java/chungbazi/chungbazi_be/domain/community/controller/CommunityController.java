@@ -75,4 +75,14 @@ public class CommunityController {
             @RequestBody @Valid CommunityRequestDTO.UploadCommentDto uploadCommentDto){
         return ApiResponse.onSuccess(communityService.uploadComment(uploadCommentDto));
     }
+
+    @GetMapping(value = "/comments")
+    @Operation(summary = "개별 게시글에 해당하는 댓글 조회 API", description = "개별 게시글에 해당하는 댓글 조회 API")
+    public ApiResponse<List<CommunityResponseDTO.UploadAndGetCommentDto>> getComments(
+            @RequestParam Long postId,
+            @RequestParam(required = false) Long lastCommentId,
+            @RequestParam(defaultValue = "10") String size){
+        int paseSize = Integer.parseInt(size);
+        return ApiResponse.onSuccess(communityService.getComments(postId, lastCommentId, paseSize));
+    }
 }

@@ -49,4 +49,9 @@ public class CommunityConverter {
                 .characterImg(comment.getAuthor().getCharacterImg())
                 .build();
     }
+    public static List<CommunityResponseDTO.UploadAndGetCommentDto> toGetListCommentDto(List<Comment> comments){
+        return comments.stream()
+                .map(CommunityConverter::toUploadAndGetCommentDto)
+                .toList();
+    }
 }
