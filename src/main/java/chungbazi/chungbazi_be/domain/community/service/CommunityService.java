@@ -61,8 +61,7 @@ public class CommunityService {
                 .characterImg(user.getCharacterImg())
                 .thumbnailUrl(post.getThumbnailUrl())
                 .imageUrls(uploadedUrls)
+                .formattedCreatedAt(post.getFormattedCreatedAt())
                 .build();
-
     }
-
 }

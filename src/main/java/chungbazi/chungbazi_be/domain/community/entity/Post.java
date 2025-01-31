@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.community.entity;
 
+import chungbazi.chungbazi_be.domain.community.utils.TimeFormatter;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
@@ -65,5 +66,8 @@ public class Post extends BaseTimeEntity {
 
     public String getThumbnailUrl() {
         return (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;
+    }
+    public String getFormattedCreatedAt() {
+        return TimeFormatter.formatCreatedAt(this.getCreatedAt());
     }
 }
