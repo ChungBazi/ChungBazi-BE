@@ -54,7 +54,7 @@ public class CommunityController {
                     * WELFARE_CULTURE: 복지·문화
                     * PARTICIPATION_RIGHTS: 참여·권리
                 """)
-    public ApiResponse<List<CommunityResponseDTO.PostListDto>> getPosts(
+    public ApiResponse<CommunityResponseDTO.TotalPostListDto> getPosts(
             @RequestParam(required = false) Category category,
             @RequestParam(required = false) Long lastPostId,
             @RequestParam(defaultValue = "10") String size){

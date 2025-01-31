@@ -33,7 +33,7 @@ public class CommunityService {
     private final CommentRepository commentRepository;
     private final S3Manager s3Manager;
 
-    public List<CommunityResponseDTO.PostListDto> getPosts(Category category, Long lastPostId, int size) {
+    public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long lastPostId, int size) {
         Pageable pageable = PageRequest.of(0, size);
         List<Post> posts;
 
@@ -46,7 +46,12 @@ public class CommunityService {
                     ? postRepository.findByCategoryOrderByIdDesc(category, pageable).getContent()
                     : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, lastPostId, pageable).getContent();
         }
-        return CommunityConverter.toPostListDto(posts);
+        List<CommunityResponseDTO.PostListDto> postList =
+                CommunityConverter.toPostListDto(posts, commentRepository);
+
+        Long totalPostCount = postRepository.countPostByCategory(category);
+
+        return CommunityConverter.toTotalPostListDto(totalPostCount, postList);
     }
     public CommunityResponseDTO.UploadAndGetPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
 

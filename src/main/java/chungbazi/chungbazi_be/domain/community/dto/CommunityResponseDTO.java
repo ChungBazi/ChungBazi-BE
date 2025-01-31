@@ -31,6 +31,14 @@ public class CommunityResponseDTO {
     @Getter
     @Builder
     @AllArgsConstructor
+    public static class TotalPostListDto {
+        Long totalPostCount;
+        List<PostListDto> postList;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
     public static class PostListDto {
         Long postId;
         String title;
@@ -39,6 +47,7 @@ public class CommunityResponseDTO {
         String formattedCreatedAt;
 
         Integer views;
+        Long commentCount;
 
         Long userId;
         String userName;

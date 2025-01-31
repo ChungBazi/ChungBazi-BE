@@ -3,11 +3,22 @@ package chungbazi.chungbazi_be.domain.community.converter;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
+import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import java.util.List;
 
 public class CommunityConverter {
-    public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts) {
-        return posts.stream().map(post -> CommunityResponseDTO.PostListDto.builder()
+
+    public static CommunityResponseDTO.TotalPostListDto toTotalPostListDto(
+            Long totalPostCount, List<CommunityResponseDTO.PostListDto> postList){
+        return CommunityResponseDTO.TotalPostListDto.builder()
+                .totalPostCount(totalPostCount)
+                .postList(postList)
+                .build();
+    }
+    public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts, CommentRepository commentRepository) {
+        return posts.stream().map(post ->{
+            Long commentCount = commentRepository.countByPostId(post.getId());
+            return CommunityResponseDTO.PostListDto.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -18,7 +29,9 @@ public class CommunityConverter {
                 .userName(post.getAuthor().getName())
                 .reward(post.getAuthor().getReward())
                 .characterImg(post.getAuthor().getCharacterImg())
-                .build()).toList();
+                    .commentCount(commentCount)
+                .build();
+        }).toList();
     }
 
     public static CommunityResponseDTO.UploadAndGetPostDto toUploadAndGetPostDto(Post post, Long commentCount) {
