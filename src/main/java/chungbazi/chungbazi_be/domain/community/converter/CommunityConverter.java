@@ -19,4 +19,21 @@ public class CommunityConverter {
                 .characterImg(post.getAuthor().getCharacterImg())
                 .build()).toList();
     }
+
+    public static CommunityResponseDTO.UploadPostDto toUploadPostDto(Post post, List<String> uploadedUrls) {
+        return CommunityResponseDTO.UploadPostDto.builder()
+                .postId(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .category(post.getCategory())
+                .formattedCreatedAt(post.getFormattedCreatedAt())
+                .views(post.getViews())
+                .userId(post.getAuthor().getId())
+                .userName(post.getAuthor().getName())
+                .reward(post.getAuthor().getReward())
+                .characterImg(post.getAuthor().getCharacterImg())
+                .thumbnailUrl(post.getThumbnailUrl())
+                .imageUrls(uploadedUrls)
+                .build();
+    }
 }

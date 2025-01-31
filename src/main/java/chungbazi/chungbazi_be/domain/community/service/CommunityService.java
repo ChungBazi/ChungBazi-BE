@@ -66,19 +66,6 @@ public class CommunityService {
                 .build();
         postRepository.save(post);
 
-        return CommunityResponseDTO.UploadPostDto.builder()
-                .postId(post.getId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .category(post.getCategory())
-                .views(post.getViews())
-                .userId(user.getId())
-                .userName(user.getName())
-                .reward(user.getReward())
-                .characterImg(user.getCharacterImg())
-                .thumbnailUrl(post.getThumbnailUrl())
-                .imageUrls(uploadedUrls)
-                .formattedCreatedAt(post.getFormattedCreatedAt())
-                .build();
+        return CommunityConverter.toUploadPostDto(post, uploadedUrls);
     }
 }
