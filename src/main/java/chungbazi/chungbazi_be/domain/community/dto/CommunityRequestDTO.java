@@ -29,7 +29,9 @@ public class CommunityRequestDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UploadCommentDto {
+        @NotNull
         Long postId;
+
         @NotBlank
         @Size(min = 1, max = 100, message = "댓글은 100자 이하")
         String content;

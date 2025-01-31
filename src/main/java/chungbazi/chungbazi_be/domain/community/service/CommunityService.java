@@ -4,7 +4,9 @@ import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.community.converter.CommunityConverter;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
+import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
+import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
@@ -28,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CommunityService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final S3Manager s3Manager;
 
     public List<CommunityResponseDTO.PostListDto> getPosts(Category category, Long lastPostId, int size) {
@@ -82,6 +85,23 @@ public class CommunityService {
     }
 
     public CommunityResponseDTO.UploadAndGetCommentDto uploadComment(CommunityRequestDTO.UploadCommentDto uploadCommentDto) {
-        return null;
+        // 게시글 조회
+        Post post = postRepository.findById(uploadCommentDto.getPostId())
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+        // 유저 조회
+        Long userId = SecurityUtils.getUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        Comment comment = Comment.builder().
+                content(uploadCommentDto.getContent())
+                .author(user)
+                .post(post)
+                .build();
+
+        commentRepository.save(comment);
+
+        return CommunityConverter.toUploadAndGetCommentDto(comment);
     }
 }

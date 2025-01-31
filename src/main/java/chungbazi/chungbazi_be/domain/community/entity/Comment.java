@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.community.entity;
 
+import chungbazi.chungbazi_be.domain.community.utils.TimeFormatter;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -36,4 +37,8 @@ public class Comment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+
+    public String getFormattedCreatedAt() {
+        return TimeFormatter.formatCreatedAt(this.getCreatedAt());
+    }
 }

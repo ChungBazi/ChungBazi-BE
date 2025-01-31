@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.community.converter;
 
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
+import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import java.util.List;
 
@@ -34,6 +35,18 @@ public class CommunityConverter {
                 .characterImg(post.getAuthor().getCharacterImg())
                 .thumbnailUrl(post.getThumbnailUrl())
                 .imageUrls(post.getImageUrls())
+                .build();
+    }
+
+    public static CommunityResponseDTO.UploadAndGetCommentDto toUploadAndGetCommentDto(Comment comment) {
+        return CommunityResponseDTO.UploadAndGetCommentDto.builder()
+                .postId(comment.getPost().getId())
+                .content(comment.getContent())
+                .formattedCreatedAt(comment.getFormattedCreatedAt())
+                .userId(comment.getAuthor().getId())
+                .userName(comment.getAuthor().getName())
+                .reward(comment.getAuthor().getReward())
+                .characterImg(comment.getAuthor().getCharacterImg())
                 .build();
     }
 }
