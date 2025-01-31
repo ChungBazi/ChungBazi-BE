@@ -30,6 +30,7 @@ public class CommunityConverter {
                 .reward(post.getAuthor().getReward())
                 .characterImg(post.getAuthor().getCharacterImg())
                     .commentCount(commentCount)
+                    .category(post.getCategory())
                 .build();
         }).toList();
     }
@@ -61,6 +62,7 @@ public class CommunityConverter {
                 .userName(comment.getAuthor().getName())
                 .reward(comment.getAuthor().getReward())
                 .characterImg(comment.getAuthor().getCharacterImg())
+                .commentId(comment.getId())
                 .build();
     }
     public static List<CommunityResponseDTO.UploadAndGetCommentDto> toGetListCommentDto(List<Comment> comments){

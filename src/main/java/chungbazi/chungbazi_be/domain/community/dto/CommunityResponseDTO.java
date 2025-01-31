@@ -65,6 +65,8 @@ public class CommunityResponseDTO {
         String content;
         String formattedCreatedAt;
 
+        Long commentId;
+
         Long userId;
         String userName;
         Integer reward;
