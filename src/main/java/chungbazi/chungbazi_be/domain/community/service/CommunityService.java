@@ -80,4 +80,8 @@ public class CommunityService {
 
         return CommunityConverter.toUploadAndGetPostDto(post);
     }
+
+    public CommunityResponseDTO.UploadAndGetCommentDto uploadComment(CommunityRequestDTO.UploadCommentDto uploadCommentDto) {
+        return null;
+    }
 }

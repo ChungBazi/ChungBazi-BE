@@ -24,4 +24,14 @@ public class CommunityRequestDTO {
         @NotNull(message = "카테고리는 필수입니다.")
         Category category;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UploadCommentDto {
+        Long postId;
+        @NotBlank
+        @Size(min = 1, max = 100, message = "댓글은 100자 이하")
+        String content;
+    }
 }

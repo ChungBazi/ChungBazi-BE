@@ -27,7 +27,8 @@ public class CommunityResponseDTO {
         String thumbnailUrl;
         List<String> imageUrls;
     }
-    @Getter@Builder
+    @Getter
+    @Builder
     @AllArgsConstructor
     public static class PostListDto {
         Long postId;
@@ -44,5 +45,19 @@ public class CommunityResponseDTO {
         String characterImg;
 
         String thumbnailUrl;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class UploadAndGetCommentDto {
+        Long postId;
+        String content;
+        String formattedCreatedAt;
+
+        Long userId;
+        String userName;
+        Integer reward;
+        String characterImg;
     }
 }

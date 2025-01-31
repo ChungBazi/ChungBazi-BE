@@ -5,6 +5,7 @@ import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
 import chungbazi.chungbazi_be.domain.community.service.CommunityService;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -24,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CommunityController {
     private final CommunityService communityService;
 
-    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    @PostMapping(value = "/posts/upload", consumes = "multipart/form-data")
     @Operation(summary = "게시글 업로드 API",
             description = """
                 커뮤니티 게시글 업로드 API
@@ -42,7 +43,7 @@ public class CommunityController {
     }
 
     @GetMapping(value = "/posts")
-    @Operation(summary = "전체 게시글 조회 API",
+    @Operation(summary = "커뮤니티 전체 게시글 또는 카테고리별 게시글 조회 API",
             description = """
                 커뮤니티 전체 게시글 또는 카테고리별 게시글 조회 API
                 - 카테고리 목록:
@@ -65,5 +66,12 @@ public class CommunityController {
     public ApiResponse<CommunityResponseDTO.UploadAndGetPostDto> getPost(
             @PathVariable Long postId) {
         return ApiResponse.onSuccess(communityService.getPost(postId));
+    }
+
+    @PostMapping(value = "/comments/upload")
+    @Operation(summary = "댓글 업로드 API", description = "댓글 업로드 API")
+    public ApiResponse<CommunityResponseDTO.UploadAndGetCommentDto> uploadComment(
+            @RequestPart("info") @Valid CommunityRequestDTO.UploadCommentDto uploadCommentDto){
+        return ApiResponse.onSuccess(communityService.uploadComment(uploadCommentDto));
     }
 }
