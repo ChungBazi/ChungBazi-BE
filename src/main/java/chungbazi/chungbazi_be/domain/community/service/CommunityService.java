@@ -79,7 +79,11 @@ public class CommunityService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
-        post.incrementViews(); // 조회수 증가
+        // 자신의 조회는 조회수 증가 제외
+        Long userId = SecurityUtils.getUserId();
+        if(!post.getAuthor().getId().equals(userId)){
+            post.incrementViews(); // 조회수 증가
+        }
 
         return CommunityConverter.toUploadAndGetPostDto(post);
     }
