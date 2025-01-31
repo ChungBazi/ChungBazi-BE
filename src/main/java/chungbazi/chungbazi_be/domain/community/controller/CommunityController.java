@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,7 +35,7 @@ public class CommunityController {
                     * WELFARE_CULTURE: 복지·문화
                     * PARTICIPATION_RIGHTS: 참여·권리
                 """)
-    public ApiResponse<CommunityResponseDTO.UploadPostDto> uploadPost(
+    public ApiResponse<CommunityResponseDTO.UploadAndGetPostDto> uploadPost(
             @RequestPart("info") @Valid CommunityRequestDTO.UploadPostDto uploadPostDto ,
             @RequestPart(value = "imageList", required = false) List<MultipartFile> imageList) {
         return ApiResponse.onSuccess(communityService.uploadPost(uploadPostDto, imageList));
@@ -57,5 +58,12 @@ public class CommunityController {
             @RequestParam(defaultValue = "10") String size){
         int paseSize = Integer.parseInt(size);
         return ApiResponse.onSuccess(communityService.getPosts(category,lastPostId,paseSize));
+    }
+
+    @GetMapping(value = "/posts/{postId}")
+    @Operation(summary = "개별 게시글 조회 API", description = "개별 게시글 조회 API")
+    public ApiResponse<CommunityResponseDTO.UploadAndGetPostDto> getPost(
+            @PathVariable Long postId) {
+        return ApiResponse.onSuccess(communityService.getPost(postId));
     }
 }

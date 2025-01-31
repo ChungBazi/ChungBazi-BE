@@ -45,7 +45,7 @@ public class CommunityService {
         }
         return CommunityConverter.toPostListDto(posts);
     }
-    public CommunityResponseDTO.UploadPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
+    public CommunityResponseDTO.UploadAndGetPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
 
         // 파일 수 검증
         if (imageList != null && imageList.size() > 10) {
@@ -69,6 +69,12 @@ public class CommunityService {
                 .build();
         postRepository.save(post);
 
-        return CommunityConverter.toUploadPostDto(post, uploadedUrls);
+        return CommunityConverter.toUploadAndGetPostDto(post);
+    }
+
+    public CommunityResponseDTO.UploadAndGetPostDto getPost(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+        return CommunityConverter.toUploadAndGetPostDto(post);
     }
 }

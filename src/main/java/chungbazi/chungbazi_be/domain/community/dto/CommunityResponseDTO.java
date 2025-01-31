@@ -10,7 +10,7 @@ public class CommunityResponseDTO {
     @Getter
     @Builder
     @AllArgsConstructor
-    public static class UploadPostDto {
+    public static class UploadAndGetPostDto {
         Long postId;
         String title;
         String content;

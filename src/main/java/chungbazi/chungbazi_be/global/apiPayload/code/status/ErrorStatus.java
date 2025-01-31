@@ -20,6 +20,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER404", "해당 유저를 찾을 수 없습니다."),
     NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"NOTIFICATION001","알림이 존재하지 않습니다."),
     NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND,"TOKEN4021","토큰이 존재하지 않습니다."),
+    NOT_FOUND_POST(HttpStatus.NOT_FOUND, "POST404", "해당 게시글을 찾을 수 없습니다."),
 
     // User 관련 에러
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "닉네임은 필수입니다."),

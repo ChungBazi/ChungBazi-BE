@@ -20,8 +20,8 @@ public class CommunityConverter {
                 .build()).toList();
     }
 
-    public static CommunityResponseDTO.UploadPostDto toUploadPostDto(Post post, List<String> uploadedUrls) {
-        return CommunityResponseDTO.UploadPostDto.builder()
+    public static CommunityResponseDTO.UploadAndGetPostDto toUploadAndGetPostDto(Post post) {
+        return CommunityResponseDTO.UploadAndGetPostDto.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -33,7 +33,7 @@ public class CommunityConverter {
                 .reward(post.getAuthor().getReward())
                 .characterImg(post.getAuthor().getCharacterImg())
                 .thumbnailUrl(post.getThumbnailUrl())
-                .imageUrls(uploadedUrls)
+                .imageUrls(post.getImageUrls())
                 .build();
     }
 }
