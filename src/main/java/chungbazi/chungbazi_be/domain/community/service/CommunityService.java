@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.community.service;
 
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.community.converter.CommunityConverter;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
@@ -28,7 +29,18 @@ public class CommunityService {
     private final S3Manager s3Manager;
 
     public List<CommunityResponseDTO.PostListDto> getPosts(Category category, Long lastPostId, int size) {
-        return null;
+
+        List<Post> posts;
+        if (category == null){ // 전체 게시글 조회
+            posts = (lastPostId == null)
+                    ? postRepository.findTopByOrderByIdDesc(size)
+                    : postRepository.findByIdLessThanOrderByIdDesc(lastPostId, size);
+        } else { // 카테고리별 게시글 조회
+            posts = (lastPostId == null)
+                    ? postRepository.findByCategoryOrderByIdDesc(category, size)
+                    : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, lastPostId, size);
+        }
+        return CommunityConverter.toPostListDto(posts);
     }
     public CommunityResponseDTO.UploadPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
 
