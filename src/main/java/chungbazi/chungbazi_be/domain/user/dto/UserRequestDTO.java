@@ -23,19 +23,19 @@ public class UserRequestDTO {
     @AllArgsConstructor
     public static class RegisterDto {
         @NotNull
-        @Schema(example = "GANGNAM", description = "사용자의 지역")
+        @Schema(example = "서울시 강남구", description = "사용자의 지역")
         private Region region;
 
         @NotNull
-        @Schema(example = "EMPLOYED", description = "사용자의 고용 상태")
+        @Schema(example = "재직자", description = "사용자의 고용 상태")
         private Employment employment;
 
         @NotNull
-        @Schema(example = "DECILE_1", description = "사용자의 소득 수준")
+        @Schema(example = "10분위", description = "사용자의 소득 수준")
         private Income income;
 
         @NotNull
-        @Schema(example = "LESS_THAN_HIGH_SCHOOL", description = "사용자의 교육 수준")
+        @Schema(example = "고졸 미만", description = "사용자의 교육 수준")
         private Education education;
 
         @NotNull
@@ -61,16 +61,16 @@ public class UserRequestDTO {
     @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class UpdateDto {
-        @Schema(example = "GANGNAM", description = "사용자의 지역")
+        @Schema(example = "서울시 강남구", description = "사용자의 지역")
         private Region region;
 
-        @Schema(example = "EMPLOYED", description = "사용자의 고용 상태")
+        @Schema(example = "재직자", description = "사용자의 고용 상태")
         private Employment employment;
 
-        @Schema(example = "DECILE_1", description = "사용자의 소득 수준")
+        @Schema(example = "10분위", description = "사용자의 소득 수준")
         private Income income;
 
-        @Schema(example = "LESS_THAN_HIGH_SCHOOL", description = "사용자의 교육 수준")
+        @Schema(example = "고졸 미만", description = "사용자의 교육 수준")
         private Education education;
 
         @Schema(example = "[\"일자리\", \"진로\"]", description = "사용자의 관심 분야")
