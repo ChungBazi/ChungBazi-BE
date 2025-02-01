@@ -1,5 +1,7 @@
 package chungbazi.chungbazi_be.domain.user.entity.enums;
 
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -33,6 +35,6 @@ public enum Income {
         return Arrays.stream(Income.values())
                 .filter(e -> e.description.equals(value))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Income value: " + value));
+                .orElseThrow(() -> new BadRequestHandler(ErrorStatus.INVALID_VALUE));
     }
 }
