@@ -4,52 +4,80 @@ import chungbazi.chungbazi_be.domain.user.entity.enums.Education;
 import chungbazi.chungbazi_be.domain.user.entity.enums.Employment;
 import chungbazi.chungbazi_be.domain.user.entity.enums.Income;
 import chungbazi.chungbazi_be.domain.user.entity.enums.Region;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 public class UserRequestDTO {
     @Getter
+    @Setter
     @NoArgsConstructor
-    public static class EducationDto{
-        @JsonProperty("education")
-        private Education education;
-
-    }
-    @Getter
-    @NoArgsConstructor
-    public static class EmploymentDto{
-        @JsonProperty("employment")
-        private Employment employment;
-
-    }
-    @Getter
-    @NoArgsConstructor
-    public static class IncomeDto{
-        @JsonProperty("income")
-        private Income income;
-
-    }
-    @Getter
-    @NoArgsConstructor
-    public static class RegionDto{
-        @JsonProperty("region")
+    @AllArgsConstructor
+    public static class RegisterDto {
+        @NotNull
+        @Schema(example = "GANGNAM", description = "사용자의 지역")
         private Region region;
 
+        @NotNull
+        @Schema(example = "EMPLOYED", description = "사용자의 고용 상태")
+        private Employment employment;
+
+        @NotNull
+        @Schema(example = "DECILE_1", description = "사용자의 소득 수준")
+        private Income income;
+
+        @NotNull
+        @Schema(example = "LESS_THAN_HIGH_SCHOOL", description = "사용자의 교육 수준")
+        private Education education;
+
+        @NotNull
+        @Schema(example = "[\"일자리\", \"진로\"]", description = "사용자의 관심 분야")
+        private List<String> interests;
+
+        @NotNull
+        @Schema(example = "[\"중소기업\", \"여성\", \"저소득층\"]", description = "추가 정보")
+        private List<String> additionInfo;
+    }
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProfileUpdateDto {
+        @NotBlank
+        @Size(min = 1, max = 10, message = "닉네임은 10자 이하")
+        String name;
     }
 
     @Getter
+    @Setter
     @NoArgsConstructor
-    public static class InterestDto {
-        private List<String> interests; // 관심사 목록 (예: ["음악", "스포츠", "영화"])
-    }
+    @AllArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class UpdateDto {
+        @Schema(example = "GANGNAM", description = "사용자의 지역")
+        private Region region;
 
-    @Getter
-    @NoArgsConstructor
-    public static class AdditionDto {
-        private List<String> additionInfo; // 추가 정보 목록 (예: ["중소기업", "여성"])
+        @Schema(example = "EMPLOYED", description = "사용자의 고용 상태")
+        private Employment employment;
+
+        @Schema(example = "DECILE_1", description = "사용자의 소득 수준")
+        private Income income;
+
+        @Schema(example = "LESS_THAN_HIGH_SCHOOL", description = "사용자의 교육 수준")
+        private Education education;
+
+        @Schema(example = "[\"일자리\", \"진로\"]", description = "사용자의 관심 분야")
+        private List<String> interests;
+
+        @Schema(example = "[\"중소기업\", \"여성\", \"저소득층\"]", description = "추가 정보")
+        private List<String> additionInfo;
     }
 
 }
