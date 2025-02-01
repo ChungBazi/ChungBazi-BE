@@ -141,5 +141,14 @@ public class NotificationService {
         return NotificationConverter.toSettingResDto(setting);
     }
 
+    //알림 수신 설정 조회
+    public NotificationSettingResDto.settingResDto getNotificationSetting(){
+        User user=userRepository.findById(SecurityUtils.getUserId())
+                .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        NotificationSetting setting=user.getNotificationSetting();
+
+        return NotificationConverter.toSettingResDto(setting);
+    }
+
 
 }
