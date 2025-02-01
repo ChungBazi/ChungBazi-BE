@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,19 @@ public class S3Manager {
 
     private final AmazonS3 amazonS3;
     private final UuidRepository uuidRepository;
+
+    public List<String> uploadMultipleFiles(List<MultipartFile> multipartFiles, String dirName) {
+        if(multipartFiles == null || multipartFiles.isEmpty()){
+            throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
+        }
+
+        List<String> uploadedUrls = new ArrayList<>();
+        for (MultipartFile file : multipartFiles) {
+            String url = uploadFile(file, dirName);
+            uploadedUrls.add(url);
+        }
+        return uploadedUrls;
+    }
 
     public String uploadFile(MultipartFile multipartFile, String dirName){
         Uuid savedUuid = Uuid.createAndSave(uuidRepository);

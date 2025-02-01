@@ -25,14 +25,14 @@ public class TokenResponseDTO {
     @Getter
     @AllArgsConstructor
     public static class RefreshTokenResponseDTO {
+        private Long userId;
+        private String userName;
         private String accessToken;
         private long accessExp;
 
-        public static RefreshTokenResponseDTO of(String accessToken, long accessExp) {
-            return new RefreshTokenResponseDTO(accessToken, accessExp);
+        public static RefreshTokenResponseDTO of(Long userId, String userName, String accessToken, long accessExp) {
+            return new RefreshTokenResponseDTO(userId, userName, accessToken, accessExp);
         }
     }
-
-
 
 }
