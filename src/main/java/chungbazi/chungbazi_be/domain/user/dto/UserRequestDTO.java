@@ -31,11 +31,11 @@ public class UserRequestDTO {
         private Employment employment;
 
         @NotNull
-        @Schema(example = "10분위", description = "사용자의 소득 수준")
+        @Schema(example = "9분위", description = "사용자의 소득 수준")
         private Income income;
 
         @NotNull
-        @Schema(example = "고졸 미만", description = "사용자의 교육 수준")
+        @Schema(example = "고등학교 졸업미만", description = "사용자의 교육 수준")
         private Education education;
 
         @NotNull
@@ -67,10 +67,10 @@ public class UserRequestDTO {
         @Schema(example = "재직자", description = "사용자의 고용 상태")
         private Employment employment;
 
-        @Schema(example = "10분위", description = "사용자의 소득 수준")
+        @Schema(example = "9분위", description = "사용자의 소득 수준")
         private Income income;
 
-        @Schema(example = "고졸 미만", description = "사용자의 교육 수준")
+        @Schema(example = "고등학교 졸업미만", description = "사용자의 교육 수준")
         private Education education;
 
         @Schema(example = "[\"일자리\", \"진로\"]", description = "사용자의 관심 분야")

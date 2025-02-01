@@ -9,14 +9,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Arrays;
 
 public enum Education {
-    LESS_THAN_HIGH_SCHOOL("고졸 미만"),
-    HIGH_SCHOOL_ENROLLED("고교 재학"),
-    HIGH_SCHOOL_GRADUATING("고졸 예정"),
-    HIGH_SCHOOL_GRADUATED("고교 졸업"),
-    COLLEGE_ENROLLED("대학 재학"),
-    COLLEGE_GRADUATING("대졸 예정"),
-    COLLEGE_GRADUATED("대학 졸업"),
-    MASTER_DOCTORAL_DEGREE("석사 박사");
+    LESS_THAN_HIGH_SCHOOL("고등학교 졸업미만"),
+    HIGH_SCHOOL_ENROLLED("고등학교 재학"),
+    HIGH_SCHOOL_GRADUATING("고등학교 졸업 예정"),
+    HIGH_SCHOOL_GRADUATED("고등학교 졸업"),
+    COLLEGE_ENROLLED("대학교 재학"),
+    COLLEGE_GRADUATING("대학교 졸업 예정"),
+    COLLEGE_GRADUATED("대학교 졸업"),
+    MASTER_DOCTORAL_DEGREE("석박사");
 
     private final String description;
 

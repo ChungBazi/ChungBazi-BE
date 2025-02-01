@@ -16,8 +16,7 @@ public enum Income {
     DECILE_6("6분위"),
     DECILE_7("7분위"),
     DECILE_8("8분위"),
-    DECILE_9("9분위"),
-    DECILE_10("10분위");
+    DECILE_9("9분위");
 
     private final String description;
 
