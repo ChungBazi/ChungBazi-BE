@@ -1,5 +1,7 @@
 package chungbazi.chungbazi_be.domain.user.entity;
 
+import chungbazi.chungbazi_be.domain.community.entity.Comment;
+import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.user.entity.enums.*;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
@@ -49,7 +51,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Region region;
 
-    @ColumnDefault("0")
+    @ColumnDefault("1")
     private Integer reward;
 
     @Column(nullable = false)
@@ -63,9 +65,19 @@ public class User {
     @Setter
     private String profileImg;
 
+    @Column
+    @Setter
+    private String characterImg;
+
     @OneToOne
     @JoinColumn(name = "uuid_id")
     private Uuid uuid;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})

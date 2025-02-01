@@ -22,6 +22,10 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
+    public final StringPath characterImg = createString("characterImg");
+
+    public final ListPath<chungbazi.chungbazi_be.domain.community.entity.Comment, chungbazi.chungbazi_be.domain.community.entity.QComment> comments = this.<chungbazi.chungbazi_be.domain.community.entity.Comment, chungbazi.chungbazi_be.domain.community.entity.QComment>createList("comments", chungbazi.chungbazi_be.domain.community.entity.Comment.class, chungbazi.chungbazi_be.domain.community.entity.QComment.class, PathInits.DIRECT2);
+
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Education> education = createEnum("education", chungbazi.chungbazi_be.domain.user.entity.enums.Education.class);
 
     public final StringPath email = createString("email");
@@ -39,6 +43,8 @@ public class QUser extends EntityPathBase<User> {
     public final ListPath<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification> notificationList = this.<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification>createList("notificationList", chungbazi.chungbazi_be.domain.notification.entity.Notification.class, chungbazi.chungbazi_be.domain.notification.entity.QNotification.class, PathInits.DIRECT2);
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider> oAuthProvider = createEnum("oAuthProvider", chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider.class);
+
+    public final ListPath<chungbazi.chungbazi_be.domain.community.entity.Post, chungbazi.chungbazi_be.domain.community.entity.QPost> posts = this.<chungbazi.chungbazi_be.domain.community.entity.Post, chungbazi.chungbazi_be.domain.community.entity.QPost>createList("posts", chungbazi.chungbazi_be.domain.community.entity.Post.class, chungbazi.chungbazi_be.domain.community.entity.QPost.class, PathInits.DIRECT2);
 
     public final StringPath profileImg = createString("profileImg");
 
