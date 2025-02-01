@@ -23,7 +23,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // User 관련 에러
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "닉네임은 필수입니다."),
-    INVALID_GENDER(HttpStatus.BAD_REQUEST, "USER400", "유효하지않은 성별입니다."),
+    INVALID_VALUE(HttpStatus.BAD_REQUEST, "USER400", "유효하지않은 입력값입니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST,"USER400","이미 존재하는 닉네임입니다."),
 
     //Policy
