@@ -40,10 +40,6 @@ public enum Region {
         this.description = description;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     @JsonValue
     public String toJson() {
         return description; // 한글 값 반환
