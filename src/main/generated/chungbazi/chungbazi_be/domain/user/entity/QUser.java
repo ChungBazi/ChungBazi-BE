@@ -38,6 +38,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification> notificationList = this.<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification>createList("notificationList", chungbazi.chungbazi_be.domain.notification.entity.Notification.class, chungbazi.chungbazi_be.domain.notification.entity.QNotification.class, PathInits.DIRECT2);
 
+    public final chungbazi.chungbazi_be.domain.notification.entity.QNotificationSetting notificationSetting;
+
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider> oAuthProvider = createEnum("oAuthProvider", chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider.class);
 
     public final StringPath profileImg = createString("profileImg");
@@ -70,6 +72,7 @@ public class QUser extends EntityPathBase<User> {
 
     public QUser(Class<? extends User> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.notificationSetting = inits.isInitialized("notificationSetting") ? new chungbazi.chungbazi_be.domain.notification.entity.QNotificationSetting(forProperty("notificationSetting"), inits.get("notificationSetting")) : null;
         this.uuid = inits.isInitialized("uuid") ? new chungbazi.chungbazi_be.global.entity.QUuid(forProperty("uuid")) : null;
     }
 

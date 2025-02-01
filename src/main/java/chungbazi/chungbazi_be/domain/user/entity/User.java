@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.user.entity;
 
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
+import chungbazi.chungbazi_be.domain.notification.entity.NotificationSetting;
 import chungbazi.chungbazi_be.domain.user.entity.enums.*;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
@@ -74,6 +75,8 @@ public class User {
     @OneToMany(mappedBy = "user",cascade = {CascadeType.ALL})
     private List<Notification> notificationList = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user",cascade = {CascadeType.ALL})
+    private NotificationSetting notificationSetting=new NotificationSetting();
 
     public void updateEducation(Education education) {
         this.education = education;
@@ -86,6 +89,16 @@ public class User {
     }
     public void updateRegion(Region region) { this.region = region;}
     public void updateIsDeleted(Boolean isDeleted){this.isDeleted = isDeleted;}
+
+    public void updateNotificationSetting(NotificationSetting notificationSetting) {this.notificationSetting = notificationSetting;}
+
+    @PostPersist
+    public void createNotificationSetting() {
+        if (this.notificationSetting == null) {
+            this.notificationSetting = new NotificationSetting(this);
+        }
+    }
+
 }
 
 
