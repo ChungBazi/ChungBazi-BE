@@ -4,9 +4,13 @@ import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.notification.converter.NotificationConverter;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
+import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingReqDto;
+import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingResDto;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
+import chungbazi.chungbazi_be.domain.notification.entity.NotificationSetting;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
+import chungbazi.chungbazi_be.domain.notification.repository.NotificationSettingRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
@@ -30,6 +34,7 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final FCMTokenService fcmTokenService;
+    private final NotificationSettingRepository notificationSettingRepository;
 
     public NotificationResponseDTO.responseDto sendNotification(NotificationRequestDTO.createDTO dto) {
         //알림 생성
@@ -115,6 +120,25 @@ public class NotificationService {
                 .hasNext(hasNext)
                 .build();
 
+    }
+
+    //알림 수신 설정
+    public NotificationSettingResDto.settingResDto setNotificationSetting(NotificationSettingReqDto dto){
+        User user=userRepository.findById(SecurityUtils.getUserId())
+                .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        NotificationSetting setting=user.getNotificationSetting();
+
+
+        setting.updatePolicyAlarm(dto.isPolicyAlarm());
+        setting.updateCommunityAlarm(dto.isCommunityAlarm());
+        setting.updateRewardAlarm(dto.isRewardAlarm());
+        setting.updateNoticeAlarm(dto.isNoticeAlarm());
+
+        user.updateNotificationSetting(setting);
+        notificationSettingRepository.save(setting);
+
+        return NotificationConverter.toSettingResDto(setting);
     }
 
 
