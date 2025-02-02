@@ -61,7 +61,7 @@ public class NotificationService {
     }
 
     //fcm한테 알림 요청
-    private void pushFCMNotification(String fcmToken,NotificationType type,String message) {
+    public void pushFCMNotification(String fcmToken,NotificationType type,String message) {
         try {
             com.google.firebase.messaging.Notification notification =
                     com.google.firebase.messaging.Notification.builder()

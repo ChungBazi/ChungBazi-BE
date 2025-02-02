@@ -11,6 +11,7 @@ import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.user.service.UserService;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -32,6 +33,7 @@ public class CommunityService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final S3Manager s3Manager;
+    private final RewardService rewardService;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long lastPostId, int size) {
         Pageable pageable = PageRequest.of(0, size);
@@ -79,6 +81,8 @@ public class CommunityService {
 
         Long commentCount = commentRepository.countByPostId(post.getId());
 
+        rewardService.checkRewards();
+
         return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
     }
 
@@ -114,6 +118,8 @@ public class CommunityService {
                 .build();
 
         commentRepository.save(comment);
+
+        rewardService.checkRewards();
 
         return CommunityConverter.toUploadAndGetCommentDto(comment);
     }
