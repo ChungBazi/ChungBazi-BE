@@ -92,7 +92,7 @@ public class User {
     private List<Notification> notificationList = new ArrayList<>();
 
     @OneToOne(mappedBy = "user",cascade = {CascadeType.ALL})
-    private NotificationSetting notificationSetting=new NotificationSetting();
+    private NotificationSetting notificationSetting;
 
     public void updateEducation(Education education) {
         this.education = education;

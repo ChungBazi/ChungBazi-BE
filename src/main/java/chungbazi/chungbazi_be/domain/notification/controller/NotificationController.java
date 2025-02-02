@@ -60,7 +60,7 @@ public class NotificationController {
         return ApiResponse.onSuccess(response);
     }
 
-    @GetMapping("/settings/")
+    @GetMapping("/settings")
     @Operation(summary = "알림 수신 설정 조회 api",description = "현재 유저의 알림 수신 설정을 조회하는 API입니다")
     public ApiResponse<NotificationSettingResDto.settingResDto> getNotificationSetting() {
         NotificationSettingResDto.settingResDto response=notificationService.getNotificationSetting();
