@@ -47,7 +47,7 @@ public class CommunityService {
         Pageable pageable = PageRequest.of(0, size);
         List<Post> posts;
 
-        if (category == null){ // 전체 게시글 조회
+        if (category == null || category.toString().isEmpty()){ // 전체 게시글 조회
             posts = (lastPostId == null)
                     ? postRepository.findByOrderByIdDesc(pageable).getContent()
                     : postRepository.findByIdLessThanOrderByIdDesc(lastPostId, pageable).getContent();
