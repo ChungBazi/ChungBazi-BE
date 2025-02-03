@@ -3,6 +3,7 @@ package chungbazi.chungbazi_be.domain.user.entity;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
+import chungbazi.chungbazi_be.domain.notification.entity.NotificationSetting;
 import chungbazi.chungbazi_be.domain.user.entity.enums.*;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
@@ -51,8 +52,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Region region;
 
-    @ColumnDefault("1")
-    private Integer reward;
+    //@ColumnDefault("1")
+    @Builder.Default
+    private Integer reward=1;
 
     @Column(nullable = false)
     private boolean isDeleted;
@@ -90,6 +92,8 @@ public class User {
     @OneToMany(mappedBy = "user",cascade = {CascadeType.ALL})
     private List<Notification> notificationList = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user",cascade = {CascadeType.ALL})
+    private NotificationSetting notificationSetting;
 
     public void updateEducation(Education education) {
         this.education = education;
@@ -102,6 +106,17 @@ public class User {
     }
     public void updateRegion(Region region) { this.region = region;}
     public void updateIsDeleted(Boolean isDeleted){this.isDeleted = isDeleted;}
+    public void updateReward(Integer reward){this.reward = reward;}
+
+    public void updateNotificationSetting(NotificationSetting notificationSetting) {this.notificationSetting = notificationSetting;}
+
+    @PostPersist
+    public void createNotificationSetting() {
+        if (this.notificationSetting == null) {
+            this.notificationSetting = new NotificationSetting(this);
+        }
+    }
+
 }
 
 

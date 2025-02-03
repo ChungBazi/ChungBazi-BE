@@ -2,9 +2,12 @@ package chungbazi.chungbazi_be.domain.notification.controller;
 
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
+import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingReqDto;
+import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingResDto;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import chungbazi.chungbazi_be.global.apiPayload.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +43,30 @@ public class NotificationController {
 
         return ApiResponse.onSuccess(response);
     }
+
+    @PatchMapping("/settings-up")
+    @Operation(summary = "알림 수신 설정 api",description = """
+            알림 수신을 설정하는 api입니다.
+            * policy_alarm은 캘린더 정책 알림 수신 설정,
+            * community_alarm은 커뮤니티 관련 알림 수신 설정,
+            * reward_alarm은 리워드 알림 수신 설정,
+            * notice_alarm은 공지사항 알림 수신 설정으로,
+            알림 끄기를 원한다면 false를, 알림 켜기를 원한다면 true를 입력해주시면 됩니다.
+            """)
+    public ApiResponse<NotificationSettingResDto.settingResDto> updateNotificationSetting(
+            @RequestBody NotificationSettingReqDto request
+    ) {
+        NotificationSettingResDto.settingResDto response=notificationService.setNotificationSetting(request);
+        return ApiResponse.onSuccess(response);
+    }
+
+    @GetMapping("/settings")
+    @Operation(summary = "알림 수신 설정 조회 api",description = "현재 유저의 알림 수신 설정을 조회하는 API입니다")
+    public ApiResponse<NotificationSettingResDto.settingResDto> getNotificationSetting() {
+        NotificationSettingResDto.settingResDto response=notificationService.getNotificationSetting();
+        return ApiResponse.onSuccess(response);
+    }
+
 
 
 
