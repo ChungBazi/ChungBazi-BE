@@ -52,7 +52,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Region region;
 
-    //@ColumnDefault("1")
     @Builder.Default
     private Integer reward=1;
 
