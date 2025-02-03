@@ -8,9 +8,15 @@ import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
+import chungbazi.chungbazi_be.domain.notification.entity.Notification;
+import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
+import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
+import chungbazi.chungbazi_be.domain.notification.service.FCMTokenService;
+import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.user.service.UserService;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -32,12 +38,16 @@ public class CommunityService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final S3Manager s3Manager;
+    private final RewardService rewardService;
+    private final NotificationRepository notificationRepository;
+    private final FCMTokenService fcmTokenService;
+    private final NotificationService notificationService;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long lastPostId, int size) {
         Pageable pageable = PageRequest.of(0, size);
         List<Post> posts;
 
-        if (category == null){ // 전체 게시글 조회
+        if (category == null || category.toString().isEmpty()){ // 전체 게시글 조회
             posts = (lastPostId == null)
                     ? postRepository.findByOrderByIdDesc(pageable).getContent()
                     : postRepository.findByIdLessThanOrderByIdDesc(lastPostId, pageable).getContent();
@@ -79,6 +89,8 @@ public class CommunityService {
 
         Long commentCount = commentRepository.countByPostId(post.getId());
 
+        rewardService.checkRewards();
+
         return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
     }
 
@@ -115,6 +127,9 @@ public class CommunityService {
 
         commentRepository.save(comment);
 
+        sendCommunityNotification(post.getId());
+        rewardService.checkRewards();
+
         return CommunityConverter.toUploadAndGetCommentDto(comment);
     }
 
@@ -130,4 +145,30 @@ public class CommunityService {
 
         return CommunityConverter.toGetListCommentDto(comments);
     }
+
+    public void sendCommunityNotification(Long postId){
+        User user=userRepository.findById(SecurityUtils.getUserId())
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        Post post=postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+        User author=post.getAuthor();
+
+        Notification notification=Notification.builder()
+                .user(author)
+                .type(NotificationType.COMMUNITY_ALARM)
+                .message(user.getName()+"님이 회원님의 게시글에 댓글을 달았습니다.")
+                .isRead(false)
+                .build();
+
+        notificationRepository.save(notification);
+
+        String fcmToken=fcmTokenService.getToken(author.getId());
+        if (fcmToken != null) {
+            notificationService.pushFCMNotification(fcmToken,notification.getType(),notification.getMessage());
+        }
+    }
+
+
 }

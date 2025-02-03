@@ -52,8 +52,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Region region;
 
-    @ColumnDefault("1")
-    private Integer reward;
+    @Builder.Default
+    private Integer reward=1;
 
     @Column(nullable = false)
     private boolean isDeleted;
@@ -105,6 +105,7 @@ public class User {
     }
     public void updateRegion(Region region) { this.region = region;}
     public void updateIsDeleted(Boolean isDeleted){this.isDeleted = isDeleted;}
+    public void updateReward(Integer reward){this.reward = reward;}
 
     public void updateNotificationSetting(NotificationSetting notificationSetting) {this.notificationSetting = notificationSetting;}
 
