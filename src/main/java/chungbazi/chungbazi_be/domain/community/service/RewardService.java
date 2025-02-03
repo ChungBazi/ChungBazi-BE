@@ -30,63 +30,23 @@ public class RewardService {
         User user=userRepository.findById(SecurityUtils.getUserId())
                 .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
-        switch (user.getReward()){
-            case 1:
-                if (user.getPosts().size()>=3 && user.getComments().size()>=3){
-                    user.updateReward(2);
-                    sendRewardNotification(2);
-                }
-                break;
-            case 2:
-                if (user.getPosts().size()>=5 && user.getComments().size()>=5){
-                    user.updateReward(3);
-                    sendRewardNotification(3);
-                }
-                break;
-            case 3:
-                if (user.getPosts().size()>=7 && user.getComments().size()>=7){
-                    user.updateReward(4);
-                    sendRewardNotification(4);
-                }
-                break;
-            case 4:
-                if (user.getPosts().size()>=15 && user.getComments().size()>=15){
-                    user.updateReward(5);
-                    sendRewardNotification(5);
-                }
-                break;
-            case 5:
-                if (user.getPosts().size()>=20 && user.getComments().size()>=20){
-                    user.updateReward(6);
-                    sendRewardNotification(6);
-                }
-                break;
-            case 6:
-                if (user.getPosts().size()>=25 && user.getComments().size()>=25){
-                    user.updateReward(7);
-                    sendRewardNotification(7);
-                }
-                break;
-            case 7:
-                if (user.getPosts().size()>=30 && user.getComments().size()>=30){
-                    user.updateReward(8);
-                    sendRewardNotification(8);
-                }
-                break;
-            case 8:
-                if (user.getPosts().size()>=35 && user.getComments().size()>=35){
-                    user.updateReward(9);
-                    sendRewardNotification(9);
-                }
-                break;
-            case 9:
-                if (user.getPosts().size()>=40 && user.getComments().size()>=40){
-                    user.updateReward(10);
-                    sendRewardNotification(10);
-                }
-                break;
+        // 리워드 레벨별 필요한 게시글/댓글 개수를 배열로 정의
+        int[] thresholds = {3, 5, 7, 15, 20, 25, 30, 35, 40};  // 최대 리워드 레벨은 10
+
+        int currentReward = user.getReward();
+
+        // 최대 리워드 레벨 도달 여부 체크
+        if (currentReward < 10) {
+            int requiredCount = thresholds[currentReward - 1];
+
+            if (user.getPosts().size() >= requiredCount && user.getComments().size() >= requiredCount) {
+                int nextReward = currentReward + 1;
+                user.updateReward(nextReward);
+                sendRewardNotification(nextReward);
+            }
         }
         userRepository.save(user);
+
     }
 
     private void sendRewardNotification(int reward) {
