@@ -127,9 +127,8 @@ public class CommunityService {
 
         commentRepository.save(comment);
 
-
-        rewardService.checkRewards();
         sendCommunityNotification(post.getId());
+        rewardService.checkRewards();
 
         return CommunityConverter.toUploadAndGetCommentDto(comment);
     }
