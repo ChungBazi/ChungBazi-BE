@@ -1,12 +1,15 @@
 package chungbazi.chungbazi_be.domain.community.service;
 
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
+import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
 import chungbazi.chungbazi_be.domain.notification.service.FCMTokenService;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -24,39 +27,39 @@ public class RewardService {
     private final NotificationRepository notificationRepository;
     private final FCMTokenService fcmTokenService;
     private final NotificationService notificationService;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
-    //리워드 체크
     public void checkRewards() {
-        User user=userRepository.findById(SecurityUtils.getUserId())
-                .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User user = userRepository.findById(SecurityUtils.getUserId())
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
-        // 리워드 레벨별 필요한 게시글/댓글 개수를 배열로 정의
-        int[] thresholds = {3, 5, 7, 15, 20, 25, 30, 35, 40};  // 최대 리워드 레벨은 10
+        int currentReward = user.getReward().getLevel();
 
-        int currentReward = user.getReward();
+        if (currentReward < RewardLevel.LEVEL_10.getLevel()) {
+            RewardLevel nextRewardLevel = RewardLevel.getNextRewardLevel(currentReward);
+            if (nextRewardLevel != null) {
+                int requiredCount = nextRewardLevel.getThreashold();
+                int postCount = postRepository.countPostByAuthorId(user.getId());
+                int commentCount = commentRepository.countCommentByAuthorId(user.getId());
 
-        // 최대 리워드 레벨 도달 여부 체크
-        if (currentReward < 10) {
-            int requiredCount = thresholds[currentReward - 1];
-
-            if (user.getPosts().size() >= requiredCount && user.getComments().size() >= requiredCount) {
-                int nextReward = currentReward + 1;
-                user.updateReward(nextReward);
-                sendRewardNotification(nextReward);
+                if (postCount >= requiredCount && commentCount >= requiredCount) {
+                    user.updateRewardLevel(nextRewardLevel);
+                    sendRewardNotification(nextRewardLevel.getLevel());
+                }
             }
         }
         userRepository.save(user);
-
     }
 
-    private void sendRewardNotification(int reward) {
+    private void sendRewardNotification(int rewardLevel) {
         User user=userRepository.findById(SecurityUtils.getUserId())
                 .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
         Notification notification=Notification.builder()
                 .user(user)
                 .type(NotificationType.REWARD_ALARM)
-                .message(reward+"단계에 달성하여 캐릭터가 지급되었습니다.")
+                .message(rewardLevel+"단계에 달성하여 캐릭터가 지급되었습니다.")
                 .isRead(false)
                 .build();
 

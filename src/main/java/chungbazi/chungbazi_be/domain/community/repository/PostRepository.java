@@ -25,4 +25,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // 카테고리별 게시글 수
     @Query("SELECT COUNT(p) FROM Post p WHERE (:category IS NULL OR p.category = :category)")
     Long countPostByCategory(@Param("category") Category category);
+
+    //user의 게시글 수
+    @Query("SELECT  COUNT(p) FROM Post p WHERE p.author.id= :authorId ")
+    int countPostByAuthorId(@Param("authorId") Long authorId);
 }
