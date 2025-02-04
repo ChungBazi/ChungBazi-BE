@@ -52,7 +52,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Region> region = createEnum("region", chungbazi.chungbazi_be.domain.user.entity.enums.Region.class);
 
-    public final NumberPath<Integer> reward = createNumber("reward", Integer.class);
+    public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel> reward = createEnum("reward", chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel.class);
 
     public final BooleanPath surveyStatus = createBoolean("surveyStatus");
 
