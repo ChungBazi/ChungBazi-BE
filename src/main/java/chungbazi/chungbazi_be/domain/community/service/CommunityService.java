@@ -127,7 +127,9 @@ public class CommunityService {
 
         commentRepository.save(comment);
 
-        sendCommunityNotification(post.getId());
+        if(user.getNotificationSetting().isCommunityAlarm()){
+            sendCommunityNotification(post.getId());
+        }
         rewardService.checkRewards();
 
         return CommunityConverter.toUploadAndGetCommentDto(comment);
