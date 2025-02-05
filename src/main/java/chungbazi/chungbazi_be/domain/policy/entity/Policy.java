@@ -71,7 +71,7 @@ public class Policy extends BaseTimeEntity {
     */
 
     // 소득 조건 코드
-    private String incomeCode;
+    //private String incomeCode;
 
     // 소득 최소 금액
     private String minIncome;
@@ -83,6 +83,7 @@ public class Policy extends BaseTimeEntity {
     @Column(length = 1000)
     private String incomeEtc;
 
+    // 추가신청자격
     private String additionCondition;
 
     /*
@@ -134,7 +135,6 @@ public class Policy extends BaseTimeEntity {
                 .endDate(dto.getEndDate())
                 .minAge(dto.getSprtTrgtMinAge())
                 .maxAge(dto.getSprtTrgtMaxAge())
-                .incomeCode(dto.getEarnCndSeCd())
                 .minIncome(dto.getEarnMinAmt())
                 .maxIncome(dto.getEarnMaxAmt())
                 .incomeEtc(dto.getEarnEtcCn())
