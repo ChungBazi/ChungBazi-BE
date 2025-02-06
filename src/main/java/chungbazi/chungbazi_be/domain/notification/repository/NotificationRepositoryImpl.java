@@ -49,10 +49,10 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
         booleanBuilder.and(qNotification.user.id.eq(userId));
 
         //타입필터
-        if(type!=null){
+        if(type!=null && !type.name().isEmpty()){
             booleanBuilder.and(qNotification.type.eq(type));
         }
-        if(cursor!=null){
+        if(cursor!=null && cursor!=0){
             booleanBuilder.and(qNotification.id.lt(cursor));
         }
 
