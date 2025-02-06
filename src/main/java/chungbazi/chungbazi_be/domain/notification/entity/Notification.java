@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.notification.entity;
 
+import chungbazi.chungbazi_be.domain.community.utils.TimeFormatter;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
@@ -39,6 +40,10 @@ public class Notification extends BaseTimeEntity {
     // Notification 엔티티 내부
     public void markAsRead() {
         this.isRead = true;
+    }
+
+    public String getFormattedCreatedAt(){
+        return TimeFormatter.formatCreatedAt(this.getCreatedAt());
     }
 
 }
