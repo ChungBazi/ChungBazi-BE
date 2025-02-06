@@ -36,7 +36,7 @@ public class KakaoAuthController {
         return ApiResponse.onSuccess(kakaoAuthService.createRefreshTokenResponse(newToken));
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/kakao-logout")
     @Operation(summary = "로그아웃 API", description = "refresh Token 삭제하고 access Token 블랙리스트에 추가")
     public ApiResponse<String> logout() {
         String token = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
