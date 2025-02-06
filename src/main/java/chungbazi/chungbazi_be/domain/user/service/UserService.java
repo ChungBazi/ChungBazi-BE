@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.user.service;
 
 
+import chungbazi.chungbazi_be.domain.auth.dto.TokenRequestDTO;
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.user.converter.UserConverter;
 import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
@@ -130,5 +131,39 @@ public class UserService {
                     .orElseGet(() -> interestRepository.save(Interest.from(interestName)));
             userInterestRepository.save(UserInterest.builder().user(user).interest(interest).build());
         }
+    }
+
+    public User findOrCreateMember(TokenRequestDTO.LoginTokenRequestDTO request) {
+        return userRepository.findByEmail(request.getEmail())
+                .map(existingUser -> {
+                    if (existingUser.isDeleted()) {
+                        throw new BadRequestHandler(ErrorStatus.DEACTIVATED_ACCOUNT);
+                    }
+                    return existingUser;
+                })
+                .orElseGet(() -> createNewUser(request));
+    }
+    public User createNewUser(TokenRequestDTO.LoginTokenRequestDTO request) {
+        User user = User.builder()
+                .email(request.getEmail())
+                .name(request.getName())
+                .build();
+        return userRepository.save(user);
+    }
+
+    public boolean determineIsFirst(User user) {
+        return !user.isSurveyStatus();
+    }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+    }
+
+    public void deleteUser(Long userId) {
+        userRepository.findById(userId).ifPresent(user -> {
+            user.updateIsDeleted(true);
+            userRepository.save(user);
+        });
     }
 }
