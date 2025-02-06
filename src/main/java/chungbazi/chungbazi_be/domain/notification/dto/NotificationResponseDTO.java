@@ -30,6 +30,7 @@ public class NotificationResponseDTO {
         private boolean isRead;
         private String message;
         private NotificationType type;
+        private String formattedCreatedAt;
     }
 
     @Getter
