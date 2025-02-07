@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.user.dto;
 
+import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +14,7 @@ public class UserResponseDTO {
         Long userId;
         String name;
         String email;
-        String profileImg;
+        RewardLevel characterImg;
     }
     @Getter
     @Builder

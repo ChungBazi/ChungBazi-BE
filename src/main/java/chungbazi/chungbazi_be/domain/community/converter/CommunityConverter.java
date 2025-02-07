@@ -28,7 +28,7 @@ public class CommunityConverter {
                 .userId(post.getAuthor().getId())
                 .userName(post.getAuthor().getName())
                 .reward(post.getAuthor().getReward().getLevel())
-                .characterImg(post.getAuthor().getCharacterImg())
+                //.characterImg(post.getAuthor().getCharacterImg())
                     .commentCount(commentCount)
                     .category(post.getCategory())
                 .build();
@@ -47,7 +47,7 @@ public class CommunityConverter {
                 .userId(post.getAuthor().getId())
                 .userName(post.getAuthor().getName())
                 .reward(post.getAuthor().getReward().getLevel())
-                .characterImg(post.getAuthor().getCharacterImg())
+                //.characterImg(post.getAuthor().getCharacterImg())
                 .thumbnailUrl(post.getThumbnailUrl())
                 .imageUrls(post.getImageUrls())
                 .build();
@@ -61,7 +61,7 @@ public class CommunityConverter {
                 .userId(comment.getAuthor().getId())
                 .userName(comment.getAuthor().getName())
                 .reward(comment.getAuthor().getReward().getLevel())
-                .characterImg(comment.getAuthor().getCharacterImg())
+                //.characterImg(comment.getAuthor().getCharacterImg())
                 .commentId(comment.getId())
                 .build();
     }
