@@ -27,10 +27,11 @@ public class CommunityConverter {
                 .thumbnailUrl(post.getThumbnailUrl())
                 .userId(post.getAuthor().getId())
                 .userName(post.getAuthor().getName())
-                .reward(post.getAuthor().getReward().getLevel())
+                .reward(post.getAuthor().getReward())
                 .characterImg(post.getAuthor().getCharacterImg())
                     .commentCount(commentCount)
                     .category(post.getCategory())
+                    .postLikes(post.getPostLikes())
                 .build();
         }).toList();
     }
@@ -46,10 +47,11 @@ public class CommunityConverter {
                 .commentCount(commentCount)
                 .userId(post.getAuthor().getId())
                 .userName(post.getAuthor().getName())
-                .reward(post.getAuthor().getReward().getLevel())
+                .reward(post.getAuthor().getReward())
                 .characterImg(post.getAuthor().getCharacterImg())
                 .thumbnailUrl(post.getThumbnailUrl())
                 .imageUrls(post.getImageUrls())
+                .postLikes(post.getPostLikes())
                 .build();
     }
 
@@ -60,7 +62,7 @@ public class CommunityConverter {
                 .formattedCreatedAt(comment.getFormattedCreatedAt())
                 .userId(comment.getAuthor().getId())
                 .userName(comment.getAuthor().getName())
-                .reward(comment.getAuthor().getReward().getLevel())
+                .reward(comment.getAuthor().getReward())
                 .characterImg(comment.getAuthor().getCharacterImg())
                 .commentId(comment.getId())
                 .build();

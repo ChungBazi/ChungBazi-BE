@@ -50,11 +50,13 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
 
-//    @Column(columnDefinition = "integer default 0") 좋아요는 추후 구현
-//    private Integer likes;
-
+    @Builder.Default
     @Column(columnDefinition = "integer default 0")
-    private Integer views;
+    private Integer views = 0;
+
+    @Builder.Default
+    @Column(columnDefinition = "integer default 0")
+    private Integer postLikes = 0;
 
     @ElementCollection
     @CollectionTable(name = "post_images", joinColumns = @JoinColumn(name = "post_id"))

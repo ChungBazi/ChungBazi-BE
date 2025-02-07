@@ -54,7 +54,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private RewardLevel reward=RewardLevel.LEVEL_1;
+    private RewardLevel reward = RewardLevel.LEVEL_1;
 
     @Column(nullable = false)
     private boolean isDeleted;
@@ -67,9 +67,10 @@ public class User {
     @Setter
     private String profileImg;
 
-    @Column
+    @Enumerated(EnumType.STRING)
     @Setter
-    private String characterImg;
+    @Builder.Default
+    private RewardLevel characterImg = RewardLevel.LEVEL_1;
 
     @OneToOne
     @JoinColumn(name = "uuid_id")

@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.community.dto;
 
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
+import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,11 +20,12 @@ public class CommunityResponseDTO {
 
         Integer views;
         Long commentCount;
+        Integer postLikes;
 
         Long userId;
         String userName;
-        Integer reward;
-        String characterImg;
+        RewardLevel reward;
+        RewardLevel characterImg;
 
         String thumbnailUrl;
         List<String> imageUrls;
@@ -48,11 +50,12 @@ public class CommunityResponseDTO {
 
         Integer views;
         Long commentCount;
+        Integer postLikes;
 
         Long userId;
         String userName;
-        Integer reward;
-        String characterImg;
+        RewardLevel reward;
+        RewardLevel characterImg;
 
         String thumbnailUrl;
     }
@@ -69,7 +72,7 @@ public class CommunityResponseDTO {
 
         Long userId;
         String userName;
-        Integer reward;
-        String characterImg;
+        RewardLevel reward;
+        RewardLevel characterImg;
     }
 }
