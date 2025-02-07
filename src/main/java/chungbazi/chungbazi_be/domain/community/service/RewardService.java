@@ -45,7 +45,10 @@ public class RewardService {
 
                 if (postCount >= requiredCount && commentCount >= requiredCount) {
                     user.updateRewardLevel(nextRewardLevel);
-                    sendRewardNotification(nextRewardLevel.getLevel());
+
+                    if (user.getNotificationSetting().isRewardAlarm()){
+                        sendRewardNotification(nextRewardLevel.getLevel());
+                    }
                 }
             }
         }

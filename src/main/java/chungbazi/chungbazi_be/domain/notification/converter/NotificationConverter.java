@@ -13,6 +13,7 @@ public class NotificationConverter {
                 .isRead(notification.isRead())
                 .message(notification.getMessage())
                 .type(notification.getType())
+                .formattedCreatedAt(notification.getFormattedCreatedAt())
                 .build();
     }
 
