@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -44,7 +41,7 @@ public class KakaoAuthController {
         return ApiResponse.onSuccess("Logout successful.");
     }
 
-    @PostMapping("/delete-account")
+    @DeleteMapping("/delete-account")
     @Operation(summary = "회원 탈퇴 API", description = "access Token을 블랙리스트에 추가하고 refresh Token 삭제, 회원 정보 삭제")
     public ApiResponse<String> deleteAccount() {
         String token = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();

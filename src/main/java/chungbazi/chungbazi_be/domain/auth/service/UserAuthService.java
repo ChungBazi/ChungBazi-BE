@@ -44,9 +44,9 @@ public class UserAuthService {
     }
 
     public void deleteUser(Long userId) {
-        userRepository.findById(userId).ifPresent(user -> {
-            user.updateIsDeleted(true);
-            userRepository.save(user);
-        });
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        userRepository.delete(user);
     }
 }
