@@ -48,13 +48,13 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<chungbazi.chungbazi_be.domain.community.entity.Post, chungbazi.chungbazi_be.domain.community.entity.QPost> posts = this.<chungbazi.chungbazi_be.domain.community.entity.Post, chungbazi.chungbazi_be.domain.community.entity.QPost>createList("posts", chungbazi.chungbazi_be.domain.community.entity.Post.class, chungbazi.chungbazi_be.domain.community.entity.QPost.class, PathInits.DIRECT2);
 
-    public final StringPath profileImg = createString("profileImg");
-
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Region> region = createEnum("region", chungbazi.chungbazi_be.domain.user.entity.enums.Region.class);
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel> reward = createEnum("reward", chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel.class);
 
     public final BooleanPath surveyStatus = createBoolean("surveyStatus");
+
+    public final NumberPath<Integer> unlockedLevel = createNumber("unlockedLevel", Integer.class);
 
     public final ListPath<chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserAddition> userAdditionList = this.<chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserAddition>createList("userAdditionList", chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition.class, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserAddition.class, PathInits.DIRECT2);
 

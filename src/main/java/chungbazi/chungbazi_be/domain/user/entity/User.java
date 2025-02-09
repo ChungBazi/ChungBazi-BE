@@ -63,25 +63,30 @@ public class User {
     @ColumnDefault("false")
     private boolean surveyStatus;
 
-    @Column
-    @Setter
-    private String profileImg;
-
+    // 캐릭터 관련
     @Enumerated(EnumType.STRING)
     @Setter
     @Builder.Default
     private RewardLevel characterImg = RewardLevel.LEVEL_1;
 
+    @Column(nullable = false)
+    @Setter
+    @Builder.Default
+    private int unlockedLevel = 1;
+
+    // 삭제 예정
     @OneToOne
     @JoinColumn(name = "uuid_id")
     private Uuid uuid;
 
+    // 커뮤니티 관련
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    // 유저 정보 관련
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<UserAddition> userAdditionList = new ArrayList<>();
@@ -90,12 +95,15 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     private List<UserInterest> userInterestList = new ArrayList<>();
 
+    // 알람 관련
     @OneToMany(mappedBy = "user",cascade = {CascadeType.ALL})
     private List<Notification> notificationList = new ArrayList<>();
 
     @OneToOne(mappedBy = "user",cascade = {CascadeType.ALL})
     private NotificationSetting notificationSetting;
 
+
+    // 유저 정보 관련
     public void updateEducation(Education education) {
         this.education = education;
     }
@@ -109,6 +117,7 @@ public class User {
     public void updateIsDeleted(Boolean isDeleted){this.isDeleted = isDeleted;}
     public void updateRewardLevel(RewardLevel reward) {this.reward = reward;}
 
+    // 알람 관련
     public void updateNotificationSetting(NotificationSetting notificationSetting) {this.notificationSetting = notificationSetting;}
 
     @PostPersist

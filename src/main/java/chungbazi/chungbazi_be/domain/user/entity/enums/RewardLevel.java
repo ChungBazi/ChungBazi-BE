@@ -1,5 +1,9 @@
 package chungbazi.chungbazi_be.domain.user.entity.enums;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public enum RewardLevel {
     LEVEL_1(1,0),
     LEVEL_2(2,3),
@@ -32,5 +36,15 @@ public enum RewardLevel {
             }
         }
         return null;
+    }
+
+    public static List<RewardLevel> getRewardListUpto(int maxLevel) {
+        List<RewardLevel> results = new ArrayList<>();
+        for (RewardLevel rewardLevel : RewardLevel.values()) {
+            if (rewardLevel.getLevel() <= maxLevel) {
+                results.add(rewardLevel);
+            }
+        }
+        return results;
     }
 }

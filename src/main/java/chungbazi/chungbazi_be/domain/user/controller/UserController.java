@@ -21,6 +21,12 @@ public class UserController {
     public ApiResponse<UserResponseDTO.ProfileDto> getProfile() {
         return ApiResponse.onSuccess(userService.getProfile());
     }
+    @GetMapping("/character")
+    @Operation(summary = "캐릭터 조회 API", description = "마이페이지 캐릭터 조회")
+    public ApiResponse<UserResponseDTO.CharacterListDto> getCharacters() {
+        return ApiResponse.onSuccess(userService.getCharacters());
+    }
+
     @PatchMapping(value = "/profile/update", consumes = "multipart/form-data")
     @Operation(summary = "프로필 수정 API", description = "마이페이지 프로필 수정")
     public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(
