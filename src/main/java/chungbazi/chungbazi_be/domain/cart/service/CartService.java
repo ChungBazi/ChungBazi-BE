@@ -6,11 +6,14 @@ import chungbazi.chungbazi_be.domain.cart.dto.CartRequestDTO;
 import chungbazi.chungbazi_be.domain.cart.dto.CartResponseDTO;
 import chungbazi.chungbazi_be.domain.cart.entity.Cart;
 import chungbazi.chungbazi_be.domain.cart.repository.CartRepository;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
-import chungbazi.chungbazi_be.domain.policy.service.PolicyService;
+import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.service.UserService;
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -26,14 +29,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class CartService {
 
     private final CartRepository cartRepository;
-    private final PolicyService policyService;
+    private final PolicyRepository policyRepository;
     private final UserService userService;
 
     // 장바구니에 담기
     @Transactional
     public void addPolicyToCart(Long policyId) {
 
-        Policy policy = policyService.findByPolicyId(policyId);
+        Policy policy = policyRepository.findById(policyId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
 
         Long userId = SecurityUtils.getUserId();
         User user = userService.findByUserId(userId);
@@ -109,5 +113,26 @@ public class CartService {
 
         return groupedDTO;
 
+    }
+
+    public List<PolicyCalendarResponse> findByUser_IdAndYearMonth(Long userId, int year, int month) {
+
+        List<Cart> carts = cartRepository.findByUser_Id(userId);
+        return carts.stream()
+                .filter(cart -> {
+                    Policy policy = cart.getPolicy();
+                    // 상시모집인 경우 필터링
+                    if (policy.getStartDate() == null || policy.getEndDate() == null) {
+                        return false;
+                    }
+
+                    LocalDate startDate = policy.getStartDate();
+                    LocalDate endDate = policy.getEndDate();
+
+                    return ((startDate.getYear() == year && startDate.getMonthValue() == month) || (
+                            endDate.getYear() == year && endDate.getMonthValue() == month));
+                })
+                .map(cart -> PolicyCalendarResponse.from(cart.getPolicy()))
+                .toList();
     }
 }

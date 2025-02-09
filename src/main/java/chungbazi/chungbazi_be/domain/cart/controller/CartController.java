@@ -44,5 +44,5 @@ public class CartController {
         List<CartResponseDTO.CartPolicyList> policies = cartService.getPoliciesFromCart();
         return ApiResponse.onSuccess(policies);
     }
-
+    
 }

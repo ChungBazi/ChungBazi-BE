@@ -46,10 +46,10 @@ public class Policy extends BaseTimeEntity {
     @Column(length = 1000)
     private String content;
 
-    // 신청시작 날짜
+    // 신청시작 날짜 (상시모집이면 null 값으로 저장)
     private LocalDate startDate;
 
-    // 신청 끝나는 날짜
+    // 신청 끝나는 날짜 (상시모집이면 null 값으로 저장)
     private LocalDate endDate;
 
     // 최소 연령
@@ -85,6 +85,9 @@ public class Policy extends BaseTimeEntity {
 
     // 추가신청자격
     private String additionCondition;
+
+    // 참여제한 대상
+    private String restrictedCondition;
 
     /*
     // 학력 요건 내용

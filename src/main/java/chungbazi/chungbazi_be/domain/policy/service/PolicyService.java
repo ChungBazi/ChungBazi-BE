@@ -1,5 +1,8 @@
 package chungbazi.chungbazi_be.domain.policy.service;
 
+import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.cart.service.CartService;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListOneResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
@@ -12,11 +15,14 @@ import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.Tuple;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +45,7 @@ public class PolicyService {
     private final WebClient webclient;
     private final PolicyRepository policyRepository;
     private final RedisTemplate<String, String> redisTemplate;
+    private final CartService cartService;
 
 
     @Value("${webclient.openApiVlak}")
@@ -274,5 +281,29 @@ public class PolicyService {
 
     public Policy findByPolicyId(Long policyId) {
         return policyRepository.findById(policyId).orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
+    }
+
+    // 캘린더 정책 전체 조회
+    public List<PolicyCalendarResponse> getCalendarList(String yearMonth) {
+
+        //유효한 타입인지 검증
+        validateYearMonth(yearMonth);
+
+        YearMonth parsedYearMonth = YearMonth.parse(yearMonth, DateTimeFormatter.ofPattern("yyyy-M"));
+        int year = parsedYearMonth.getYear();
+        int month = parsedYearMonth.getMonthValue();
+
+        Long userId = SecurityUtils.getUserId();
+        return cartService.findByUser_IdAndYearMonth(userId, year, month);
+    }
+
+    // 유효한 타입인지 확인
+    private void validateYearMonth(String yearMonth) {
+        try {
+            YearMonth.parse(yearMonth); // "2025-01" 형식이 아닌 경우 예외 발생
+        } catch (DateTimeParseException e) {
+            // 유효하지 않은 형식인 경우 CustomException 던지기
+            throw new BadRequestHandler(ErrorStatus.NOT_VALID_TYPE_YEAR_MONTH);
+        }
     }
 }

@@ -20,6 +20,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "USER404", "해당 유저를 찾을 수 없습니다."),
     NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, "NOTIFICATION001", "알림이 존재하지 않습니다."),
 
+
     // 멤버 관련 에러
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
     INVALID_GENDER(HttpStatus.BAD_REQUEST, "MEMBER", "유효하지않은 성별입니다."),
@@ -30,6 +31,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_SEARCH_NAME(HttpStatus.BAD_REQUEST, "POLICY5003", "검색어를 입력해주세요."),
     POLICY_NOT_FOUND(HttpStatus.NOT_FOUND, "POLICY5004", "존재하지 않는 정책입니다."),
     NO_CURSOR(HttpStatus.BAD_REQUEST, "POLICY5005", "커서가 존재하지않습니다."),
+    NOT_VALID_TYPE_YEAR_MONTH(HttpStatus.BAD_REQUEST, "POLICY5006", "유효한 날짜 형식이 아닙니다."),
 
     //Notification
     GOOGLE_REQUEST_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "FCMTOKEN001", "firebase 접근 토큰이 유효하지 않습니다."),

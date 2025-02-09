@@ -62,6 +62,8 @@ public class QPolicy extends EntityPathBase<Policy> {
 
     public final StringPath registerUrl = createString("registerUrl");
 
+    public final StringPath restrictedCondition = createString("restrictedCondition");
+
     public final StringPath result = createString("result");
 
     public final DatePath<java.time.LocalDate> startDate = createDate("startDate", java.time.LocalDate.class);

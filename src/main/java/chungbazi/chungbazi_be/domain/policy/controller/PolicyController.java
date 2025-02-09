@@ -1,10 +1,12 @@
 package chungbazi.chungbazi_be.domain.policy.controller;
 
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.service.PolicyService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,6 +59,14 @@ public class PolicyController {
     public ApiResponse<PolicyDetailsResponse> getPolicyDetails(@PathVariable Long policyId) {
 
         PolicyDetailsResponse response = policyService.getPolicyDetails(policyId);
+        return ApiResponse.onSuccess(response);
+    }
+
+    // 캘린더 정책 전체 조회
+    @GetMapping("/calendar")
+    public ApiResponse<List<PolicyCalendarResponse>> getCalendarList(@RequestParam String yearMonth) {
+
+        List<PolicyCalendarResponse> response = policyService.getCalendarList(yearMonth);
         return ApiResponse.onSuccess(response);
     }
 
