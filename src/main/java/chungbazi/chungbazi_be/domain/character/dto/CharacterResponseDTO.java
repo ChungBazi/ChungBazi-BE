@@ -18,5 +18,16 @@ public class CharacterResponseDTO {
     @AllArgsConstructor
     public static class MainCharacterDto {
         String rewardLevel;
+        String name;
+        String nextRewardLevel;
+        int posts;
+        int comments;
+    }
+    @Getter
+    @AllArgsConstructor
+    public static class NextLevelInfo {
+        String nextRewardLevel;
+        int posts;
+        int comments;
     }
 }

@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.character.converter;
 
 import chungbazi.chungbazi_be.domain.character.dto.CharacterResponseDTO;
+import chungbazi.chungbazi_be.domain.character.dto.CharacterResponseDTO.NextLevelInfo;
 import chungbazi.chungbazi_be.domain.character.entity.Character;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
@@ -26,9 +27,13 @@ public class CharacterConverter {
                 .toList();
     }
 
-    public static CharacterResponseDTO.MainCharacterDto toMainCharacterDto(Character character) {
+    public static CharacterResponseDTO.MainCharacterDto toMainCharacterDto(Character character, User user, NextLevelInfo nextLevelInfo) {
         return CharacterResponseDTO.MainCharacterDto.builder()
                 .rewardLevel(character.getRewardLevel().name())
+                .name(user.getName())
+                .nextRewardLevel(nextLevelInfo.getNextRewardLevel())
+                .posts(nextLevelInfo.getPosts())
+                .comments(nextLevelInfo.getComments())
                 .build();
     }
 }

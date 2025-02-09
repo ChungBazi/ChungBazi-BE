@@ -3,8 +3,10 @@ package chungbazi.chungbazi_be.domain.character.service;
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.character.converter.CharacterConverter;
 import chungbazi.chungbazi_be.domain.character.dto.CharacterResponseDTO;
+import chungbazi.chungbazi_be.domain.character.dto.CharacterResponseDTO.NextLevelInfo;
 import chungbazi.chungbazi_be.domain.character.entity.Character;
 import chungbazi.chungbazi_be.domain.character.repository.CharacterRepository;
+import chungbazi.chungbazi_be.domain.community.service.RewardService;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CharacterService {
     private final UserRepository userRepository;
     private final CharacterRepository characterRepository;
+    private final RewardService rewardService;
 
     public List<CharacterResponseDTO.CharacterListDto> getCharacters() {
         Long userId = SecurityUtils.getUserId();
@@ -55,7 +58,8 @@ public class CharacterService {
             character.setOpen(true);
             characterRepository.save(character);
         }
-        return CharacterConverter.toMainCharacterDto(character);
+        NextLevelInfo nextLevelInfo = rewardService.calNextLevelInfo(user, character);
+        return CharacterConverter.toMainCharacterDto(character, user, nextLevelInfo);
     }
 
     public CharacterResponseDTO.MainCharacterDto getMainCharacter() {
@@ -67,6 +71,7 @@ public class CharacterService {
         Character character = characterRepository.findTopByUserIdAndOpenOrderByRewardLevelDesc(userId, true)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHARACTER));
 
-        return CharacterConverter.toMainCharacterDto(character);
+        NextLevelInfo nextLevelInfo = rewardService.calNextLevelInfo(user, character);
+        return CharacterConverter.toMainCharacterDto(character, user, nextLevelInfo);
     }
 }
