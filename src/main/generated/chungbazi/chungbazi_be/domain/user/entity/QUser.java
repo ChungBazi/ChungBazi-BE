@@ -24,6 +24,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel> characterImg = createEnum("characterImg", chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel.class);
 
+    public final ListPath<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter> characters = this.<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter>createList("characters", chungbazi.chungbazi_be.domain.character.entity.Character.class, chungbazi.chungbazi_be.domain.character.entity.QCharacter.class, PathInits.DIRECT2);
+
     public final ListPath<chungbazi.chungbazi_be.domain.community.entity.Comment, chungbazi.chungbazi_be.domain.community.entity.QComment> comments = this.<chungbazi.chungbazi_be.domain.community.entity.Comment, chungbazi.chungbazi_be.domain.community.entity.QComment>createList("comments", chungbazi.chungbazi_be.domain.community.entity.Comment.class, chungbazi.chungbazi_be.domain.community.entity.QComment.class, PathInits.DIRECT2);
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Education> education = createEnum("education", chungbazi.chungbazi_be.domain.user.entity.enums.Education.class);
@@ -53,8 +55,6 @@ public class QUser extends EntityPathBase<User> {
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel> reward = createEnum("reward", chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel.class);
 
     public final BooleanPath surveyStatus = createBoolean("surveyStatus");
-
-    public final NumberPath<Integer> unlockedLevel = createNumber("unlockedLevel", Integer.class);
 
     public final ListPath<chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserAddition> userAdditionList = this.<chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserAddition>createList("userAdditionList", chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition.class, chungbazi.chungbazi_be.domain.user.entity.mapping.QUserAddition.class, PathInits.DIRECT2);
 

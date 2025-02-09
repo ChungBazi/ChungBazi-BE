@@ -45,14 +45,6 @@ public class UserService {
 
         return UserConverter.toProfileDto(user);
     }
-    public UserResponseDTO.CharacterListDto getCharacters() {
-        Long userId = SecurityUtils.getUserId();
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
-        return UserConverter.toCharacterListDto(user);
-    }
 
     public UserResponseDTO.ProfileUpdateDto updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto, MultipartFile profileImg) {
         final long MAX_UPLOAD_SIZE = 5 * 1024 * 1024;

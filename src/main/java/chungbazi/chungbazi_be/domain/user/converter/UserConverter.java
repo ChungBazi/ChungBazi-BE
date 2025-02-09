@@ -21,21 +21,4 @@ public class UserConverter {
                 //.profileImg(user.getProfileImg())
                 .build();
     }
-    public static UserResponseDTO.CharacterListDto toCharacterListDto(User user) {
-        List<UserResponseDTO.CharacterStatusDto> characterStatusList = toCharacterStatusListDto(user.getUnlockedLevel(),
-                user.getReward().getLevel());
-        return UserResponseDTO.CharacterListDto.builder()
-                .userId(user.getId())
-                .characterImgList(characterStatusList)
-                .build();
-    }
-
-    public static List<UserResponseDTO.CharacterStatusDto> toCharacterStatusListDto(int unlockedLevel, int maxRewardLevel) {
-        return RewardLevel.getRewardListUpto(maxRewardLevel).stream()
-                .map(rewardLevel -> UserResponseDTO.CharacterStatusDto.builder()
-                        .rewardLevel(rewardLevel.name())
-                        .isOpen(rewardLevel.getLevel() <= unlockedLevel)
-                        .build())
-                .toList();
-    }
 }

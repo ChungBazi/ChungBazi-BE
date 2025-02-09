@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.user.entity;
 
+import chungbazi.chungbazi_be.domain.character.entity.Character;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
@@ -9,6 +10,7 @@ import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
 import chungbazi.chungbazi_be.global.entity.Uuid;
 import jakarta.persistence.*;
+import java.util.Arrays;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
@@ -52,10 +54,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Region region;
 
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private RewardLevel reward = RewardLevel.LEVEL_1;
-
     @Column(nullable = false)
     private boolean isDeleted;
 
@@ -69,10 +67,12 @@ public class User {
     @Builder.Default
     private RewardLevel characterImg = RewardLevel.LEVEL_1;
 
-    @Column(nullable = false)
-    @Setter
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
+    private List<Character> characters;
+
+    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private int unlockedLevel = 1;
+    private RewardLevel reward = RewardLevel.LEVEL_1;
 
     // 삭제 예정
     @OneToOne
@@ -121,9 +121,20 @@ public class User {
     public void updateNotificationSetting(NotificationSetting notificationSetting) {this.notificationSetting = notificationSetting;}
 
     @PostPersist
-    public void createNotificationSetting() {
+    public void postPersistInitialization() {
+        // 알람 초기화
         if (this.notificationSetting == null) {
             this.notificationSetting = new NotificationSetting(this);
+        }
+        // 캐릭터 리스트 초기화
+        if (characters == null || characters.isEmpty()) {
+            this.characters = Arrays.stream(RewardLevel.values())
+                    .map(level -> Character.builder()
+                            .user(this)
+                            .rewardLevel(level)
+                            .isOpen(level == RewardLevel.LEVEL_1)
+                            .build())
+                    .toList();
         }
     }
 
