@@ -43,7 +43,13 @@ public class CharacterService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
-        RewardLevel targetLevel = RewardLevel.valueOf(selectedLevel);
+        RewardLevel targetLevel;
+
+        try {
+            targetLevel = RewardLevel.valueOf(selectedLevel);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
+        }
 
         // 유저 레벨보다 높은 캐릭터 선택 시 에러 핸들링
         if (targetLevel.getLevel() > user.getReward().getLevel()) {

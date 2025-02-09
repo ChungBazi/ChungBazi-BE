@@ -25,7 +25,11 @@ public class CharacterController {
     }
 
     @PatchMapping("/selectOrOpen")
-    @Operation(summary = "캐릭터 선택 및 오픈 API", description = "캐릭터 선택 및 오픈")
+    @Operation(summary = "캐릭터 선택 및 오픈 API",
+            description = """
+                캐릭터 선택 및 오픈
+                - 레벨 값 예시 : LEVEL_1 (10까지 가능)
+                """)
     public ApiResponse<CharacterResponseDTO.MainCharacterDto> selectOrOpen(@RequestParam String selectedLevel) {
         return ApiResponse.onSuccess(characterService.selectOrOpen(selectedLevel));
     }

@@ -28,6 +28,7 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_VALUE(HttpStatus.BAD_REQUEST, "USER400", "유효하지 않은 입력값입니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST,"USER400","이미 존재하는 닉네임입니다."),
     INVALID_CHARACTER(HttpStatus.BAD_REQUEST,"CHARACTER400","유효하지 않은 캐릭터입니다."),
+
     //Policy
     CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5001", "존재하지 않는 정책 코드 입니다."),
     NO_SEARCH_NAME(HttpStatus.BAD_REQUEST, "POLICY5002", "검색어를 입력해주세요."),
