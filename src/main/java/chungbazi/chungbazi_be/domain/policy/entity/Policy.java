@@ -84,9 +84,11 @@ public class Policy extends BaseTimeEntity {
     private String incomeEtc;
 
     // 추가신청자격
+    @Column(columnDefinition = "TEXT")
     private String additionCondition;
 
     // 참여제한 대상
+    @Column(columnDefinition = "TEXT")
     private String restrictedCondition;
 
     /*

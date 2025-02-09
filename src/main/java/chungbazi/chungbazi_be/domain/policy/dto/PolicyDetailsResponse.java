@@ -28,6 +28,8 @@ public class PolicyDetailsResponse {
     private String incomeEtc;
     private String additionCondition;
 
+    private String restrictionCondition;
+
     private String applyProcedure;
 
     private String document;
@@ -55,6 +57,7 @@ public class PolicyDetailsResponse {
                 .maxIncome(policy.getMaxIncome())
                 .incomeEtc(policy.getIncomeEtc())
                 .additionCondition(policy.getAdditionCondition())
+                .restrictionCondition(policy.getRestrictedCondition())
                 .applyProcedure(policy.getApplyProcedure())
                 .document(policy.getDocument())
                 .result(policy.getResult())

@@ -31,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -51,58 +50,58 @@ public class PolicyService {
     @Value("${webclient.openApiVlak}")
     private String openApiVlak;
 
-
-    @Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
-    @Transactional
-    public void schedulePolicyFetch() {
-        getPolicy();
-    }
-
-    // OpenAPI에서 정책 가져오기
-    @Transactional
-    public void getPolicy() {
-
-        int display = 20;
-        int pageIndex = 1;
-        String srchPolyBizSecd = "003002001";
-
-        LocalDate twoMonthAgo = LocalDate.now().minusMonths(2);
-
-        while (true) {
-            // XML -> DTO
-            YouthPolicyListResponse policies = fetchPolicy(display, pageIndex, srchPolyBizSecd);
-
-            if (policies == null) {
-                break;
-            }
-
-            // DB에 이미 존재하는 bizId가 있는지 확인 & 날짜 유효한 것만 DTO -> Entity
-            List<Policy> validPolicies = new ArrayList<>();
-            for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
-                if (policyRepository.existsByBizId(response.getPlcyNo())) {
-                    break;
-                }
-                if (isDateAvail(response, twoMonthAgo)) {
-                    validPolicies.add(Policy.toEntity(response));
-                }
-            }
-            if (!validPolicies.isEmpty()) {
-                policyRepository.saveAll(validPolicies);
-            }
-
-            // 마지막 정책 마감날짜
-            YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
-                    .get(policies.getResult().getYouthPolicyList().size() - 1);
-            if (!isDateAvail(lastPolicy, twoMonthAgo)) {
-                break;
-            }
-
-            pageIndex++;
+    /*
+        @Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
+        @Transactional
+        public void schedulePolicyFetch() {
+            getPolicy();
         }
 
-    }
+        // OpenAPI에서 정책 가져오기
+        @Transactional
+        public void getPolicy() {
 
+            int display = 20;
+            int pageIndex = 1;
+            String srchPolyBizSecd = "003002001";
 
+            LocalDate twoMonthAgo = LocalDate.now().minusMonths(2);
+
+            while (true) {
+                // XML -> DTO
+                YouthPolicyListResponse policies = fetchPolicy(display, pageIndex, srchPolyBizSecd);
+
+                if (policies == null) {
+                    break;
+                }
+
+                // DB에 이미 존재하는 bizId가 있는지 확인 & 날짜 유효한 것만 DTO -> Entity
+                List<Policy> validPolicies = new ArrayList<>();
+                for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
+                    if (policyRepository.existsByBizId(response.getPlcyNo())) {
+                        break;
+                    }
+                    if (isDateAvail(response, twoMonthAgo)) {
+                        validPolicies.add(Policy.toEntity(response));
+                    }
+                }
+                if (!validPolicies.isEmpty()) {
+                    policyRepository.saveAll(validPolicies);
+                }
+
+                // 마지막 정책 마감날짜
+                YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
+                        .get(policies.getResult().getYouthPolicyList().size() - 1);
+                if (!isDateAvail(lastPolicy, twoMonthAgo)) {
+                    break;
+                }
+
+                pageIndex++;
+            }
+
+        }
+
+    */
     // 정책 검색
     public PolicyListResponse getSearchPolicy(String name, String cursor, int size, String order) {
 
