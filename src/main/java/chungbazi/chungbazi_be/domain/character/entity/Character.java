@@ -40,5 +40,5 @@ public class Character {
 
     @Column(nullable = false)
     @Setter
-    private boolean isOpen;
+    private boolean open;
 }

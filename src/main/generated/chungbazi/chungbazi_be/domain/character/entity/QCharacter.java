@@ -24,7 +24,7 @@ public class QCharacter extends EntityPathBase<Character> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final BooleanPath isOpen = createBoolean("isOpen");
+    public final BooleanPath open = createBoolean("open");
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel> rewardLevel = createEnum("rewardLevel", chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel.class);
 

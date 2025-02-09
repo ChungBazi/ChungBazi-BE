@@ -10,4 +10,7 @@ public interface CharacterRepository extends JpaRepository<Character, Long> {
     List<Character> findByUserId(Long userId);
 
     Optional<Character> findByUserIdAndRewardLevel(Long userId, RewardLevel rewardLevel);
+
+    Optional<Character> findTopByUserIdAndOpenOrderByRewardLevelDesc(Long userId, boolean open);
+
 }

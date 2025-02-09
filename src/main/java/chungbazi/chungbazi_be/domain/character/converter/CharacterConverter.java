@@ -33,8 +33,8 @@ public class CharacterConverter {
                 .toList();
     }
 
-    public static CharacterResponseDTO.SelectedCharacterDto toSelectedCharacterDto(Character character) {
-        return CharacterResponseDTO.SelectedCharacterDto.builder()
+    public static CharacterResponseDTO.MainCharacterDto toMainCharacterDto(Character character) {
+        return CharacterResponseDTO.MainCharacterDto.builder()
                 .rewardLevel(character.getRewardLevel().name())
                 .build();
     }

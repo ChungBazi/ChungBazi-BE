@@ -23,7 +23,7 @@ public class CharacterResponseDTO {
     @Getter
     @Builder
     @AllArgsConstructor
-    public static class SelectedCharacterDto {
+    public static class MainCharacterDto {
         String rewardLevel;
     }
 }

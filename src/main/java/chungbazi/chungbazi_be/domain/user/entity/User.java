@@ -132,7 +132,7 @@ public class User {
                     .map(level -> Character.builder()
                             .user(this)
                             .rewardLevel(level)
-                            .isOpen(level == RewardLevel.LEVEL_1)
+                            .open(level == RewardLevel.LEVEL_1)
                             .build())
                     .toList();
         }

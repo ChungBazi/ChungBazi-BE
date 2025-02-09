@@ -3,6 +3,7 @@ package chungbazi.chungbazi_be.domain.character.controller;
 import chungbazi.chungbazi_be.domain.character.dto.CharacterResponseDTO;
 import chungbazi.chungbazi_be.domain.character.service.CharacterService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,13 @@ public class CharacterController {
 
     @PatchMapping("/selectOrOpen")
     @Operation(summary = "캐릭터 선택 및 오픈 API", description = "캐릭터 선택 및 오픈")
-    public ApiResponse<CharacterResponseDTO.SelectedCharacterDto> selectOrOpen(@RequestParam String selectedLevel) {
+    public ApiResponse<CharacterResponseDTO.MainCharacterDto> selectOrOpen(@RequestParam String selectedLevel) {
         return ApiResponse.onSuccess(characterService.selectOrOpen(selectedLevel));
+    }
+
+    @GetMapping("/mainCharacter")
+    @Operation(summary = "메인 캐릭터 조회 API", description = "메인 캐릭터 조회")
+    public ApiResponse<CharacterResponseDTO.MainCharacterDto> getMainCharacter() {
+        return ApiResponse.onSuccess(characterService.getMainCharacter());
     }
 }

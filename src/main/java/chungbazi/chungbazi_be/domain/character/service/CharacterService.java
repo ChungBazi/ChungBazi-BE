@@ -34,7 +34,7 @@ public class CharacterService {
         return CharacterConverter.toCharacterListDto(user, characterList);
     }
 
-    public CharacterResponseDTO.SelectedCharacterDto selectOrOpen(String selectedLevel) {
+    public CharacterResponseDTO.MainCharacterDto selectOrOpen(String selectedLevel) {
         Long userId = SecurityUtils.getUserId();
 
         User user = userRepository.findById(userId)
@@ -55,6 +55,18 @@ public class CharacterService {
             character.setOpen(true);
             characterRepository.save(character);
         }
-        return CharacterConverter.toSelectedCharacterDto(character);
+        return CharacterConverter.toMainCharacterDto(character);
+    }
+
+    public CharacterResponseDTO.MainCharacterDto getMainCharacter() {
+        Long userId = SecurityUtils.getUserId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        Character character = characterRepository.findTopByUserIdAndOpenOrderByRewardLevelDesc(userId, true)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHARACTER));
+
+        return CharacterConverter.toMainCharacterDto(character);
     }
 }
