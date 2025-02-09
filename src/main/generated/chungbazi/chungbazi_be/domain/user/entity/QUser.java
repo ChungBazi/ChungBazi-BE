@@ -24,6 +24,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel> characterImg = createEnum("characterImg", chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel.class);
 
+    public final ListPath<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter> characters = this.<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter>createList("characters", chungbazi.chungbazi_be.domain.character.entity.Character.class, chungbazi.chungbazi_be.domain.character.entity.QCharacter.class, PathInits.DIRECT2);
+
     public final ListPath<chungbazi.chungbazi_be.domain.community.entity.Comment, chungbazi.chungbazi_be.domain.community.entity.QComment> comments = this.<chungbazi.chungbazi_be.domain.community.entity.Comment, chungbazi.chungbazi_be.domain.community.entity.QComment>createList("comments", chungbazi.chungbazi_be.domain.community.entity.Comment.class, chungbazi.chungbazi_be.domain.community.entity.QComment.class, PathInits.DIRECT2);
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Education> education = createEnum("education", chungbazi.chungbazi_be.domain.user.entity.enums.Education.class);
@@ -47,8 +49,6 @@ public class QUser extends EntityPathBase<User> {
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider> oAuthProvider = createEnum("oAuthProvider", chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider.class);
 
     public final ListPath<chungbazi.chungbazi_be.domain.community.entity.Post, chungbazi.chungbazi_be.domain.community.entity.QPost> posts = this.<chungbazi.chungbazi_be.domain.community.entity.Post, chungbazi.chungbazi_be.domain.community.entity.QPost>createList("posts", chungbazi.chungbazi_be.domain.community.entity.Post.class, chungbazi.chungbazi_be.domain.community.entity.QPost.class, PathInits.DIRECT2);
-
-    public final StringPath profileImg = createString("profileImg");
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Region> region = createEnum("region", chungbazi.chungbazi_be.domain.user.entity.enums.Region.class);
 

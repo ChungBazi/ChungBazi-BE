@@ -1,6 +1,8 @@
 package chungbazi.chungbazi_be.domain.community.service;
 
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.character.dto.CharacterResponseDTO.NextLevelInfo;
+import chungbazi.chungbazi_be.domain.character.entity.Character;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
@@ -16,6 +18,7 @@ import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandle
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.N;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -73,5 +76,27 @@ public class RewardService {
         if(fcmToken!=null){
             notificationService.pushFCMNotification(fcmToken,notification.getType(),notification.getMessage());
         }
+    }
+
+    public NextLevelInfo calNextLevelInfo(User user, Character character){
+        int currentRewardLevel = character.getRewardLevel().getLevel();
+
+        if(currentRewardLevel >= RewardLevel.LEVEL_10.getLevel()){
+            return new NextLevelInfo(null, 0, 0);
+        }
+
+        RewardLevel nextRewardLevel = RewardLevel.getNextRewardLevel(currentRewardLevel);
+
+        if(nextRewardLevel != null) {
+            int requiredPosts = Math.max(0,
+                    nextRewardLevel.getThreashold() - postRepository.countPostByAuthorId(user.getId()));
+            int requiredComments = Math.max(0,
+                    nextRewardLevel.getThreashold() - commentRepository.countCommentByAuthorId(user.getId()));
+
+            return new NextLevelInfo(nextRewardLevel.name(), requiredPosts, requiredComments);
+        }
+
+        return new NextLevelInfo(null, 0, 0);
+
     }
 }

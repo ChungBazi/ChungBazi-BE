@@ -8,6 +8,7 @@ import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
 import chungbazi.chungbazi_be.domain.user.entity.Addition;
 import chungbazi.chungbazi_be.domain.user.entity.Interest;
 import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
 import chungbazi.chungbazi_be.domain.user.repository.*;
@@ -44,6 +45,7 @@ public class UserService {
 
         return UserConverter.toProfileDto(user);
     }
+
     public UserResponseDTO.ProfileUpdateDto updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto, MultipartFile profileImg) {
         final long MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
 
@@ -63,22 +65,22 @@ public class UserService {
         }
 
         // profileImg handle
-        String profileUrl;
-
-        if(profileImg != null){
-            if(profileImg.getSize() > MAX_UPLOAD_SIZE){
-                throw new BadRequestHandler(ErrorStatus.PAYLOAD_TOO_LARGE);
-            }
-            if(user.getProfileImg() != null){
-                s3Manager.deleteFile(user.getProfileImg());
-            }
-            profileUrl = s3Manager.uploadFile(profileImg, "profile-images");
-
-        } else {
-            profileUrl = user.getProfileImg();
-        }
-
-        user.setProfileImg(profileUrl);
+//        String profileUrl;
+//
+//        if(profileImg != null){
+//            if(profileImg.getSize() > MAX_UPLOAD_SIZE){
+//                throw new BadRequestHandler(ErrorStatus.PAYLOAD_TOO_LARGE);
+//            }
+//            if(user.getProfileImg() != null){
+//                s3Manager.deleteFile(user.getProfileImg());
+//            }
+//            profileUrl = s3Manager.uploadFile(profileImg, "profile-images");
+//
+//        } else {
+//            profileUrl = user.getProfileImg();
+//        }
+//
+//        user.setProfileImg(profileUrl);
         user.setName(profileUpdateDto.getName());
         userRepository.save(user);
 
