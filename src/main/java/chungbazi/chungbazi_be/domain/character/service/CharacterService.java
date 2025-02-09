@@ -23,7 +23,7 @@ public class CharacterService {
     private final UserRepository userRepository;
     private final CharacterRepository characterRepository;
 
-    public CharacterResponseDTO.CharacterListDto getCharacters() {
+    public List<CharacterResponseDTO.CharacterListDto> getCharacters() {
         Long userId = SecurityUtils.getUserId();
 
         User user = userRepository.findById(userId)

@@ -10,13 +10,6 @@ public class CharacterResponseDTO {
     @Builder
     @AllArgsConstructor
     public static class CharacterListDto {
-        Long userId;
-        List<CharacterStatusDto> characterImgList;
-    }
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    public static class CharacterStatusDto {
         String rewardLevel;
         boolean isOpen;
     }
