@@ -21,12 +21,13 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND,"NOTIFICATION001","알림이 존재하지 않습니다."),
     NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND,"TOKEN4021","토큰이 존재하지 않습니다."),
     NOT_FOUND_POST(HttpStatus.NOT_FOUND, "POST404", "해당 게시글을 찾을 수 없습니다."),
+    NOT_FOUND_CHARACTER(HttpStatus.NOT_FOUND, "CHARACTER404", "해당 케릭터를 찾을 수 없습니다."),
 
     // User 관련 에러
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "닉네임은 필수입니다."),
-    INVALID_VALUE(HttpStatus.BAD_REQUEST, "USER400", "유효하지않은 입력값입니다."),
+    INVALID_VALUE(HttpStatus.BAD_REQUEST, "USER400", "유효하지 않은 입력값입니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST,"USER400","이미 존재하는 닉네임입니다."),
-
+    INVALID_CHARACTER(HttpStatus.BAD_REQUEST,"CHARACTER400","유효하지 않은 캐릭터입니다."),
     //Policy
     CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5001", "존재하지 않는 정책 코드 입니다."),
     NO_SEARCH_NAME(HttpStatus.BAD_REQUEST, "POLICY5002", "검색어를 입력해주세요."),

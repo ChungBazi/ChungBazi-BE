@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "user_character")
@@ -38,5 +39,6 @@ public class Character {
     private RewardLevel rewardLevel;
 
     @Column(nullable = false)
+    @Setter
     private boolean isOpen;
 }

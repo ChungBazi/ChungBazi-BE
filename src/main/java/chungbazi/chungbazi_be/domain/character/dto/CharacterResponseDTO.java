@@ -20,4 +20,10 @@ public class CharacterResponseDTO {
         String rewardLevel;
         boolean isOpen;
     }
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class SelectedCharacterDto {
+        String rewardLevel;
+    }
 }
