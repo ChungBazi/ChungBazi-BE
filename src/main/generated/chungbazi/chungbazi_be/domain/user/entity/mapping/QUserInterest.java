@@ -47,7 +47,7 @@ public class QUserInterest extends EntityPathBase<UserInterest> {
     public QUserInterest(Class<? extends UserInterest> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.interest = inits.isInitialized("interest") ? new chungbazi.chungbazi_be.domain.user.entity.QInterest(forProperty("interest")) : null;
-        this.user = inits.isInitialized("user") ? new chungbazi.chungbazi_be.domain.user.entity.QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new chungbazi.chungbazi_be.domain.user.entity.QUser(forProperty("user"), inits.get("user")) : null;
     }
 
 }

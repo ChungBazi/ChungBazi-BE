@@ -13,7 +13,6 @@ public class JwtAuthenticationToken implements Authentication {
     private final Object credentials;
     private Collection<? extends GrantedAuthority> authorities;
     private boolean authenticated = true;
-
     public JwtAuthenticationToken(String principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
         this.principal = principal;
         this.credentials = credentials;
@@ -59,7 +58,7 @@ public class JwtAuthenticationToken implements Authentication {
         try {
             return Long.parseLong(principal);
         } catch (NumberFormatException e) {
-            throw new BadRequestHandler(ErrorStatus.INVALID_USER_ID_FORMAT);
+            throw new BadRequestHandler(ErrorStatus.INVALID_USER_ID);
         }
     }
 }

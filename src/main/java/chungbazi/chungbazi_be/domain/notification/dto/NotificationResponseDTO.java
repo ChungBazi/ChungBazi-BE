@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 public class NotificationResponseDTO {
@@ -29,6 +30,17 @@ public class NotificationResponseDTO {
         private boolean isRead;
         private String message;
         private NotificationType type;
-        private LocalDateTime createdAt;
+        private String formattedCreatedAt;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class notificationListDto{
+        private List<notificationDto> notifications;
+        private Long nextCursor;
+        private boolean hasNext;
+    }
+
 }

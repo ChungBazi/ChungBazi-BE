@@ -9,6 +9,14 @@ public class UserConverter {
                 .userId(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .characterImg(user.getCharacterImg())
+                .build();
+    }
+    public static UserResponseDTO.ProfileUpdateDto toProfileUpdateDto(User user){
+        return UserResponseDTO.ProfileUpdateDto.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .profileImg(user.getProfileImg())
                 .build();
     }
 }

@@ -14,10 +14,22 @@ public class TokenDTO {
     private Long userId;
     private String userName;
     private Boolean isFirst;
-
-    public static TokenDTO of(String accessToken, String refreshToken, String grantType, long accessExp, long refreshExp, Long userId, String userName, Boolean isFirst) {
-        return new TokenDTO(accessToken, refreshToken, grantType, accessExp,refreshExp, userId, userName, isFirst);
+    public static TokenDTO of(String accessToken,
+                              String refreshToken,
+                              String grantType,
+                              long accessExp,
+                              long refreshExp,
+                              Long userId,
+                              String userName,
+                              Boolean isFirst) {
+        return new TokenDTO(
+                accessToken,
+                refreshToken,
+                grantType,
+                accessExp,
+                refreshExp,
+                userId,
+                userName,
+                isFirst);
     }
-
-
 }

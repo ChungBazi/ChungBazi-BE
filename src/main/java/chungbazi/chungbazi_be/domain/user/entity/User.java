@@ -1,9 +1,13 @@
 package chungbazi.chungbazi_be.domain.user.entity;
 
+import chungbazi.chungbazi_be.domain.community.entity.Comment;
+import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
+import chungbazi.chungbazi_be.domain.notification.entity.NotificationSetting;
 import chungbazi.chungbazi_be.domain.user.entity.enums.*;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
+import chungbazi.chungbazi_be.global.entity.Uuid;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -26,10 +30,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -47,13 +52,35 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Region region;
 
-    @ColumnDefault("0")
-    private Integer reward;
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private RewardLevel reward = RewardLevel.LEVEL_1;
 
     @Column(nullable = false)
     private boolean isDeleted;
 
-    private String imageUrl;
+    @Setter
+    @ColumnDefault("false")
+    private boolean surveyStatus;
+
+    @Column
+    @Setter
+    private String profileImg;
+
+    @Enumerated(EnumType.STRING)
+    @Setter
+    @Builder.Default
+    private RewardLevel characterImg = RewardLevel.LEVEL_1;
+
+    @OneToOne
+    @JoinColumn(name = "uuid_id")
+    private Uuid uuid;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
@@ -66,6 +93,8 @@ public class User {
     @OneToMany(mappedBy = "user",cascade = {CascadeType.ALL})
     private List<Notification> notificationList = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user",cascade = {CascadeType.ALL})
+    private NotificationSetting notificationSetting;
 
     public void updateEducation(Education education) {
         this.education = education;
@@ -78,6 +107,17 @@ public class User {
     }
     public void updateRegion(Region region) { this.region = region;}
     public void updateIsDeleted(Boolean isDeleted){this.isDeleted = isDeleted;}
+    public void updateRewardLevel(RewardLevel reward) {this.reward = reward;}
+
+    public void updateNotificationSetting(NotificationSetting notificationSetting) {this.notificationSetting = notificationSetting;}
+
+    @PostPersist
+    public void createNotificationSetting() {
+        if (this.notificationSetting == null) {
+            this.notificationSetting = new NotificationSetting(this);
+        }
+    }
+
 }
 
 
