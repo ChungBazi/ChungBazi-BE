@@ -4,6 +4,7 @@ import chungbazi.chungbazi_be.domain.user.entity.enums.Education;
 import chungbazi.chungbazi_be.domain.user.entity.enums.Employment;
 import chungbazi.chungbazi_be.domain.user.entity.enums.Income;
 import chungbazi.chungbazi_be.domain.user.entity.enums.Region;
+import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -53,6 +54,9 @@ public class UserRequestDTO {
         @NotBlank
         @Size(min = 1, max = 10, message = "닉네임은 10자 이하")
         String name;
+
+        @NotNull
+        RewardLevel characterImg;
     }
 
     @Getter

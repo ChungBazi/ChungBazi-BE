@@ -22,12 +22,12 @@ public class UserController {
         return ApiResponse.onSuccess(userService.getProfile());
     }
 
-    @PatchMapping(value = "/profile/update", consumes = "multipart/form-data")
+    @PatchMapping(value = "/profile/update")
     @Operation(summary = "프로필 수정 API", description = "마이페이지 프로필 수정")
-    public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(
-            @RequestPart("info") @Valid UserRequestDTO.ProfileUpdateDto profileUpdateDto,
-            @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
-        return ApiResponse.onSuccess(userService.updateProfile(profileUpdateDto, profileImg));
+    public ApiResponse<Void> updateProfile(
+            @RequestBody @Valid UserRequestDTO.ProfileUpdateDto profileUpdateDto) {
+        userService.updateProfile(profileUpdateDto);
+        return ApiResponse.onSuccess(null);
     }
 
     @PostMapping("/register")

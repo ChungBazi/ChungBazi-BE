@@ -17,12 +17,4 @@ public class UserResponseDTO {
         String email;
         RewardLevel characterImg;
     }
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    public static class ProfileUpdateDto {
-        Long userId;
-        String name;
-        String profileImg;
-    }
 }
