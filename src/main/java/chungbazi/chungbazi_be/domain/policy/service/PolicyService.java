@@ -156,11 +156,9 @@ public class PolicyService {
 
 
     // 카테고리별 정책 조회
-    public PolicyListResponse getCategoryPolicy(String categoryName, Long cursor, int size, String order) {
+    public PolicyListResponse getCategoryPolicy(Category categoryName, Long cursor, int size, String order) {
 
-        Category category = Category.fromKoreanName(categoryName);
-
-        List<Policy> policies = policyRepository.getPolicyWithCategory(category, cursor, size + 1, order);
+        List<Policy> policies = policyRepository.getPolicyWithCategory(categoryName, cursor, size + 1, order);
 
         boolean hasNext = policies.size() > size;
 
