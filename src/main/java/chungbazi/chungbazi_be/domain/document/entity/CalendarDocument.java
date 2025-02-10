@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 public class CalendarDocument extends BaseTimeEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "calendar_document_id")
@@ -39,4 +39,9 @@ public class CalendarDocument extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;
+
+
+    public void updateCheck(boolean check) {
+        this.isChecked = check;
+    }
 }

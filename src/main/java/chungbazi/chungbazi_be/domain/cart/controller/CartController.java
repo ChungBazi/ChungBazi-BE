@@ -4,6 +4,7 @@ import chungbazi.chungbazi_be.domain.cart.dto.CartRequestDTO;
 import chungbazi.chungbazi_be.domain.cart.dto.CartResponseDTO;
 import chungbazi.chungbazi_be.domain.cart.service.CartService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +23,7 @@ public class CartController {
     private final CartService cartService;
 
     // 장바구니에 담기
+    @Operation(summary = "장바구니에 담기 API", description = "장바구니에 담기")
     @PostMapping("/{policyId}")
     public ApiResponse<String> addPolicyToCart(@PathVariable("policyId") Long policyId) {
 
@@ -30,6 +32,7 @@ public class CartController {
     }
 
     // 장바구니 삭제
+    @Operation(summary = "장바구니 삭제 API", description = "장바구니 삭제")
     @DeleteMapping("/delete")
     public ApiResponse<String> deletePolicyFromCart(@RequestBody CartRequestDTO.CartDeleteList deleteList) {
 
@@ -38,11 +41,12 @@ public class CartController {
     }
 
     // 장바구니 정책 전체 조회
+    @Operation(summary = "장바구니 정책 전체 조회 API", description = "장바구니 정책 전체 조회")
     @GetMapping
     public ApiResponse<List<CartResponseDTO.CartPolicyList>> getPoliciesFromCart() {
 
         List<CartResponseDTO.CartPolicyList> policies = cartService.getPoliciesFromCart();
         return ApiResponse.onSuccess(policies);
     }
-    
+
 }

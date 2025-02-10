@@ -9,4 +9,9 @@ public class CartRequestDTO {
     public static class CartDeleteList {
         private List<Long> deleteList;
     }
+
+    @Getter
+    public static class CalendarDocument {
+        private String content;
+    }
 }

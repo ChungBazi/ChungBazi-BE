@@ -55,7 +55,7 @@ public class QCart extends EntityPathBase<Cart> {
     public QCart(Class<? extends Cart> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.policy = inits.isInitialized("policy") ? new chungbazi.chungbazi_be.domain.policy.entity.QPolicy(forProperty("policy")) : null;
-        this.user = inits.isInitialized("user") ? new chungbazi.chungbazi_be.domain.user.entity.QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new chungbazi.chungbazi_be.domain.user.entity.QUser(forProperty("user"), inits.get("user")) : null;
     }
 
 }

@@ -11,7 +11,12 @@ import java.util.List;
 public class CartConverter {
 
     public static CartResponseDTO.CartPolicy toCartPolicy(Policy policy) {
-        int dDay = (int) ChronoUnit.DAYS.between(policy.getEndDate(), LocalDate.now());
+        Integer dDay;
+        if (policy.getEndDate() == null) {
+            dDay = null;
+        } else {
+            dDay = (int) ChronoUnit.DAYS.between(policy.getEndDate(), LocalDate.now());
+        }
         return CartResponseDTO.CartPolicy.builder()
                 .name(policy.getName())
                 .startDate(policy.getStartDate())
