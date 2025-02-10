@@ -77,4 +77,13 @@ public class CommunityResponseDTO {
         RewardLevel reward;
         RewardLevel characterImg;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class CommentListDto {
+        List<UploadAndGetCommentDto> commentsList;
+        private Long nextCursor;
+        private boolean hasNext;
+    }
 }

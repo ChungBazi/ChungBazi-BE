@@ -143,17 +143,28 @@ public class CommunityService {
         return CommunityConverter.toUploadAndGetCommentDto(comment);
     }
 
-    public List<CommunityResponseDTO.UploadAndGetCommentDto> getComments(Long postId, Long lastCommentId, int size){
-        Pageable pageable = PageRequest.of(0, size);
+    public CommunityResponseDTO.CommentListDto getComments(Long postId, Long cursor, int size){
+        Pageable pageable = PageRequest.of(0, size + 1);
 
         List<Comment> comments;
-        if (lastCommentId == null) {
-            comments = commentRepository.findByPostIdOrderByIdDesc(postId, pageable).getContent();
+        if (cursor == null) {
+            comments = commentRepository.findByPostIdOrderByIdAsc(postId, pageable).getContent();
         } else {
-            comments = commentRepository.findByPostIdAndIdLessThanOrderByIdDesc(postId, lastCommentId, pageable).getContent();
+            comments = commentRepository.findByPostIdAndIdGreaterThanOrderByIdAsc(postId, cursor, pageable).getContent();
         }
 
-        return CommunityConverter.toGetListCommentDto(comments);
+        boolean hasNext = comments.size() > size;
+        Long nextCursor = null;
+
+        if(hasNext) {
+            Comment lastComment = comments.get(size - 1);
+            nextCursor = lastComment.getId();
+            comments = comments.subList(0, size);
+        }
+
+        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments);
+
+        return CommunityConverter.toGetCommentsListDto(commentsList, nextCursor, hasNext);
     }
 
     public void sendCommunityNotification(Long postId){

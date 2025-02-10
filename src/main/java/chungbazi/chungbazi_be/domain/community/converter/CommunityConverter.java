@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.community.converter;
 
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
+import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO.CommentListDto;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
@@ -69,9 +70,16 @@ public class CommunityConverter {
                 .commentId(comment.getId())
                 .build();
     }
-    public static List<CommunityResponseDTO.UploadAndGetCommentDto> toGetListCommentDto(List<Comment> comments){
+    public static List<CommunityResponseDTO.UploadAndGetCommentDto> toListCommentDto(List<Comment> comments){
         return comments.stream()
                 .map(CommunityConverter::toUploadAndGetCommentDto)
                 .toList();
+    }
+    public static CommunityResponseDTO.CommentListDto toGetCommentsListDto(List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList, Long nextCursor, boolean hasNext) {
+        return CommunityResponseDTO.CommentListDto.builder()
+                .commentsList(commentsList)
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
+                .build();
     }
 }
