@@ -10,6 +10,7 @@ import chungbazi.chungbazi_be.domain.community.service.RewardService;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -22,27 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class CharacterService {
-    private final UserRepository userRepository;
     private final CharacterRepository characterRepository;
     private final RewardService rewardService;
+    private final UserHelper userHelper;
 
     public List<CharacterResponseDTO.CharacterListDto> getCharacters() {
-        Long userId = SecurityUtils.getUserId();
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
-        List<Character> characterList = characterRepository.findByUserId(userId);
-
+        User user = userHelper.getAuthenticatedUser();
+        List<Character> characterList = characterRepository.findByUserId(user.getId());
         return CharacterConverter.toCharacterListDto(user, characterList);
     }
 
     public CharacterResponseDTO.MainCharacterDto selectOrOpen(String selectedLevel) {
-        Long userId = SecurityUtils.getUserId();
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
+        User user = userHelper.getAuthenticatedUser();
         RewardLevel targetLevel;
 
         try {
@@ -50,13 +42,12 @@ public class CharacterService {
         } catch (IllegalArgumentException e) {
             throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
         }
-
         // 유저 레벨보다 높은 캐릭터 선택 시 에러 핸들링
         if (targetLevel.getLevel() > user.getReward().getLevel()) {
             throw new BadRequestHandler(ErrorStatus.INVALID_CHARACTER);
         }
 
-        Character character = characterRepository.findByUserIdAndRewardLevel(userId, targetLevel)
+        Character character = characterRepository.findByUserIdAndRewardLevel(user.getId(), targetLevel)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHARACTER));
 
         // 캐릭터 잠겨있는 경우 오픈
@@ -69,15 +60,13 @@ public class CharacterService {
     }
 
     public CharacterResponseDTO.MainCharacterDto getMainCharacter() {
-        Long userId = SecurityUtils.getUserId();
+        User user = userHelper.getAuthenticatedUser();
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
-        Character character = characterRepository.findTopByUserIdAndOpenOrderByRewardLevelDesc(userId, true)
+        Character character = characterRepository.findTopByUserIdAndOpenOrderByRewardLevelDesc(user.getId(), true)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHARACTER));
 
         NextLevelInfo nextLevelInfo = rewardService.calNextLevelInfo(user, character);
+
         return CharacterConverter.toMainCharacterDto(character, user, nextLevelInfo);
     }
 }

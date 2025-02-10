@@ -1,6 +1,8 @@
 package chungbazi.chungbazi_be.domain.user.service;
 
 
+import static chungbazi.chungbazi_be.domain.user.entity.QUser.user;
+
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.user.converter.UserConverter;
 import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
@@ -12,6 +14,7 @@ import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
 import chungbazi.chungbazi_be.domain.user.repository.*;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -36,13 +39,10 @@ public class UserService {
     private final InterestRepository interestRepository;
     private final UserInterestRepository userInterestRepository;
     private final S3Manager s3Manager;
+    private final UserHelper userHelper;
 
     public UserResponseDTO.ProfileDto getProfile() {
-        Long userId = SecurityUtils.getUserId();
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
+        User user = userHelper.getAuthenticatedUser();
         return UserConverter.toProfileDto(user);
     }
 
@@ -50,10 +50,7 @@ public class UserService {
         final long MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
 
         //user, nickname handle
-        Long userId = SecurityUtils.getUserId();
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User user = userHelper.getAuthenticatedUser();
 
         // 닉네임 변경 여부 확인
         if (!user.getName().equals(profileUpdateDto.getName())) { // 기존 닉네임과 입력받은 닉네임이 다를 경우
