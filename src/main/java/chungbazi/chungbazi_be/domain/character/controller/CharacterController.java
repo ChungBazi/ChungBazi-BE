@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/character")
 public class CharacterController {
     private final CharacterService characterService;
-    @GetMapping("/characterList")
+    @GetMapping("/character-list")
     @Operation(summary = "캐릭터 조회 API", description = "마이페이지 캐릭터 조회")
     public ApiResponse<List<CharacterResponseDTO.CharacterListDto>> getCharacters() {
         return ApiResponse.onSuccess(characterService.getCharacters());
     }
 
-    @PatchMapping("/selectOrOpen")
+    @PatchMapping("/select-or-open")
     @Operation(summary = "캐릭터 선택 및 오픈 API",
             description = """
                 캐릭터 선택 및 오픈
@@ -35,7 +35,7 @@ public class CharacterController {
         return ApiResponse.onSuccess(characterService.selectOrOpen(selectedLevel));
     }
 
-    @GetMapping("/mainCharacter")
+    @GetMapping("/main-character")
     @Operation(summary = "메인 캐릭터 조회 API", description = "메인 캐릭터 조회")
     public ApiResponse<CharacterResponseDTO.MainCharacterDto> getMainCharacter() {
         return ApiResponse.onSuccess(characterService.getMainCharacter());
