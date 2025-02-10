@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.domain.character.controller;
 
 import chungbazi.chungbazi_be.domain.character.dto.CharacterResponseDTO;
 import chungbazi.chungbazi_be.domain.character.service.CharacterService;
+import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,7 @@ public class CharacterController {
                 캐릭터 선택 및 오픈
                 - 레벨 값 예시 : LEVEL_1 (10까지 가능)
                 """)
-    public ApiResponse<CharacterResponseDTO.MainCharacterDto> selectOrOpen(@RequestParam String selectedLevel) {
+    public ApiResponse<CharacterResponseDTO.MainCharacterDto> selectOrOpen(@RequestParam RewardLevel selectedLevel) {
         return ApiResponse.onSuccess(characterService.selectOrOpen(selectedLevel));
     }
 

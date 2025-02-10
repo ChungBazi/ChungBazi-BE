@@ -33,21 +33,15 @@ public class CharacterService {
         return CharacterConverter.toCharacterListDto(user, characterList);
     }
 
-    public CharacterResponseDTO.MainCharacterDto selectOrOpen(String selectedLevel) {
+    public CharacterResponseDTO.MainCharacterDto selectOrOpen(RewardLevel selectedLevel) {
         User user = userHelper.getAuthenticatedUser();
-        RewardLevel targetLevel;
 
-        try {
-            targetLevel = RewardLevel.valueOf(selectedLevel);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
-        }
         // 유저 레벨보다 높은 캐릭터 선택 시 에러 핸들링
-        if (targetLevel.getLevel() > user.getReward().getLevel()) {
+        if (selectedLevel.getLevel() > user.getReward().getLevel()) {
             throw new BadRequestHandler(ErrorStatus.INVALID_CHARACTER);
         }
 
-        Character character = characterRepository.findByUserIdAndRewardLevel(user.getId(), targetLevel)
+        Character character = characterRepository.findByUserIdAndRewardLevel(user.getId(), selectedLevel)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHARACTER));
 
         // 캐릭터 잠겨있는 경우 오픈
