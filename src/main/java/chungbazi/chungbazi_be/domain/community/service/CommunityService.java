@@ -49,17 +49,17 @@ public class CommunityService {
         List<Post> posts;
 
         if (category == null || category.toString().isEmpty()){ // 전체 게시글 조회
-            posts = (cursor == null)
+            posts = (cursor == 0)
                     ? postRepository.findByOrderByIdDesc(pageable).getContent()
                     : postRepository.findByIdLessThanOrderByIdDesc(cursor, pageable).getContent();
         } else { // 카테고리별 게시글 조회
-            posts = (cursor == null)
+            posts = (cursor == 0)
                     ? postRepository.findByCategoryOrderByIdDesc(category, pageable).getContent()
                     : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, cursor, pageable).getContent();
         }
 
         boolean hasNext = posts.size() > size;
-        Long nextCursor = null;
+        Long nextCursor = 0L;
 
         if(hasNext) {
             Post lastPost = posts.get(size - 1);
@@ -143,14 +143,14 @@ public class CommunityService {
         Pageable pageable = PageRequest.of(0, size + 1);
 
         List<Comment> comments;
-        if (cursor == null) {
+        if (cursor == 0) {
             comments = commentRepository.findByPostIdOrderByIdAsc(postId, pageable).getContent();
         } else {
             comments = commentRepository.findByPostIdAndIdGreaterThanOrderByIdAsc(postId, cursor, pageable).getContent();
         }
 
         boolean hasNext = comments.size() > size;
-        Long nextCursor = null;
+        Long nextCursor = 0L;
 
         if(hasNext) {
             Comment lastComment = comments.get(size - 1);
