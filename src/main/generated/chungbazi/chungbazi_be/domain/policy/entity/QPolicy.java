@@ -40,8 +40,6 @@ public class QPolicy extends EntityPathBase<Policy> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath incomeCode = createString("incomeCode");
-
     public final StringPath incomeEtc = createString("incomeEtc");
 
     public final StringPath intro = createString("intro");
@@ -63,6 +61,8 @@ public class QPolicy extends EntityPathBase<Policy> {
     public final StringPath referenceUrl2 = createString("referenceUrl2");
 
     public final StringPath registerUrl = createString("registerUrl");
+
+    public final StringPath restrictedCondition = createString("restrictedCondition");
 
     public final StringPath result = createString("result");
 

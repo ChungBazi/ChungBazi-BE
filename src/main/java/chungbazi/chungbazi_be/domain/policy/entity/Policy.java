@@ -46,10 +46,10 @@ public class Policy extends BaseTimeEntity {
     @Column(length = 1000)
     private String content;
 
-    // 신청시작 날짜
+    // 신청시작 날짜 (상시모집이면 null 값으로 저장)
     private LocalDate startDate;
 
-    // 신청 끝나는 날짜
+    // 신청 끝나는 날짜 (상시모집이면 null 값으로 저장)
     private LocalDate endDate;
 
     // 최소 연령
@@ -71,7 +71,7 @@ public class Policy extends BaseTimeEntity {
     */
 
     // 소득 조건 코드
-    private String incomeCode;
+    //private String incomeCode;
 
     // 소득 최소 금액
     private String minIncome;
@@ -83,7 +83,13 @@ public class Policy extends BaseTimeEntity {
     @Column(length = 1000)
     private String incomeEtc;
 
+    // 추가신청자격
+    @Column(columnDefinition = "TEXT")
     private String additionCondition;
+
+    // 참여제한 대상
+    @Column(columnDefinition = "TEXT")
+    private String restrictedCondition;
 
     /*
     // 학력 요건 내용
@@ -134,7 +140,6 @@ public class Policy extends BaseTimeEntity {
                 .endDate(dto.getEndDate())
                 .minAge(dto.getSprtTrgtMinAge())
                 .maxAge(dto.getSprtTrgtMaxAge())
-                .incomeCode(dto.getEarnCndSeCd())
                 .minIncome(dto.getEarnMinAmt())
                 .maxIncome(dto.getEarnMaxAmt())
                 .incomeEtc(dto.getEarnEtcCn())
@@ -149,5 +154,3 @@ public class Policy extends BaseTimeEntity {
                 .build();
     }
 }
-
-

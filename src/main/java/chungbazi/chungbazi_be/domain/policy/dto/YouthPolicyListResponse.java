@@ -12,7 +12,7 @@ public class YouthPolicyListResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)   // 명시되지 않은 필드는 매핑 시 무시
     private Result result;
 
-    
+
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)   // 명시되지 않은 필드는 매핑 시 무시
     public static class Result {

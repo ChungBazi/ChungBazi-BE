@@ -22,6 +22,7 @@ import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHand
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import chungbazi.chungbazi_be.global.s3.S3Manager;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -127,4 +128,7 @@ public class UserService {
         }
     }
 
+    public User findByUserId(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+    }
 }

@@ -1,15 +1,28 @@
 package chungbazi.chungbazi_be.domain.policy.service;
 
-import chungbazi.chungbazi_be.domain.policy.dto.*;
+import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.cart.service.CartService;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyListOneResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyListResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyResponse;
+import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.Tuple;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -32,65 +44,66 @@ public class PolicyService {
     private final WebClient webclient;
     private final PolicyRepository policyRepository;
     private final RedisTemplate<String, String> redisTemplate;
+    private final CartService cartService;
 
 
     @Value("${webclient.openApiVlak}")
     private String openApiVlak;
 
-
-    @Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
-    @Transactional
-    public void schedulePolicyFetch() {
-        getPolicy();
-    }
-
-    // OpenAPI에서 정책 가져오기
-    @Transactional
-    public void getPolicy() {
-
-        int display = 20;
-        int pageIndex = 1;
-        String srchPolyBizSecd = "003002001";
-
-        LocalDate twoMonthAgo = LocalDate.now().minusMonths(2);
-
-        while (true) {
-            // XML -> DTO
-            YouthPolicyListResponse policies = fetchPolicy(display, pageIndex, srchPolyBizSecd);
-
-            if (policies == null) {
-                break;
-            }
-
-            // DB에 이미 존재하는 bizId가 있는지 확인 & 날짜 유효한 것만 DTO -> Entity
-            List<Policy> validPolicies = new ArrayList<>();
-            for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
-                if (policyRepository.existsByBizId(response.getPlcyNo())) {
-                    break;
-                }
-                if (isDateAvail(response, twoMonthAgo)) {
-                    validPolicies.add(Policy.toEntity(response));
-                }
-            }
-            if (!validPolicies.isEmpty()) {
-                policyRepository.saveAll(validPolicies);
-            }
-
-            // 마지막 정책 마감날짜
-            YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
-                    .get(policies.getResult().getYouthPolicyList().size() - 1);
-            if (!isDateAvail(lastPolicy, twoMonthAgo)) {
-                break;
-            }
-
-            pageIndex++;
+    /*
+        @Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
+        @Transactional
+        public void schedulePolicyFetch() {
+            getPolicy();
         }
 
-    }
+        // OpenAPI에서 정책 가져오기
+        @Transactional
+        public void getPolicy() {
 
+            int display = 20;
+            int pageIndex = 1;
+            String srchPolyBizSecd = "003002001";
 
+            LocalDate twoMonthAgo = LocalDate.now().minusMonths(2);
+
+            while (true) {
+                // XML -> DTO
+                YouthPolicyListResponse policies = fetchPolicy(display, pageIndex, srchPolyBizSecd);
+
+                if (policies == null) {
+                    break;
+                }
+
+                // DB에 이미 존재하는 bizId가 있는지 확인 & 날짜 유효한 것만 DTO -> Entity
+                List<Policy> validPolicies = new ArrayList<>();
+                for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
+                    if (policyRepository.existsByBizId(response.getPlcyNo())) {
+                        break;
+                    }
+                    if (isDateAvail(response, twoMonthAgo)) {
+                        validPolicies.add(Policy.toEntity(response));
+                    }
+                }
+                if (!validPolicies.isEmpty()) {
+                    policyRepository.saveAll(validPolicies);
+                }
+
+                // 마지막 정책 마감날짜
+                YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
+                        .get(policies.getResult().getYouthPolicyList().size() - 1);
+                if (!isDateAvail(lastPolicy, twoMonthAgo)) {
+                    break;
+                }
+
+                pageIndex++;
+            }
+
+        }
+
+    */
     // 정책 검색
-    public PolicySearchResponse getSearchPolicy(String name, String cursor, int size, String order) {
+    public PolicyListResponse getSearchPolicy(String name, String cursor, int size, String order) {
 
         if (name == null) {
             throw new GeneralException(ErrorStatus.NO_SEARCH_NAME);
@@ -121,24 +134,52 @@ public class PolicyService {
         }
 
         if (policies.isEmpty()) {
-            return PolicySearchResponse.of(policyDtoList, null, false);
+            return PolicyListResponse.of(policyDtoList, null, false);
         }
 
-        return PolicySearchResponse.of(policyDtoList, nextCursor, hasNext);
+        return PolicyListResponse.of(policyDtoList, nextCursor, hasNext);
     }
 
 
     // 인기 검색어 조회
     public PopularSearchResponse getPopularSearch() {
+
         ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
         String key = "ranking:" + LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+
         //상위 6개 검색어 반환
         Set<String> result = zSetOperations.reverseRange(key, 0, 5);
         List<String> resultList = result.stream().toList();
         return PopularSearchResponse.from(resultList);
+
     }
 
 
+    // 카테고리별 정책 조회
+    public PolicyListResponse getCategoryPolicy(String categoryName, Long cursor, int size, String order) {
+
+        Category category = Category.fromKoreanName(categoryName);
+
+        List<Policy> policies = policyRepository.getPolicyWithCategory(category, cursor, size + 1, order);
+
+        boolean hasNext = policies.size() > size;
+
+        if (hasNext) {
+            policies.subList(0, size);
+        }
+
+        List<PolicyListOneResponse> policyDtoList = policies.stream().map(PolicyListOneResponse::from).toList();
+
+        return PolicyListResponse.of(policyDtoList, hasNext);
+    }
+
+    // 정책상세조회
+    public PolicyDetailsResponse getPolicyDetails(Long policyId) {
+
+        Policy policy = policyRepository.findById(policyId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
+        return PolicyDetailsResponse.from(policy);
+    }
 
     // JSON -> DTO
     private YouthPolicyListResponse fetchPolicy(int display, int pageIndex, String srchPolyBizSecd) {
@@ -237,4 +278,31 @@ public class PolicyService {
         }
     }
 
+    public Policy findByPolicyId(Long policyId) {
+        return policyRepository.findById(policyId).orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
+    }
+
+    // 캘린더 정책 전체 조회
+    public List<PolicyCalendarResponse> getCalendarList(String yearMonth) {
+
+        //유효한 타입인지 검증
+        validateYearMonth(yearMonth);
+
+        YearMonth parsedYearMonth = YearMonth.parse(yearMonth, DateTimeFormatter.ofPattern("yyyy-M"));
+        int year = parsedYearMonth.getYear();
+        int month = parsedYearMonth.getMonthValue();
+
+        Long userId = SecurityUtils.getUserId();
+        return cartService.findByUser_IdAndYearMonth(userId, year, month);
+    }
+
+    // 유효한 타입인지 확인
+    private void validateYearMonth(String yearMonth) {
+        try {
+            YearMonth.parse(yearMonth); // "2025-01" 형식이 아닌 경우 예외 발생
+        } catch (DateTimeParseException e) {
+            // 유효하지 않은 형식인 경우 CustomException 던지기
+            throw new BadRequestHandler(ErrorStatus.NOT_VALID_TYPE_YEAR_MONTH);
+        }
+    }
 }

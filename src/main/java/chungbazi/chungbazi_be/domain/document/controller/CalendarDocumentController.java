@@ -1,0 +1,43 @@
+package chungbazi.chungbazi_be.domain.document.controller;
+
+import chungbazi.chungbazi_be.domain.document.service.CalendarDocumentService;
+import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/calendar")
+public class CalendarDocumentController {
+
+    private final CalendarDocumentService calendarDocumentService;
+
+    //서류 생성
+
+    //서류 체크
+    @Operation(summary = "서류 체크 API", description = "서류 체크")
+    @PatchMapping("/calendar/{cartId}/documents/{documentId}")
+    public ApiResponse<String> checkDocument(@PathVariable Long cartId, @PathVariable Long documentId,
+                                             @RequestParam(required = true) boolean check) {
+
+        calendarDocumentService.checkDocument(cartId, documentId, check);
+        return ApiResponse.onSuccess("서류가 체크 되었습니다.");
+    }
+
+    /*
+    // 서류 수정 (내용 수정, 삭제)
+    @PutMapping("/{cartId}/documents")
+    public ApiResponse<String> editDocument(@PathVariable Long cartId,
+                                            @RequestBody List<CalendarDocument> dtos) {
+
+        calendarDocumentService.editDocument(cartId, dtos);
+        return ApiResponse.onSuccess("서류가 수정되었습니다.");
+    }
+    */
+
+}

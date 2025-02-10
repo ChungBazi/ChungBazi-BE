@@ -14,11 +14,17 @@ public class PolicyListOneResponse {
     private String policyName;
     private LocalDate startDate;
     private LocalDate endDate;
-    private int dDay;
+    private Integer dDay;
 
     public static PolicyListOneResponse from(Policy policy) {
 
-        int dDay = (int) ChronoUnit.DAYS.between(policy.getEndDate(), LocalDate.now());
+        Integer dDay;
+
+        if (policy.getEndDate() == null) {
+            dDay = null;
+        } else {
+            dDay = (int) ChronoUnit.DAYS.between(policy.getEndDate(), LocalDate.now());
+        }
 
         return PolicyListOneResponse.builder()
                 .policyId(policy.getId())
