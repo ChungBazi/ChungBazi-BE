@@ -1,16 +1,22 @@
 package chungbazi.chungbazi_be.domain.user.service;
 
 
+import static chungbazi.chungbazi_be.domain.user.entity.QUser.user;
+
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
+import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.user.converter.UserConverter;
 import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
 import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
 import chungbazi.chungbazi_be.domain.user.entity.Addition;
 import chungbazi.chungbazi_be.domain.user.entity.Interest;
 import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
 import chungbazi.chungbazi_be.domain.user.repository.*;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -35,55 +41,44 @@ public class UserService {
     private final UserAdditionRepository userAdditionRepository;
     private final InterestRepository interestRepository;
     private final UserInterestRepository userInterestRepository;
-    private final S3Manager s3Manager;
+    private final UserHelper userHelper;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     public UserResponseDTO.ProfileDto getProfile() {
-        Long userId = SecurityUtils.getUserId();
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
+        User user = userHelper.getAuthenticatedUser();
         return UserConverter.toProfileDto(user);
     }
-    public UserResponseDTO.ProfileUpdateDto updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto, MultipartFile profileImg) {
-        final long MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
 
-        //user, nickname handle
-        Long userId = SecurityUtils.getUserId();
+    public UserResponseDTO.RewardDto getReward() {
+        User user = userHelper.getAuthenticatedUser();
+        int rewardLevel = user.getReward().getLevel();
+        int postCount = postRepository.countPostByAuthorId(user.getId());
+        int commentCount = commentRepository.countCommentByAuthorId(user.getId());
+        return UserConverter.toRewardDto(rewardLevel, postCount, commentCount);
+    }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+    public void updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto) {
+        User user = userHelper.getAuthenticatedUser();
 
-        // 닉네임 변경 여부 확인
+        // 유저 레벨보다 높은 캐릭터 선택 시 에러 핸들링
+        if (profileUpdateDto.getCharacterImg().getLevel() > user.getReward().getLevel()) {
+            throw new BadRequestHandler(ErrorStatus.INVALID_CHARACTER);
+        }
+
+        // 닉네임 및 이미지 변경 여부 확인
         if (!user.getName().equals(profileUpdateDto.getName())) { // 기존 닉네임과 입력받은 닉네임이 다를 경우
             boolean isDuplicateName = userRepository.existsByName(profileUpdateDto.getName());
             if (isDuplicateName) {
                 throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
             }
-            user.setName(profileUpdateDto.getName()); // 닉네임 변경
+            user.setName(profileUpdateDto.getName());
         }
 
-        // profileImg handle
-        String profileUrl;
-
-        if(profileImg != null){
-            if(profileImg.getSize() > MAX_UPLOAD_SIZE){
-                throw new BadRequestHandler(ErrorStatus.PAYLOAD_TOO_LARGE);
-            }
-            if(user.getProfileImg() != null){
-                s3Manager.deleteFile(user.getProfileImg());
-            }
-            profileUrl = s3Manager.uploadFile(profileImg, "profile-images");
-
-        } else {
-            profileUrl = user.getProfileImg();
+        if (!user.getCharacterImg().equals(profileUpdateDto.getCharacterImg())) { // 기존 이미지와 입력받은 이미지가 다를 경우
+            user.setCharacterImg(profileUpdateDto.getCharacterImg());
         }
-
-        user.setProfileImg(profileUrl);
-        user.setName(profileUpdateDto.getName());
         userRepository.save(user);
-
-        return UserConverter.toProfileUpdateDto(user);
     }
 
     public void registerUserInfo(UserRequestDTO.RegisterDto registerDto) {

@@ -17,6 +17,7 @@ import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.domain.user.service.UserService;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -34,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 @RequiredArgsConstructor
 public class CommunityService {
-    private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final S3Manager s3Manager;
@@ -42,26 +42,35 @@ public class CommunityService {
     private final NotificationRepository notificationRepository;
     private final FCMTokenService fcmTokenService;
     private final NotificationService notificationService;
+    private final UserHelper userHelper;
 
-    public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long lastPostId, int size) {
-        Pageable pageable = PageRequest.of(0, size);
+    public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size + 1);
         List<Post> posts;
 
         if (category == null || category.toString().isEmpty()){ // 전체 게시글 조회
-            posts = (lastPostId == null)
+            posts = (cursor == 0)
                     ? postRepository.findByOrderByIdDesc(pageable).getContent()
-                    : postRepository.findByIdLessThanOrderByIdDesc(lastPostId, pageable).getContent();
+                    : postRepository.findByIdLessThanOrderByIdDesc(cursor, pageable).getContent();
         } else { // 카테고리별 게시글 조회
-            posts = (lastPostId == null)
+            posts = (cursor == 0)
                     ? postRepository.findByCategoryOrderByIdDesc(category, pageable).getContent()
-                    : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, lastPostId, pageable).getContent();
+                    : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, cursor, pageable).getContent();
         }
-        List<CommunityResponseDTO.PostListDto> postList =
-                CommunityConverter.toPostListDto(posts, commentRepository);
 
+        boolean hasNext = posts.size() > size;
+        Long nextCursor = 0L;
+
+        if(hasNext) {
+            Post lastPost = posts.get(size - 1);
+            nextCursor = lastPost.getId();
+            posts = posts.subList(0, size);
+        }
+
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
         Long totalPostCount = postRepository.countPostByCategory(category);
 
-        return CommunityConverter.toTotalPostListDto(totalPostCount, postList);
+        return CommunityConverter.toTotalPostListDto(totalPostCount, postList, nextCursor, hasNext);
     }
     public CommunityResponseDTO.UploadAndGetPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
 
@@ -70,9 +79,7 @@ public class CommunityService {
             throw new BadRequestHandler(ErrorStatus.FILE_COUNT_EXCEEDED);
         }
         // 유저 조회
-        Long userId = SecurityUtils.getUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User user = userHelper.getAuthenticatedUser();
         // 파일 업로드
         List<String> uploadedUrls = (imageList != null && !imageList.isEmpty())
                 ? s3Manager.uploadMultipleFiles(imageList, "post-images") : new ArrayList<>();
@@ -99,11 +106,11 @@ public class CommunityService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
         // 자신의 조회는 조회수 증가 제외
-        Long userId = SecurityUtils.getUserId();
-        if(!post.getAuthor().getId().equals(userId)){
+        User user = userHelper.getAuthenticatedUser();
+
+        if(!post.getAuthor().getId().equals(user.getId())){
             post.incrementViews(); // 조회수 증가
         }
-
         Long commentCount = commentRepository.countByPostId(postId);
 
         return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
@@ -115,10 +122,7 @@ public class CommunityService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
         // 유저 조회
-        Long userId = SecurityUtils.getUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
+        User user = userHelper.getAuthenticatedUser();
         Comment comment = Comment.builder().
                 content(uploadCommentDto.getContent())
                 .author(user)
@@ -135,24 +139,34 @@ public class CommunityService {
         return CommunityConverter.toUploadAndGetCommentDto(comment);
     }
 
-    public List<CommunityResponseDTO.UploadAndGetCommentDto> getComments(Long postId, Long lastCommentId, int size){
-        Pageable pageable = PageRequest.of(0, size);
+    public CommunityResponseDTO.CommentListDto getComments(Long postId, Long cursor, int size){
+        Pageable pageable = PageRequest.of(0, size + 1);
 
         List<Comment> comments;
-        if (lastCommentId == null) {
-            comments = commentRepository.findByPostIdOrderByIdDesc(postId, pageable).getContent();
+        if (cursor == 0) {
+            comments = commentRepository.findByPostIdOrderByIdAsc(postId, pageable).getContent();
         } else {
-            comments = commentRepository.findByPostIdAndIdLessThanOrderByIdDesc(postId, lastCommentId, pageable).getContent();
+            comments = commentRepository.findByPostIdAndIdGreaterThanOrderByIdAsc(postId, cursor, pageable).getContent();
         }
 
-        return CommunityConverter.toGetListCommentDto(comments);
+        boolean hasNext = comments.size() > size;
+        Long nextCursor = 0L;
+
+        if(hasNext) {
+            Comment lastComment = comments.get(size - 1);
+            nextCursor = lastComment.getId();
+            comments = comments.subList(0, size);
+        }
+
+        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments);
+
+        return CommunityConverter.toGetCommentsListDto(commentsList, nextCursor, hasNext);
     }
 
     public void sendCommunityNotification(Long postId){
-        User user=userRepository.findById(SecurityUtils.getUserId())
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User user = userHelper.getAuthenticatedUser();
 
-        Post post=postRepository.findById(postId)
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
         User author=post.getAuthor();
@@ -171,6 +185,4 @@ public class CommunityService {
             notificationService.pushFCMNotification(fcmToken,notification.getType(),notification.getMessage());
         }
     }
-
-
 }

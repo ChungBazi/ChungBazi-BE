@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     // 처음 요청
-    Page<Comment> findByPostIdOrderByIdDesc(Long postId, Pageable pageable);
+    Page<Comment> findByPostIdOrderByIdAsc(Long postId, Pageable pageable);
 
     // 무한 스크롤
-    Page<Comment> findByPostIdAndIdLessThanOrderByIdDesc(Long postId, Long lastCommentId, Pageable pageable);
+    Page<Comment> findByPostIdAndIdGreaterThanOrderByIdAsc(Long postId, Long lastCommentId, Pageable pageable);
 
     @Query("SELECT COUNT(c) FROM Comment c WHERE c.post.id = :postId")
     Long countByPostId(@Param("postId") Long postId);

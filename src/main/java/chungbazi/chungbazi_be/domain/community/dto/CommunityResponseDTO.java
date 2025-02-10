@@ -36,6 +36,8 @@ public class CommunityResponseDTO {
     public static class TotalPostListDto {
         Long totalPostCount;
         List<PostListDto> postList;
+        private Long nextCursor;
+        private boolean hasNext;
     }
 
     @Getter
@@ -74,5 +76,14 @@ public class CommunityResponseDTO {
         String userName;
         RewardLevel reward;
         RewardLevel characterImg;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class CommentListDto {
+        List<UploadAndGetCommentDto> commentsList;
+        private Long nextCursor;
+        private boolean hasNext;
     }
 }

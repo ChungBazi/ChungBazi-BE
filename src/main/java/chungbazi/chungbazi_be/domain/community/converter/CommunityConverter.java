@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.community.converter;
 
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
+import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO.CommentListDto;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
@@ -9,10 +10,12 @@ import java.util.List;
 public class CommunityConverter {
 
     public static CommunityResponseDTO.TotalPostListDto toTotalPostListDto(
-            Long totalPostCount, List<CommunityResponseDTO.PostListDto> postList){
+            Long totalPostCount, List<CommunityResponseDTO.PostListDto> postList, Long nextCursor, boolean hasNext){
         return CommunityResponseDTO.TotalPostListDto.builder()
                 .totalPostCount(totalPostCount)
                 .postList(postList)
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
                 .build();
     }
     public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts, CommentRepository commentRepository) {
@@ -67,9 +70,16 @@ public class CommunityConverter {
                 .commentId(comment.getId())
                 .build();
     }
-    public static List<CommunityResponseDTO.UploadAndGetCommentDto> toGetListCommentDto(List<Comment> comments){
+    public static List<CommunityResponseDTO.UploadAndGetCommentDto> toListCommentDto(List<Comment> comments){
         return comments.stream()
                 .map(CommunityConverter::toUploadAndGetCommentDto)
                 .toList();
+    }
+    public static CommunityResponseDTO.CommentListDto toGetCommentsListDto(List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList, Long nextCursor, boolean hasNext) {
+        return CommunityResponseDTO.CommentListDto.builder()
+                .commentsList(commentsList)
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
+                .build();
     }
 }
