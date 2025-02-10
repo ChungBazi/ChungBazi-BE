@@ -43,25 +43,33 @@ public class CommunityService {
     private final FCMTokenService fcmTokenService;
     private final NotificationService notificationService;
 
-    public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long lastPostId, int size) {
-        Pageable pageable = PageRequest.of(0, size);
+    public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size + 1);
         List<Post> posts;
 
         if (category == null || category.toString().isEmpty()){ // 전체 게시글 조회
-            posts = (lastPostId == null)
+            posts = (cursor == null)
                     ? postRepository.findByOrderByIdDesc(pageable).getContent()
-                    : postRepository.findByIdLessThanOrderByIdDesc(lastPostId, pageable).getContent();
+                    : postRepository.findByIdLessThanOrderByIdDesc(cursor, pageable).getContent();
         } else { // 카테고리별 게시글 조회
-            posts = (lastPostId == null)
+            posts = (cursor == null)
                     ? postRepository.findByCategoryOrderByIdDesc(category, pageable).getContent()
-                    : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, lastPostId, pageable).getContent();
+                    : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, cursor, pageable).getContent();
         }
-        List<CommunityResponseDTO.PostListDto> postList =
-                CommunityConverter.toPostListDto(posts, commentRepository);
 
+        boolean hasNext = posts.size() > size;
+        Long nextCursor = null;
+
+        if(hasNext) {
+            Post lastPost = posts.get(size - 1);
+            nextCursor = lastPost.getId();
+            posts = posts.subList(0, size);
+        }
+
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
         Long totalPostCount = postRepository.countPostByCategory(category);
 
-        return CommunityConverter.toTotalPostListDto(totalPostCount, postList);
+        return CommunityConverter.toTotalPostListDto(totalPostCount, postList, nextCursor, hasNext);
     }
     public CommunityResponseDTO.UploadAndGetPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
 

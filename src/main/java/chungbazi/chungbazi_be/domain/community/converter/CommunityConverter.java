@@ -9,10 +9,12 @@ import java.util.List;
 public class CommunityConverter {
 
     public static CommunityResponseDTO.TotalPostListDto toTotalPostListDto(
-            Long totalPostCount, List<CommunityResponseDTO.PostListDto> postList){
+            Long totalPostCount, List<CommunityResponseDTO.PostListDto> postList, Long nextCursor, boolean hasNext){
         return CommunityResponseDTO.TotalPostListDto.builder()
                 .totalPostCount(totalPostCount)
                 .postList(postList)
+                .nextCursor(nextCursor)
+                .hasNext(hasNext)
                 .build();
     }
     public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts, CommentRepository commentRepository) {

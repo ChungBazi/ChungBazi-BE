@@ -56,10 +56,10 @@ public class CommunityController {
                 """)
     public ApiResponse<CommunityResponseDTO.TotalPostListDto> getPosts(
             @RequestParam(required = false) Category category,
-            @RequestParam(required = false) Long lastPostId,
+            @RequestParam(required = false) Long cursor,
             @RequestParam(defaultValue = "10") String size){
         int paseSize = Integer.parseInt(size);
-        return ApiResponse.onSuccess(communityService.getPosts(category,lastPostId,paseSize));
+        return ApiResponse.onSuccess(communityService.getPosts(category,cursor,paseSize));
     }
 
     @GetMapping(value = "/posts/{postId}")
