@@ -5,6 +5,7 @@ import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
+import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.service.PolicyService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +51,7 @@ public class PolicyController {
     @Operation(summary = "카테고리별 정책 API", description = "카테고리별 정책 조회")
     @GetMapping
     public ApiResponse<PolicyListResponse> getCategoryPolicy(
-            @RequestParam(value = "category", required = true) String category,
+            @RequestParam(value = "category", required = true) Category category,
             @RequestParam(value = "cursor", required = false) Long cursor,
             @RequestParam(value = "size", defaultValue = "15", required = false) int size,
             @RequestParam(value = "order", defaultValue = "latest", required = false) String order) {
