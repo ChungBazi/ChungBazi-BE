@@ -14,11 +14,12 @@ public class UserConverter {
                 .characterImg(user.getCharacterImg())
                 .build();
     }
-    public static UserResponseDTO.ProfileUpdateDto toProfileUpdateDto(User user){
-        return UserResponseDTO.ProfileUpdateDto.builder()
-                .userId(user.getId())
-                .name(user.getName())
-                //.profileImg(user.getProfileImg())
+
+    public static UserResponseDTO.RewardDto toRewardDto(int rewardLevel, int postCount, int commentCount) {
+        return UserResponseDTO.RewardDto.builder()
+                .rewardLevel(rewardLevel)
+                .postCount(postCount)
+                .commentCount(commentCount)
                 .build();
     }
 }

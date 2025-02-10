@@ -56,7 +56,7 @@ public class CommunityController {
                 """)
     public ApiResponse<CommunityResponseDTO.TotalPostListDto> getPosts(
             @RequestParam(required = false) Category category,
-            @RequestParam(required = false) Long cursor,
+            @RequestParam Long cursor,
             @RequestParam(defaultValue = "10") String size){
         int paseSize = Integer.parseInt(size);
         return ApiResponse.onSuccess(communityService.getPosts(category,cursor,paseSize));
@@ -80,7 +80,7 @@ public class CommunityController {
     @Operation(summary = "개별 게시글에 해당하는 댓글 조회 API", description = "개별 게시글에 해당하는 댓글 조회 API")
     public ApiResponse<CommunityResponseDTO.CommentListDto> getComments(
             @RequestParam Long postId,
-            @RequestParam(required = false) Long cursor,
+            @RequestParam Long cursor,
             @RequestParam(defaultValue = "10") String size){
         int paseSize = Integer.parseInt(size);
         return ApiResponse.onSuccess(communityService.getComments(postId, cursor, paseSize));

@@ -4,6 +4,7 @@ import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
 import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
 import chungbazi.chungbazi_be.domain.user.service.UserService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,18 @@ public class UserController {
         return ApiResponse.onSuccess(userService.getProfile());
     }
 
-    @PatchMapping(value = "/profile/update", consumes = "multipart/form-data")
+    @PatchMapping(value = "/profile/update")
     @Operation(summary = "프로필 수정 API", description = "마이페이지 프로필 수정")
-    public ApiResponse<UserResponseDTO.ProfileUpdateDto> updateProfile(
-            @RequestPart("info") @Valid UserRequestDTO.ProfileUpdateDto profileUpdateDto,
-            @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
-        return ApiResponse.onSuccess(userService.updateProfile(profileUpdateDto, profileImg));
+    public ApiResponse<Void> updateProfile(
+            @RequestBody @Valid UserRequestDTO.ProfileUpdateDto profileUpdateDto) {
+        userService.updateProfile(profileUpdateDto);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/reward")
+    @Operation(summary = "리워드 조회 API", description = "리워드 조회 API")
+    public ApiResponse<UserResponseDTO.RewardDto> getReward() {
+        return ApiResponse.onSuccess(userService.getReward());
     }
 
     @PostMapping("/register")

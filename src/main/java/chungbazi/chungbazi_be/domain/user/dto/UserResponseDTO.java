@@ -20,9 +20,9 @@ public class UserResponseDTO {
     @Getter
     @Builder
     @AllArgsConstructor
-    public static class ProfileUpdateDto {
-        Long userId;
-        String name;
-        String profileImg;
+    public static class RewardDto {
+        int rewardLevel;
+        int postCount;
+        int commentCount;
     }
 }
