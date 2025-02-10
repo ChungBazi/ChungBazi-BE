@@ -17,4 +17,12 @@ public class UserResponseDTO {
         String email;
         RewardLevel characterImg;
     }
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class RewardDto {
+        int rewardLevel;
+        int postCount;
+        int commentCount;
+    }
 }

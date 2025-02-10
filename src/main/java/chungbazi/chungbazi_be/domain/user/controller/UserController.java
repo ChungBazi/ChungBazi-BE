@@ -4,6 +4,7 @@ import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
 import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
 import chungbazi.chungbazi_be.domain.user.service.UserService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,12 @@ public class UserController {
             @RequestBody @Valid UserRequestDTO.ProfileUpdateDto profileUpdateDto) {
         userService.updateProfile(profileUpdateDto);
         return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/reward")
+    @Operation(summary = "리워드 조회 API", description = "리워드 조회 API")
+    public ApiResponse<UserResponseDTO.RewardDto> getReward() {
+        return ApiResponse.onSuccess(userService.getReward());
     }
 
     @PostMapping("/register")

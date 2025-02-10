@@ -14,4 +14,12 @@ public class UserConverter {
                 .characterImg(user.getCharacterImg())
                 .build();
     }
+
+    public static UserResponseDTO.RewardDto toRewardDto(int rewardLevel, int postCount, int commentCount) {
+        return UserResponseDTO.RewardDto.builder()
+                .rewardLevel(rewardLevel)
+                .postCount(postCount)
+                .commentCount(commentCount)
+                .build();
+    }
 }

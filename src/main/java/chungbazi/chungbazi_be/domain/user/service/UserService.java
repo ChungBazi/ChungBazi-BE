@@ -4,6 +4,8 @@ package chungbazi.chungbazi_be.domain.user.service;
 import static chungbazi.chungbazi_be.domain.user.entity.QUser.user;
 
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
+import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.user.converter.UserConverter;
 import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
 import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
@@ -38,12 +40,21 @@ public class UserService {
     private final UserAdditionRepository userAdditionRepository;
     private final InterestRepository interestRepository;
     private final UserInterestRepository userInterestRepository;
-    private final S3Manager s3Manager;
     private final UserHelper userHelper;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     public UserResponseDTO.ProfileDto getProfile() {
         User user = userHelper.getAuthenticatedUser();
         return UserConverter.toProfileDto(user);
+    }
+
+    public UserResponseDTO.RewardDto getReward() {
+        User user = userHelper.getAuthenticatedUser();
+        int rewardLevel = user.getReward().getLevel();
+        int postCount = postRepository.countPostByAuthorId(user.getId());
+        int commentCount = commentRepository.countCommentByAuthorId(user.getId());
+        return UserConverter.toRewardDto(rewardLevel, postCount, commentCount);
     }
 
     public void updateProfile(UserRequestDTO.ProfileUpdateDto profileUpdateDto) {
