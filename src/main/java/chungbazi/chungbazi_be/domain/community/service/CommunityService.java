@@ -17,6 +17,7 @@ import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.domain.user.service.UserService;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -34,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 @RequiredArgsConstructor
 public class CommunityService {
-    private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final S3Manager s3Manager;
@@ -42,6 +42,7 @@ public class CommunityService {
     private final NotificationRepository notificationRepository;
     private final FCMTokenService fcmTokenService;
     private final NotificationService notificationService;
+    private final UserHelper userHelper;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -78,9 +79,7 @@ public class CommunityService {
             throw new BadRequestHandler(ErrorStatus.FILE_COUNT_EXCEEDED);
         }
         // 유저 조회
-        Long userId = SecurityUtils.getUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User user = userHelper.getAuthenticatedUser();
         // 파일 업로드
         List<String> uploadedUrls = (imageList != null && !imageList.isEmpty())
                 ? s3Manager.uploadMultipleFiles(imageList, "post-images") : new ArrayList<>();
@@ -107,11 +106,11 @@ public class CommunityService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
         // 자신의 조회는 조회수 증가 제외
-        Long userId = SecurityUtils.getUserId();
-        if(!post.getAuthor().getId().equals(userId)){
+        User user = userHelper.getAuthenticatedUser();
+
+        if(!post.getAuthor().getId().equals(user.getId())){
             post.incrementViews(); // 조회수 증가
         }
-
         Long commentCount = commentRepository.countByPostId(postId);
 
         return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
@@ -123,10 +122,7 @@ public class CommunityService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
         // 유저 조회
-        Long userId = SecurityUtils.getUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
+        User user = userHelper.getAuthenticatedUser();
         Comment comment = Comment.builder().
                 content(uploadCommentDto.getContent())
                 .author(user)
@@ -168,10 +164,9 @@ public class CommunityService {
     }
 
     public void sendCommunityNotification(Long postId){
-        User user=userRepository.findById(SecurityUtils.getUserId())
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User user = userHelper.getAuthenticatedUser();
 
-        Post post=postRepository.findById(postId)
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
         User author=post.getAuthor();
@@ -190,6 +185,4 @@ public class CommunityService {
             notificationService.pushFCMNotification(fcmToken,notification.getType(),notification.getMessage());
         }
     }
-
-
 }
