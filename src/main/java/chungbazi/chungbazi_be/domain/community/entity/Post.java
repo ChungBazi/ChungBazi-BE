@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.community.entity;
 
 import chungbazi.chungbazi_be.domain.community.utils.TimeFormatter;
+import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
@@ -65,6 +66,9 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Notification> notifications=new ArrayList<>();
 
     public String getThumbnailUrl() {
         return (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;
