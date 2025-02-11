@@ -13,6 +13,8 @@ public class NotificationConverter {
                 .isRead(notification.isRead())
                 .message(notification.getMessage())
                 .type(notification.getType())
+                .policyId(notification.getPolicy().getId())
+                .postId(notification.getPost().getId())
                 .formattedCreatedAt(notification.getFormattedCreatedAt())
                 .build();
     }
