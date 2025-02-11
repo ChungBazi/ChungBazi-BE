@@ -131,7 +131,7 @@ public class CommunityService {
 
         commentRepository.save(comment);
 
-        if(user.getNotificationSetting().isCommunityAlarm()){
+        if(user.getNotificationSetting().isCommunityAlarm() && !user.getId().equals(post.getAuthor().getId())){
             sendCommunityNotification(post.getId());
         }
         rewardService.checkRewards();

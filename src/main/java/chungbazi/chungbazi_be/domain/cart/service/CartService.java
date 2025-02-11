@@ -53,7 +53,10 @@ public class CartService {
 
         Cart cart = new Cart(policy, user);
         cartRepository.save(cart);
-        sendPolicyNotification(policy);
+
+        if(user.getNotificationSetting().isPolicyAlarm()) {
+            sendPolicyNotification(policy);
+        }
 
     }
 
