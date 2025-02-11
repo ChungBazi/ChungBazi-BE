@@ -18,13 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationController {
     private final NotificationService notificationService;
 
-    @PostMapping("/create")
-    @Operation(summary = "알림 생성 API", description = "알림을 생성하고, fcm으로 알림을 요청하는 API입니다.")
-    public ApiResponse<NotificationResponseDTO.responseDto> createNotification(@RequestBody NotificationRequestDTO.createDTO dto) {
-        NotificationResponseDTO.responseDto responseDto = notificationService.sendNotification(dto);
-        return ApiResponse.onSuccess(responseDto);
-    }
-
     @PatchMapping("/{notificationId}/read")
     @Operation(summary = "특정 알림 읽음 상태 변경 API")
     public ApiResponse<Void> readNotification(@PathVariable Long notificationId) {
