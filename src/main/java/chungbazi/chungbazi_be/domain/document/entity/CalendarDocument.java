@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -31,7 +32,9 @@ public class CalendarDocument extends BaseTimeEntity {
     private Long id;
 
     @NotNull
-    private boolean isChecked;
+    @Setter
+    @Builder.Default
+    private boolean isChecked = false;
 
     @NotNull
     private String document;
@@ -42,7 +45,6 @@ public class CalendarDocument extends BaseTimeEntity {
 
 
     public CalendarDocument(String doc, Cart cart) {
-        this.isChecked = false;
         this.document = doc;
         this.cart = cart;
     }

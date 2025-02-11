@@ -12,7 +12,9 @@ import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.service.UserService;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -31,6 +33,7 @@ public class CartService {
     private final CartRepository cartRepository;
     private final PolicyRepository policyRepository;
     private final UserService userService;
+    private final UserHelper userHelper;
 
     // 장바구니에 담기
     @Transactional
@@ -39,8 +42,11 @@ public class CartService {
         Policy policy = policyRepository.findById(policyId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
 
-        Long userId = SecurityUtils.getUserId();
-        User user = userService.findByUserId(userId);
+        User user = userHelper.getAuthenticatedUser();
+
+        if (cartRepository.existsByPolicyAndUser(policy, user)) {
+            throw new BadRequestHandler(ErrorStatus.ALREADY_EXIST_CART);
+        }
 
         Cart cart = new Cart(policy, user);
         cartRepository.save(cart);

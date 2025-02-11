@@ -39,6 +39,9 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_CURSOR(HttpStatus.BAD_REQUEST, "POLICY5005", "커서가 존재하지않습니다."),
     NOT_VALID_TYPE_YEAR_MONTH(HttpStatus.BAD_REQUEST, "POLICY5006", "유효한 날짜 형식이 아닙니다."),
 
+    //Cart
+    ALREADY_EXIST_CART(HttpStatus.BAD_REQUEST, "Cart4001", "이미 해당 정책을 장바구니에 담았습니다."),
+
     //Notification
     GOOGLE_REQUEST_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "FCMTOKEN001", "firebase 접근 토큰이 유효하지 않습니다."),
     FCM_SEND_FAILURE(HttpStatus.BAD_REQUEST, "FCMSEND001", "FCM 메시지 전송에 실패했습니다."),

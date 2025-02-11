@@ -4,13 +4,13 @@ import chungbazi.chungbazi_be.domain.document.dto.DocumentRequestDTO;
 import chungbazi.chungbazi_be.domain.document.service.CalendarDocumentService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,7 +22,7 @@ public class CalendarDocumentController {
 
     //서류 생성
     @Operation(summary = "서류 추가 API", description = "서류 추가")
-    @PostMapping("/calendar/{cartId}/documents")
+    @PostMapping("/{cartId}/documents")
     public ApiResponse<String> createDocuments(@RequestBody DocumentRequestDTO.DocumentCreateList createList,
                                                @PathVariable Long cartId) {
 
@@ -32,11 +32,11 @@ public class CalendarDocumentController {
 
     //서류 체크
     @Operation(summary = "서류 체크 API", description = "서류 체크")
-    @PatchMapping("/calendar/{cartId}/documents/{documentId}")
-    public ApiResponse<String> checkDocument(@PathVariable Long cartId, @PathVariable Long documentId,
-                                             @RequestParam(required = true) boolean check) {
+    @PutMapping("/{cartId}/documents/check")
+    public ApiResponse<String> checkDocument(@PathVariable Long cartId,
+                                             @RequestBody List<DocumentRequestDTO.DocumentCheck> checkList) {
 
-        calendarDocumentService.checkDocument(cartId, documentId, check);
+        calendarDocumentService.checkDocument(cartId, checkList);
         return ApiResponse.onSuccess("서류가 체크 되었습니다.");
     }
 

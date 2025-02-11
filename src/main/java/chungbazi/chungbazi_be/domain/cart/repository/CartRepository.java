@@ -1,6 +1,8 @@
 package chungbazi.chungbazi_be.domain.cart.repository;
 
 import chungbazi.chungbazi_be.domain.cart.entity.Cart;
+import chungbazi.chungbazi_be.domain.policy.entity.Policy;
+import chungbazi.chungbazi_be.domain.user.entity.User;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,4 +16,6 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     void deleteByUser_IdAndPolicyIds(@Param("userId") Long userId, @Param("policyIds") List<Long> policyIds);
 
     List<Cart> findByUser_Id(Long userId);
+
+    boolean existsByPolicyAndUser(Policy policy, User user);
 }

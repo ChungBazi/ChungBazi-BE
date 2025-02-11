@@ -24,6 +24,7 @@ public class CalendarDocumentService {
     private final UserHelper userHelper;
     private final CartService cartService;
 
+
     // 서류 생성
     @Transactional
     public void addDocument(DocumentRequestDTO.DocumentCreateList dto, Long cartId) {
@@ -47,12 +48,13 @@ public class CalendarDocumentService {
 
     // 서류 체크
     @Transactional
-    public void checkDocument(Long cartId, Long documentId, boolean check) {
+    public void checkDocument(Long cartId, List<DocumentRequestDTO.DocumentCheck> checkList) {
 
-        CalendarDocument document = calendarDocumentRepository.findById(documentId)
-                .orElseThrow(() -> new NotFoundHandler(
-                        ErrorStatus.NOT_FOUND_DOCUMENT));
+        checkList.forEach(check -> {
+            CalendarDocument document = calendarDocumentRepository.findById(check.getDocumentId())
+                    .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_DOCUMENT));
 
-        document.updateCheck(check);
+            document.updateCheck(check.isChecked());
+        });
     }
 }

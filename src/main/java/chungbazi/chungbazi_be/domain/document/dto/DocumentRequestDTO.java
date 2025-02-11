@@ -10,4 +10,10 @@ public class DocumentRequestDTO {
     public static class DocumentCreateList {
         private List<String> documents;
     }
+
+    @Getter
+    public static class DocumentCheck {
+        private Long documentId;
+        private boolean checked;
+    }
 }
