@@ -36,8 +36,7 @@ public class RewardService {
     private final UserHelper userHelper;
 
     public void checkRewards() {
-        User user = userRepository.findById(SecurityUtils.getUserId())
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User user = userHelper.getAuthenticatedUser();
 
         int currentReward = user.getReward().getLevel();
 
