@@ -15,12 +15,16 @@ public class PolicyCalendarResponse {
     private LocalDate startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
     private LocalDate endDate;
+    private Long cartId;
+    private Long policyId;
 
-    public static PolicyCalendarResponse from(Policy policy) {
+    public static PolicyCalendarResponse of(Policy policy, Long cartId) {
         return PolicyCalendarResponse.builder()
                 .name(policy.getName())
                 .startDate(policy.getStartDate())
                 .endDate(policy.getEndDate())
+                .cartId(cartId)
+                .policyId(policy.getId())
                 .build();
     }
 }

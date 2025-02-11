@@ -132,7 +132,7 @@ public class CartService {
                     return ((startDate.getYear() == year && startDate.getMonthValue() == month) || (
                             endDate.getYear() == year && endDate.getMonthValue() == month));
                 })
-                .map(cart -> PolicyCalendarResponse.from(cart.getPolicy()))
+                .map(cart -> PolicyCalendarResponse.of(cart.getPolicy(), cart.getId()))
                 .toList();
     }
 
