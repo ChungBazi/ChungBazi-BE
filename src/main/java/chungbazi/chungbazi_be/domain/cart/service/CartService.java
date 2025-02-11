@@ -135,4 +135,9 @@ public class CartService {
                 .map(cart -> PolicyCalendarResponse.from(cart.getPolicy()))
                 .toList();
     }
+
+    public Cart findById(Long cartId) {
+
+        return cartRepository.findById(cartId).orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CART));
+    }
 }

@@ -41,6 +41,13 @@ public class CalendarDocument extends BaseTimeEntity {
     private Cart cart;
 
 
+    public CalendarDocument(String doc, Cart cart) {
+        this.isChecked = false;
+        this.document = doc;
+        this.cart = cart;
+    }
+
+
     public void updateCheck(boolean check) {
         this.isChecked = check;
     }

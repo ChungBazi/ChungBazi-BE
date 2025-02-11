@@ -1,8 +1,13 @@
 package chungbazi.chungbazi_be.domain.document.service;
 
 import chungbazi.chungbazi_be.domain.cart.dto.CartRequestDTO;
+import chungbazi.chungbazi_be.domain.cart.entity.Cart;
+import chungbazi.chungbazi_be.domain.cart.service.CartService;
+import chungbazi.chungbazi_be.domain.document.dto.DocumentRequestDTO;
 import chungbazi.chungbazi_be.domain.document.entity.CalendarDocument;
 import chungbazi.chungbazi_be.domain.document.repository.CalendarDocumentRepository;
+import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import java.util.List;
@@ -16,6 +21,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class CalendarDocumentService {
 
     private final CalendarDocumentRepository calendarDocumentRepository;
+    private final UserHelper userHelper;
+    private final CartService cartService;
+
+    // 서류 생성
+    @Transactional
+    public void addDocument(DocumentRequestDTO.DocumentCreateList dto, Long cartId) {
+
+        User user = userHelper.getAuthenticatedUser();
+        Cart cart = cartService.findById(cartId);
+
+        dto.getDocuments().forEach(doc -> {
+            CalendarDocument document = new CalendarDocument(doc, cart);
+            calendarDocumentRepository.save(document);
+        });
+    }
 
     // 서류 수정
     @Transactional
