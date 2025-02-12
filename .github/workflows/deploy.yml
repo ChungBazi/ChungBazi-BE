@@ -33,7 +33,6 @@ jobs:
       # serviceAccountKey.json 파일 생성 (🚨 추가됨!)
       - name: Make serviceAccountKey.json
         run: |
-          mkdir -p ./src/main/resources
           echo '${{ secrets.SERVICE_ACCOUNT_KEY }}' > ./src/main/resources/serviceAccountKey.json
         shell: bash
 
