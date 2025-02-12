@@ -31,7 +31,8 @@ public class CalendarDocument extends BaseTimeEntity {
     private Long id;
 
     @NotNull
-    private boolean isChecked;
+    @Builder.Default
+    private boolean isChecked = false;
 
     @NotNull
     private String document;
@@ -41,7 +42,17 @@ public class CalendarDocument extends BaseTimeEntity {
     private Cart cart;
 
 
+    public CalendarDocument(String doc, Cart cart) {
+        this.document = doc;
+        this.cart = cart;
+    }
+
+
     public void updateCheck(boolean check) {
         this.isChecked = check;
+    }
+
+    public void updateDocument(String document) {
+        this.document = document;
     }
 }

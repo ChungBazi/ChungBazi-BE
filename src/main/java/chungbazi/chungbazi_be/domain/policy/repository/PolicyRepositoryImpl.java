@@ -88,7 +88,7 @@ public class PolicyRepositoryImpl implements PolicyRepositoryCustom {
     // 일치도 순 정렬, 일치도 같다면 Id 크기로 정렬
     private BooleanExpression ltCursor(String cursor, String keyword, QPolicy policy) {
 
-        if (cursor == null) {
+        if (cursor == null || cursor.isEmpty() || cursor.equals("\"\"")) {
             return null;
         }
 
@@ -146,7 +146,7 @@ public class PolicyRepositoryImpl implements PolicyRepositoryCustom {
 
     private BooleanExpression ltCursorId(Long cursor, QPolicy policy) {
 
-        if (cursor == null) {
+        if (cursor == null || cursor == 0) {
             return null;
         }
 

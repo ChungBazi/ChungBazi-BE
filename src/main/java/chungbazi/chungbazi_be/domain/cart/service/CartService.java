@@ -16,6 +16,7 @@ import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.service.UserService;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,8 +49,11 @@ public class CartService {
         Policy policy = policyRepository.findById(policyId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
 
-        Long userId = SecurityUtils.getUserId();
-        User user = userService.findByUserId(userId);
+        User user = userHelper.getAuthenticatedUser();
+
+        if (cartRepository.existsByPolicyAndUser(policy, user)) {
+            throw new BadRequestHandler(ErrorStatus.ALREADY_EXIST_CART);
+        }
 
         Cart cart = new Cart(policy, user);
         cartRepository.save(cart);
@@ -146,8 +150,13 @@ public class CartService {
                     return ((startDate.getYear() == year && startDate.getMonthValue() == month) || (
                             endDate.getYear() == year && endDate.getMonthValue() == month));
                 })
-                .map(cart -> PolicyCalendarResponse.from(cart.getPolicy()))
+                .map(cart -> PolicyCalendarResponse.of(cart.getPolicy(), cart.getId()))
                 .toList();
+    }
+
+    public Cart findById(Long cartId) {
+
+        return cartRepository.findById(cartId).orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CART));
     }
 
     public void sendPolicyNotification(Policy policy){
