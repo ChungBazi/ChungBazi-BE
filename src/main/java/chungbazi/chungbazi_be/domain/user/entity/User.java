@@ -124,7 +124,9 @@ public class User {
     public void postPersistInitialization() {
         // 알람 초기화
         if (this.notificationSetting == null) {
-            this.notificationSetting = new NotificationSetting(this);
+            this.notificationSetting = NotificationSetting.builder()
+                    .user(this)
+                    .build();
         }
         // 캐릭터 리스트 초기화
         if (characters == null || characters.isEmpty()) {

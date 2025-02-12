@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.notification.service;
 
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.converter.NotificationConverter;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
@@ -11,6 +12,7 @@ import chungbazi.chungbazi_be.domain.notification.entity.NotificationSetting;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationSettingRepository;
+import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
@@ -36,15 +38,14 @@ public class NotificationService {
     private final FCMTokenService fcmTokenService;
     private final NotificationSettingRepository notificationSettingRepository;
 
-    public NotificationResponseDTO.responseDto sendNotification(NotificationRequestDTO.createDTO dto) {
-        //알림 생성
-        User user = userRepository.findById(SecurityUtils.getUserId())
-                .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+    public NotificationResponseDTO.responseDto sendNotification(User user, NotificationType type, String message, Post post, Policy policy) {
         Notification notification=Notification.builder()
                 .user(user)
-                .type(dto.getType())
-                .message(dto.getMessage())
+                .type(type)
+                .message(message)
                 .isRead(false)
+                .post(post)
+                .policy(policy)
                 .build();
 
         notificationRepository.save(notification);
@@ -52,7 +53,7 @@ public class NotificationService {
         //FCM 푸시 전송
         String fcmToken= fcmTokenService.getToken(user.getId());
         if(fcmToken!=null){
-            pushFCMNotification(fcmToken,dto.getType(),dto.getMessage());
+            pushFCMNotification(fcmToken,type,message);
         }
         return NotificationResponseDTO.responseDto.builder()
                 .notificationId(notification.getId())

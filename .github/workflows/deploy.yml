@@ -36,12 +36,12 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build -x test
 
-      # Docker 이미지 빌드 및 푸시
+      # Docker 이미지 빌드 및 푸시 (🚨 `--build-arg` 추가!)
       - name: Docker build & push to Docker Hub
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_REPO }}:latest .
-          docker push ${{ secrets.DOCKER_REPO }}:latest
+          docker build --build-arg SERVICE_ACCOUNT_KEY="${{ secrets.SERVICE_ACCOUNT_KEY }}" -t ${{ secrets.DOCKER_REPO }}:latest .
+          docker push ${{ secrets.DOCKER_REPO }}:latest    
 
       # 서버 배포
       - name: Deploy to server with Docker

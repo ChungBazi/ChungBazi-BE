@@ -6,6 +6,8 @@ import chungbazi.chungbazi_be.domain.cart.dto.CartRequestDTO;
 import chungbazi.chungbazi_be.domain.cart.dto.CartResponseDTO;
 import chungbazi.chungbazi_be.domain.cart.entity.Cart;
 import chungbazi.chungbazi_be.domain.cart.repository.CartRepository;
+import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
+import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
@@ -17,11 +19,14 @@ import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +38,8 @@ public class CartService {
     private final CartRepository cartRepository;
     private final PolicyRepository policyRepository;
     private final UserService userService;
+    private final ThreadPoolTaskScheduler taskScheduler;
+    private final NotificationService notificationService;
     private final UserHelper userHelper;
 
     // 장바구니에 담기
@@ -50,6 +57,11 @@ public class CartService {
 
         Cart cart = new Cart(policy, user);
         cartRepository.save(cart);
+
+        if(user.getNotificationSetting().isPolicyAlarm()) {
+            sendPolicyNotification(policy);
+        }
+
     }
 
     @Transactional
@@ -145,5 +157,17 @@ public class CartService {
     public Cart findById(Long cartId) {
 
         return cartRepository.findById(cartId).orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CART));
+    }
+
+    public void sendPolicyNotification(Policy policy){
+        User user= userHelper.getAuthenticatedUser();
+        LocalDate notificationDate=policy.getEndDate().minusDays(3);
+
+        if(notificationDate.isAfter(LocalDate.now())){
+            taskScheduler.schedule(()->{
+                String message= policy.getName()+"가 3일 뒤 마감됩니다!";
+                notificationService.sendNotification(user, NotificationType.POLICY_ALARM,message,null,policy);
+            },notificationDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        }
     }
 }

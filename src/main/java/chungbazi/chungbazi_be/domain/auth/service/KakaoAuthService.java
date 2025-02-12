@@ -59,6 +59,7 @@ public class KakaoAuthService {
         tokenAuthService.addToBlackList(token, "delete-account", 3600L);
         tokenAuthService.deleteRefreshToken(userId);
         userAuthService.deleteUser(userId);
+        fcmTokenService.deleteToken(Long.valueOf(userId));
     }
 
     // 응답

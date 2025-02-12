@@ -21,6 +21,10 @@ public class FCMTokenService {
         return redisTemplate.opsForValue().get("_"+String.valueOf(userId));
     }
 
+    public void deleteToken(Long userId){
+        redisTemplate.delete(String.valueOf("_"+userId));
+    }
+
 
 
 }
