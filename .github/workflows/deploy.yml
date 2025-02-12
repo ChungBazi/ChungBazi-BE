@@ -30,6 +30,13 @@ jobs:
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
         shell: bash
 
+      # serviceAccountKey.json 파일 생성 (🚨 추가됨!)
+      - name: Make serviceAccountKey.json
+        run: |
+          mkdir -p ./src/main/resources
+          echo '${{ secrets.SERVICE_ACCOUNT_KEY }}' > ./src/main/resources/serviceAccountKey.json
+        shell: bash
+
       # Gradle로 빌드
       - name: Build with Gradle
         run: |
@@ -40,8 +47,8 @@ jobs:
       - name: Docker build & push to Docker Hub
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build --build-arg SERVICE_ACCOUNT_KEY="${{ secrets.SERVICE_ACCOUNT_KEY }}" -t ${{ secrets.DOCKER_REPO }}:latest .
-          docker push ${{ secrets.DOCKER_REPO }}:latest    
+          docker build -t ${{ secrets.DOCKER_REPO }}:latest .
+          docker push ${{ secrets.DOCKER_REPO }}:latest   
 
       # 서버 배포
       - name: Deploy to server with Docker
