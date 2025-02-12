@@ -30,7 +30,7 @@ jobs:
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
         shell: bash
 
-      # serviceAccountKey.json 파일 생성 (🚨 추가됨!)
+      # serviceAccountKey.json 파일 생성
       - name: Make serviceAccountKey.json
         run: |
           echo '${{ secrets.SERVICE_ACCOUNT_KEY }}' > ./src/main/resources/serviceAccountKey.json
