@@ -13,6 +13,7 @@ import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import jakarta.transaction.Transactional;
@@ -32,10 +33,10 @@ public class RewardService {
     private final NotificationService notificationService;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final UserHelper userHelper;
 
     public void checkRewards() {
-        User user = userRepository.findById(SecurityUtils.getUserId())
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User user = userHelper.getAuthenticatedUser();
 
         int currentReward = user.getReward().getLevel();
 
@@ -59,23 +60,10 @@ public class RewardService {
     }
 
     private void sendRewardNotification(int rewardLevel) {
-        User user=userRepository.findById(SecurityUtils.getUserId())
-                .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User user=userHelper.getAuthenticatedUser();
+        String message = rewardLevel + "단계에 달성하여 캐릭터가 지급되었습니다.";
 
-        Notification notification=Notification.builder()
-                .user(user)
-                .type(NotificationType.REWARD_ALARM)
-                .message(rewardLevel+"단계에 달성하여 캐릭터가 지급되었습니다.")
-                .isRead(false)
-                .build();
-
-        notificationRepository.save(notification);
-
-        //FCM푸시 전송
-        String fcmToken = fcmTokenService.getToken(user.getId());
-        if(fcmToken!=null){
-            notificationService.pushFCMNotification(fcmToken,notification.getType(),notification.getMessage());
-        }
+        notificationService.sendNotification(user, NotificationType.REWARD_ALARM, message, null, null);
     }
 
     public NextLevelInfo calNextLevelInfo(User user, Character character){

@@ -1,7 +1,9 @@
 package chungbazi.chungbazi_be.domain.notification.entity;
 
+import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.utils.TimeFormatter;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
+import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
 import com.google.firebase.database.annotations.NotNull;
@@ -33,11 +35,17 @@ public class Notification extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    //댓글이랑 연관관계
+    // 커뮤니티 알림인 경우 (선택적)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
 
-    //장바구니랑 연관관계
+    // 정책 알림인 경우 (선택적)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "policy_id")
+    private Policy policy;
 
-    // Notification 엔티티 내부
+
     public void markAsRead() {
         this.isRead = true;
     }

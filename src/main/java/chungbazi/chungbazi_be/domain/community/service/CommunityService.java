@@ -131,7 +131,7 @@ public class CommunityService {
 
         commentRepository.save(comment);
 
-        if(user.getNotificationSetting().isCommunityAlarm()){
+        if(user.getNotificationSetting().isCommunityAlarm() && !user.getId().equals(post.getAuthor().getId())){
             sendCommunityNotification(post.getId());
         }
         rewardService.checkRewards();
@@ -170,19 +170,8 @@ public class CommunityService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
         User author=post.getAuthor();
+        String message=user.getName()+"님이 회원님의 게시글에 댓글을 달았습니다.";
 
-        Notification notification=Notification.builder()
-                .user(author)
-                .type(NotificationType.COMMUNITY_ALARM)
-                .message(user.getName()+"님이 회원님의 게시글에 댓글을 달았습니다.")
-                .isRead(false)
-                .build();
-
-        notificationRepository.save(notification);
-
-        String fcmToken=fcmTokenService.getToken(author.getId());
-        if (fcmToken != null) {
-            notificationService.pushFCMNotification(fcmToken,notification.getType(),notification.getMessage());
-        }
+        notificationService.sendNotification(author, NotificationType.COMMUNITY_ALARM, message, post, null);
     }
 }
