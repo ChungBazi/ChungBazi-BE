@@ -16,4 +16,10 @@ public class DocumentRequestDTO {
         private Long documentId;
         private boolean checked;
     }
+
+    @Getter
+    public static class DocumentUpdate {
+        private Long documentId;
+        private String content;
+    }
 }

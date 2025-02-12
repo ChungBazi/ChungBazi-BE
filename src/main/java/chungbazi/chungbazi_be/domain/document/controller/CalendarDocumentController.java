@@ -40,15 +40,13 @@ public class CalendarDocumentController {
         return ApiResponse.onSuccess("서류가 체크 되었습니다.");
     }
 
-    /*
     // 서류 수정 (내용 수정, 삭제)
     @PutMapping("/{cartId}/documents")
     public ApiResponse<String> editDocument(@PathVariable Long cartId,
-                                            @RequestBody List<CalendarDocument> dtos) {
+                                            @RequestBody List<DocumentRequestDTO.DocumentUpdate> dtos) {
 
         calendarDocumentService.editDocument(cartId, dtos);
         return ApiResponse.onSuccess("서류가 수정되었습니다.");
     }
-    */
 
 }
