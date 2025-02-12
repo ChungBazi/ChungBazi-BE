@@ -30,6 +30,14 @@ jobs:
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
         shell: bash
 
+      # serviceAccountKey.json 파일 생성
+      - name: Make serviceAccountKey.json
+        run: |
+          cd ./src/main/resources
+          touch ./serviceAccountKey.json
+          echo '${{ secrets.SERVICE_ACCOUNT_KEY }}' > ./serviceAccountKey.json
+        shell: bash
+
       # Gradle로 빌드
       - name: Build with Gradle
         run: |
