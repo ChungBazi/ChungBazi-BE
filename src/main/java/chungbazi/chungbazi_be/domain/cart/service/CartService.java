@@ -58,7 +58,7 @@ public class CartService {
         Cart cart = new Cart(policy, user);
         cartRepository.save(cart);
 
-        if(user.getNotificationSetting().isPolicyAlarm()) {
+        if(user.getNotificationSetting().isPolicyAlarm() &&policy.getEndDate()!=null) {
             sendPolicyNotification(policy);
         }
 
