@@ -33,9 +33,7 @@ jobs:
       # serviceAccountKey.json 파일 생성
       - name: Make serviceAccountKey.json
         run: |
-          cd ./src/main/resources
-          touch ./serviceAccountKey.json
-          echo '${{ secrets.SERVICE_ACCOUNT_KEY }}' > ./serviceAccountKey.json
+          echo '${{ secrets.SERVICE_ACCOUNT_KEY }}' > src/main/resources/serviceAccountKey.json
         shell: bash
 
       # Gradle로 빌드
