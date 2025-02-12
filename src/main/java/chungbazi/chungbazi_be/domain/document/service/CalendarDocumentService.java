@@ -82,4 +82,8 @@ public class CalendarDocumentService {
             document.updateCheck(check.isChecked());
         });
     }
+
+    public List<CalendarDocument> findAllByCart_Id(Long cartId) {
+        return calendarDocumentRepository.findAllByCart_Id(cartId);
+    }
 }

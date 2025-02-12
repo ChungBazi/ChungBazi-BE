@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.policy.controller;
 
 import chungbazi.chungbazi_be.domain.document.service.CalendarDocumentService;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarDetailResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
@@ -78,5 +79,15 @@ public class PolicyController {
         List<PolicyCalendarResponse> response = policyService.getCalendarList(yearMonth);
         return ApiResponse.onSuccess(response);
     }
+
+    // 캘린더 정책 상세 조회
+    @Operation(summary = "캘린더 정책 상세 조회 API", description = "캘린더 정책 상세 조회")
+    @GetMapping("/calendar/{cartId}")
+    public ApiResponse<PolicyCalendarDetailResponse> getCalendarDetail(@PathVariable Long cartId) {
+
+        PolicyCalendarDetailResponse response = policyService.getCalendarDetail(cartId);
+        return ApiResponse.onSuccess(response);
+    }
+
 
 }

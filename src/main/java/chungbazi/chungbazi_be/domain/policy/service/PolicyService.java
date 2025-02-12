@@ -1,7 +1,11 @@
 package chungbazi.chungbazi_be.domain.policy.service;
 
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.cart.entity.Cart;
 import chungbazi.chungbazi_be.domain.cart.service.CartService;
+import chungbazi.chungbazi_be.domain.document.entity.CalendarDocument;
+import chungbazi.chungbazi_be.domain.document.service.CalendarDocumentService;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarDetailResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListOneResponse;
@@ -45,6 +49,7 @@ public class PolicyService {
     private final PolicyRepository policyRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final CartService cartService;
+    private final CalendarDocumentService calendarDocumentService;
 
 
     @Value("${webclient.openApiVlak}")
@@ -302,5 +307,14 @@ public class PolicyService {
             // 유효하지 않은 형식인 경우 CustomException 던지기
             throw new BadRequestHandler(ErrorStatus.NOT_VALID_TYPE_YEAR_MONTH);
         }
+    }
+
+    public PolicyCalendarDetailResponse getCalendarDetail(Long cartId) {
+
+        Cart cart = cartService.findById(cartId);
+        Policy policy = cart.getPolicy();
+        List<CalendarDocument> documents = calendarDocumentService.findAllByCart_Id(cartId);
+
+        return PolicyCalendarDetailResponse.of(cart, policy, documents);
     }
 }
