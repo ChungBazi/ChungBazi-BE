@@ -24,6 +24,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_FOUND_CHARACTER(HttpStatus.NOT_FOUND, "CHARACTER404", "해당 케릭터를 찾을 수 없습니다."),
     NOT_FOUND_DOCUMENT(HttpStatus.NOT_FOUND, "DOCUMENT401", "해당 문서를 찾을 수 없습니다."),
     NOT_FOUND_CART(HttpStatus.NOT_FOUND, "CART401", "해당 장바구니를 찾을 수 없습니다."),
+    NOT_FOUND_LIKE(HttpStatus.NOT_FOUND, "LIKE404", "해당 좋아요를 찾을 수 없습니다."),
 
     // User 관련 에러
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "닉네임은 필수입니다."),
@@ -66,6 +67,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //community 관련 에러
     FILE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "UPLOAD400", "파일은 10장을 초과할 수 없습니다."),
+    ALREADY_LIKED(HttpStatus.BAD_REQUEST, "LIKE400", "이미 좋아요를 했습니다.")
     ;
 
 
