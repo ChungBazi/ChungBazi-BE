@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -84,5 +85,17 @@ public class CommunityController {
             @RequestParam(defaultValue = "10") String size){
         int paseSize = Integer.parseInt(size);
         return ApiResponse.onSuccess(communityService.getComments(postId, cursor, paseSize));
+    }
+    @PostMapping(value = "/likes")
+    @Operation(summary = "개별 게시글 좋아요 API", description = "개별 게시글 좋아요 API")
+    public ApiResponse<Void> likePost(@RequestParam Long postId){
+        communityService.likePost(postId);
+        return ApiResponse.onSuccess(null);
+    }
+    @DeleteMapping(value = "/likes")
+    @Operation(summary = "개별 게시글 좋아요 취소 API", description = "개별 게시글 좋아요 취소 API")
+    public ApiResponse<Void> unlikePost(@RequestParam Long postId){
+        communityService.unlikePost(postId);
+        return ApiResponse.onSuccess(null);
     }
 }

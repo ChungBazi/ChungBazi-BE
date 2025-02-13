@@ -5,14 +5,17 @@ import chungbazi.chungbazi_be.domain.community.converter.CommunityConverter;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
+import chungbazi.chungbazi_be.domain.community.entity.Heart;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
+import chungbazi.chungbazi_be.domain.community.repository.HeartRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
 import chungbazi.chungbazi_be.domain.notification.service.FCMTokenService;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
@@ -43,6 +46,7 @@ public class CommunityService {
     private final FCMTokenService fcmTokenService;
     private final NotificationService notificationService;
     private final UserHelper userHelper;
+    private final HeartRepository heartRepository;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -90,6 +94,7 @@ public class CommunityService {
                 .category(uploadPostDto.getCategory())
                 .author(user)
                 .views(0)
+                .postLikes(0)
                 .imageUrls(uploadedUrls)
                 .build();
         postRepository.save(post);
@@ -161,6 +166,35 @@ public class CommunityService {
         List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments);
 
         return CommunityConverter.toGetCommentsListDto(commentsList, nextCursor, hasNext);
+    }
+
+    public void likePost(Long postId){
+        User user = userHelper.getAuthenticatedUser();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+        //이미 좋아요한 경우
+        if(heartRepository.existsByUserAndPost(user, post)) {
+            throw new BadRequestHandler(ErrorStatus.ALREADY_LIKED);
+        }
+
+        Heart heart = Heart.builder().user(user).post(post).build();
+        heartRepository.save(heart);
+
+        post.incrementLike();
+        postRepository.save(post);
+    }
+    public void unlikePost(Long postId){
+        User user = userHelper.getAuthenticatedUser();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+        Heart heart = heartRepository.findByUserAndPost(user,post)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_LIKE));
+        heartRepository.delete(heart);
+
+        post.decrementLike();
+        postRepository.save(post);
     }
 
     public void sendCommunityNotification(Long postId){
