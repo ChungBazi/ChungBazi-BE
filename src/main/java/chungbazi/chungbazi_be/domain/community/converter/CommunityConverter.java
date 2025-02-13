@@ -47,6 +47,7 @@ public class CommunityConverter {
                 .category(post.getCategory())
                 .formattedCreatedAt(post.getFormattedCreatedAt())
                 .views(post.getViews())
+                .postLikes(post.getPostLikes())
                 .commentCount(commentCount)
                 .userId(post.getAuthor().getId())
                 .userName(post.getAuthor().getName())

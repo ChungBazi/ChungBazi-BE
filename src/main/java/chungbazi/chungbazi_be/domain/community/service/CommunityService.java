@@ -94,6 +94,7 @@ public class CommunityService {
                 .category(uploadPostDto.getCategory())
                 .author(user)
                 .views(0)
+                .postLikes(0)
                 .imageUrls(uploadedUrls)
                 .build();
         postRepository.save(post);
@@ -179,6 +180,9 @@ public class CommunityService {
 
         Heart heart = Heart.builder().user(user).post(post).build();
         heartRepository.save(heart);
+
+        post.incrementLike();
+        postRepository.save(post);
     }
     public void unlikePost(Long postId){
         User user = userHelper.getAuthenticatedUser();
@@ -188,6 +192,9 @@ public class CommunityService {
         Heart heart = heartRepository.findByUserAndPost(user,post)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_LIKE));
         heartRepository.delete(heart);
+
+        post.decrementLike();
+        postRepository.save(post);
     }
 
     public void sendCommunityNotification(Long postId){

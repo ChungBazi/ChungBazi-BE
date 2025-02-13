@@ -79,4 +79,11 @@ public class Post extends BaseTimeEntity {
     public void incrementViews() {
         this.views = this.views + 1;
     }
+
+    public void incrementLike(){this.postLikes = this.postLikes + 1;}
+    public void decrementLike(){
+        if(this.postLikes > 0) {
+            this.postLikes -= 1;
+        }
+    }
 }
