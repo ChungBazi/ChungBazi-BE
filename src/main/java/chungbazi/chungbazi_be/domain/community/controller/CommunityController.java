@@ -93,7 +93,7 @@ public class CommunityController {
         return ApiResponse.onSuccess(null);
     }
     @DeleteMapping(value = "/likes")
-    @Operation(summary = "개별 게시글 좋아요 API", description = "개별 게시글 좋아요 API")
+    @Operation(summary = "개별 게시글 좋아요 취소 API", description = "개별 게시글 좋아요 취소 API")
     public ApiResponse<Void> unlikePost(@RequestParam Long postId){
         communityService.unlikePost(postId);
         return ApiResponse.onSuccess(null);
