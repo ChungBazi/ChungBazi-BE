@@ -25,11 +25,20 @@ import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import chungbazi.chungbazi_be.global.s3.S3Manager;
+import chungbazi.chungbazi_be.global.utils.PaginationResult;
+import chungbazi.chungbazi_be.global.utils.PaginationUtil;
+import chungbazi.chungbazi_be.global.utils.PopularSearch;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +56,8 @@ public class CommunityService {
     private final NotificationService notificationService;
     private final UserHelper userHelper;
     private final HeartRepository heartRepository;
+    private final PopularSearch popularSearch;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -62,19 +73,17 @@ public class CommunityService {
                     : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, cursor, pageable).getContent();
         }
 
-        boolean hasNext = posts.size() > size;
-        Long nextCursor = 0L;
-
-        if(hasNext) {
-            Post lastPost = posts.get(size - 1);
-            nextCursor = lastPost.getId();
-            posts = posts.subList(0, size);
-        }
+        PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
+        posts = paginationResult.getItems();
 
         List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
         Long totalPostCount = postRepository.countPostByCategory(category);
 
-        return CommunityConverter.toTotalPostListDto(totalPostCount, postList, nextCursor, hasNext);
+        return CommunityConverter.toTotalPostListDto(
+                totalPostCount,
+                postList,
+                paginationResult.getNextCursor(),
+                paginationResult.isHasNext());
     }
     public CommunityResponseDTO.UploadAndGetPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
 
@@ -154,18 +163,15 @@ public class CommunityService {
             comments = commentRepository.findByPostIdAndIdGreaterThanOrderByIdAsc(postId, cursor, pageable).getContent();
         }
 
-        boolean hasNext = comments.size() > size;
-        Long nextCursor = 0L;
-
-        if(hasNext) {
-            Comment lastComment = comments.get(size - 1);
-            nextCursor = lastComment.getId();
-            comments = comments.subList(0, size);
-        }
+        PaginationResult<Comment> paginationResult = PaginationUtil.paginate(comments, size);
+        comments = paginationResult.getItems();
 
         List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments);
 
-        return CommunityConverter.toGetCommentsListDto(commentsList, nextCursor, hasNext);
+        return CommunityConverter.toGetCommentsListDto(
+                commentsList,
+                paginationResult.getNextCursor(),
+                paginationResult.isHasNext());
     }
 
     public void likePost(Long postId){
@@ -207,5 +213,48 @@ public class CommunityService {
         String message=user.getName()+"님이 회원님의 게시글에 댓글을 달았습니다.";
 
         notificationService.sendNotification(author, NotificationType.COMMUNITY_ALARM, message, post, null);
+    }
+    public CommunityResponseDTO.TotalPostListDto getSearchPost(String query, String filter, String period, Long cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size + 1);
+        List<Post> posts;
+        LocalDateTime startDate = getStartDateByPeriod(period);
+
+        if(!filter.equals("title") && !filter.equals("content")){
+            throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
+        }
+        String searchField = filter.equals("title") ? "title" : "content";
+
+        if (searchField.equals("title")) { // 제목으로 검색
+            posts = (cursor == 0)
+                    ? postRepository.findByTitleContainingAndCreatedAtAfterOrderByIdDesc(query, startDate, pageable).getContent()
+                    : postRepository.findByTitleContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(query, startDate, cursor, pageable).getContent();
+        } else { // 내용으로 검색
+            posts = (cursor == 0)
+                    ? postRepository.findByContentContainingAndCreatedAtAfterOrderByIdDesc(query, startDate, pageable).getContent()
+                    : postRepository.findByContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(query, startDate, cursor, pageable).getContent();
+        }
+
+        popularSearch.updatePopularSearch(query, "community");
+
+        PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
+        posts = paginationResult.getItems();
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
+
+        return CommunityConverter.toTotalPostListDto(
+                null,
+                postList,
+                paginationResult.getNextCursor(),
+                paginationResult.isHasNext());
+    }
+    private LocalDateTime getStartDateByPeriod(String period) {
+        switch (period) {
+            case "1d": return LocalDateTime.now().minusDays(1);
+            case "7d": return LocalDateTime.now().minusDays(7);
+            case "1m": return LocalDateTime.now().minusMonths(1);
+            case "3m": return LocalDateTime.now().minusMonths(3);
+            case "6m": return LocalDateTime.now().minusMonths(6);
+            case "1y": return LocalDateTime.now().minusYears(1);
+            default: return LocalDateTime.of(2025, 1, 1, 0, 0); // 전체 조회
+        }
     }
 }

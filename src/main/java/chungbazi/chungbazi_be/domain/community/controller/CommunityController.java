@@ -3,8 +3,10 @@ package chungbazi.chungbazi_be.domain.community.controller;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
 import chungbazi.chungbazi_be.domain.community.service.CommunityService;
+import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import chungbazi.chungbazi_be.global.service.PopularSearchService;
 import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/community")
 public class CommunityController {
     private final CommunityService communityService;
+    private final PopularSearchService popularSearchService;
 
     @PostMapping(value = "/posts/upload", consumes = "multipart/form-data")
     @Operation(summary = "게시글 업로드 API",
@@ -58,9 +61,8 @@ public class CommunityController {
     public ApiResponse<CommunityResponseDTO.TotalPostListDto> getPosts(
             @RequestParam(required = false) Category category,
             @RequestParam Long cursor,
-            @RequestParam(defaultValue = "10") String size){
-        int paseSize = Integer.parseInt(size);
-        return ApiResponse.onSuccess(communityService.getPosts(category,cursor,paseSize));
+            @RequestParam(defaultValue = "10") int size){
+        return ApiResponse.onSuccess(communityService.getPosts(category, cursor, size));
     }
 
     @GetMapping(value = "/posts/{postId}")
@@ -82,9 +84,8 @@ public class CommunityController {
     public ApiResponse<CommunityResponseDTO.CommentListDto> getComments(
             @RequestParam Long postId,
             @RequestParam Long cursor,
-            @RequestParam(defaultValue = "10") String size){
-        int paseSize = Integer.parseInt(size);
-        return ApiResponse.onSuccess(communityService.getComments(postId, cursor, paseSize));
+            @RequestParam(defaultValue = "10") int size){
+        return ApiResponse.onSuccess(communityService.getComments(postId, cursor, size));
     }
     @PostMapping(value = "/likes")
     @Operation(summary = "개별 게시글 좋아요 API", description = "개별 게시글 좋아요 API")
@@ -97,5 +98,23 @@ public class CommunityController {
     public ApiResponse<Void> unlikePost(@RequestParam Long postId){
         communityService.unlikePost(postId);
         return ApiResponse.onSuccess(null);
+    }
+    @GetMapping("/search")
+    @Operation(summary = "커뮤니티 검색 API", description = "커뮤니티 검색 API")
+    public ApiResponse<CommunityResponseDTO.TotalPostListDto> getSearchPost(
+            @RequestParam String query,
+            @RequestParam(value = "filter", required = false, defaultValue = "title") String filter,
+            @RequestParam(value = "period", required = false, defaultValue = "all") String period,
+            @RequestParam Long cursor,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        CommunityResponseDTO.TotalPostListDto response = communityService.getSearchPost(query, filter, period, cursor, size);
+        return ApiResponse.onSuccess(response);
+    }
+    @GetMapping("/search/popular")
+    @Operation(summary = "커뮤니티 인기 검색어 조회 API", description = "커뮤니티 인기 검색어 조회 API")
+    public ApiResponse<PopularSearchResponse> getSearchPopular(){
+        PopularSearchResponse response = popularSearchService.getPopularSearch("community");
+        return ApiResponse.onSuccess(response);
     }
 }

@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.domain.community.utils;
+package chungbazi.chungbazi_be.global.utils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
