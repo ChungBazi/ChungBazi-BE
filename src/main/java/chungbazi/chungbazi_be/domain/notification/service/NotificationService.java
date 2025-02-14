@@ -53,7 +53,7 @@ public class NotificationService {
         //FCM 푸시 전송
         String fcmToken= fcmTokenService.getToken(user.getId());
         if(fcmToken!=null){
-            pushFCMNotification(fcmToken,type,message);
+            pushFCMNotification(fcmToken,message);
         }
         return NotificationResponseDTO.responseDto.builder()
                 .notificationId(notification.getId())
@@ -62,12 +62,11 @@ public class NotificationService {
     }
 
     //fcm한테 알림 요청
-    public void pushFCMNotification(String fcmToken,NotificationType type,String message) {
+    public void pushFCMNotification(String fcmToken,String message) {
         try {
             com.google.firebase.messaging.Notification notification =
                     com.google.firebase.messaging.Notification.builder()
                             .setTitle("새로운 알림이 도착했습니다.")
-                            .setBody("[" + type.toString() + "]" + message)
                             .build();
 
             Message firebaseMessage = Message.builder()
