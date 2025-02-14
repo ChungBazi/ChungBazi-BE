@@ -61,9 +61,8 @@ public class CommunityController {
     public ApiResponse<CommunityResponseDTO.TotalPostListDto> getPosts(
             @RequestParam(required = false) Category category,
             @RequestParam Long cursor,
-            @RequestParam(defaultValue = "10") String size){
-        int paseSize = Integer.parseInt(size);
-        return ApiResponse.onSuccess(communityService.getPosts(category,cursor,paseSize));
+            @RequestParam(defaultValue = "10") int size){
+        return ApiResponse.onSuccess(communityService.getPosts(category, cursor, size));
     }
 
     @GetMapping(value = "/posts/{postId}")
@@ -85,9 +84,8 @@ public class CommunityController {
     public ApiResponse<CommunityResponseDTO.CommentListDto> getComments(
             @RequestParam Long postId,
             @RequestParam Long cursor,
-            @RequestParam(defaultValue = "10") String size){
-        int paseSize = Integer.parseInt(size);
-        return ApiResponse.onSuccess(communityService.getComments(postId, cursor, paseSize));
+            @RequestParam(defaultValue = "10") int size){
+        return ApiResponse.onSuccess(communityService.getComments(postId, cursor, size));
     }
     @PostMapping(value = "/likes")
     @Operation(summary = "개별 게시글 좋아요 API", description = "개별 게시글 좋아요 API")
