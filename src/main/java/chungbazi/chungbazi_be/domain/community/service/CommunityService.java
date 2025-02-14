@@ -27,12 +27,18 @@ import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandle
 import chungbazi.chungbazi_be.global.s3.S3Manager;
 import chungbazi.chungbazi_be.global.utils.PaginationResult;
 import chungbazi.chungbazi_be.global.utils.PaginationUtil;
+import chungbazi.chungbazi_be.global.utils.PopularSearch;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +56,8 @@ public class CommunityService {
     private final NotificationService notificationService;
     private final UserHelper userHelper;
     private final HeartRepository heartRepository;
+    private final PopularSearch popularSearch;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -226,7 +234,7 @@ public class CommunityService {
                     : postRepository.findByContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(query, startDate, cursor, pageable).getContent();
         }
 
-        //updatePopularSearch(query); 인기검색어
+        popularSearch.updatePopularSearch(query, "community");
 
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
         posts = paginationResult.getItems();

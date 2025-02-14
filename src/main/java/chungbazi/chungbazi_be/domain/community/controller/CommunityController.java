@@ -3,8 +3,10 @@ package chungbazi.chungbazi_be.domain.community.controller;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
 import chungbazi.chungbazi_be.domain.community.service.CommunityService;
+import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import chungbazi.chungbazi_be.global.service.PopularSearchService;
 import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/community")
 public class CommunityController {
     private final CommunityService communityService;
+    private final PopularSearchService popularSearchService;
 
     @PostMapping(value = "/posts/upload", consumes = "multipart/form-data")
     @Operation(summary = "게시글 업로드 API",
@@ -108,6 +111,12 @@ public class CommunityController {
             @RequestParam(defaultValue = "10") int size
     ) {
         CommunityResponseDTO.TotalPostListDto response = communityService.getSearchPost(query, filter, period, cursor, size);
+        return ApiResponse.onSuccess(response);
+    }
+    @GetMapping("/search/popular")
+    @Operation(summary = "커뮤니티 인기 검색어 조회 API", description = "커뮤니티 인기 검색어 조회 API")
+    public ApiResponse<PopularSearchResponse> getSearchPopular(){
+        PopularSearchResponse response = popularSearchService.getPopularSearch("community");
         return ApiResponse.onSuccess(response);
     }
 }
