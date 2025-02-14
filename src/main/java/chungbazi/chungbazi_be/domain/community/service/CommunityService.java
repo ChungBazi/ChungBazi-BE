@@ -25,6 +25,7 @@ import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import chungbazi.chungbazi_be.global.s3.S3Manager;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -207,5 +208,49 @@ public class CommunityService {
         String message=user.getName()+"님이 회원님의 게시글에 댓글을 달았습니다.";
 
         notificationService.sendNotification(author, NotificationType.COMMUNITY_ALARM, message, post, null);
+    }
+    public CommunityResponseDTO.TotalPostListDto getSearchPost(String query, String filter, String period, Long cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size + 1);
+        List<Post> posts;
+        LocalDateTime startDate = getStartDateByPeriod(period);
+        if(!filter.equals("title") && !filter.equals("content")){
+            throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
+        }
+        String searchField = filter.equals("title") ? "title" : "content";
+
+        if (searchField.equals("title")) { // 제목으로 검색
+            posts = (cursor == 0)
+                    ? postRepository.findByTitleContainingAndCreatedAtAfterOrderByIdDesc(query, startDate, pageable).getContent()
+                    : postRepository.findByTitleContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(query, startDate, cursor, pageable).getContent();
+        } else { // 내용으로 검색
+            posts = (cursor == 0)
+                    ? postRepository.findByContentContainingAndCreatedAtAfterOrderByIdDesc(query, startDate, pageable).getContent()
+                    : postRepository.findByContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(query, startDate, cursor, pageable).getContent();
+        }
+
+        boolean hasNext = posts.size() > size;
+        Long nextCursor = 0L;
+
+        if (hasNext) {
+            Post lastPost = posts.get(size - 1);
+            nextCursor = lastPost.getId();
+            posts = posts.subList(0, size);
+        }
+
+        //updatePopularSearch(query); 인기검색어
+
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
+        return CommunityConverter.toTotalPostListDto(null, postList, nextCursor, hasNext);
+    }
+    private LocalDateTime getStartDateByPeriod(String period) {
+        switch (period) {
+            case "1d": return LocalDateTime.now().minusDays(1);
+            case "7d": return LocalDateTime.now().minusDays(7);
+            case "1m": return LocalDateTime.now().minusMonths(1);
+            case "3m": return LocalDateTime.now().minusMonths(3);
+            case "6m": return LocalDateTime.now().minusMonths(6);
+            case "1y": return LocalDateTime.now().minusYears(1);
+            default: return LocalDateTime.of(2025, 1, 1, 0, 0); // 전체 조회
+        }
     }
 }

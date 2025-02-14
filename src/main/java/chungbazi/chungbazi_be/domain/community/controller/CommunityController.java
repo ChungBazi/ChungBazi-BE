@@ -98,4 +98,16 @@ public class CommunityController {
         communityService.unlikePost(postId);
         return ApiResponse.onSuccess(null);
     }
+    @GetMapping("/search")
+    @Operation(summary = "커뮤니티 검색 API", description = "커뮤니티 검색 API")
+    public ApiResponse<CommunityResponseDTO.TotalPostListDto> getSearchPost(
+            @RequestParam String query,
+            @RequestParam(value = "filter", required = false, defaultValue = "title") String filter,
+            @RequestParam(value = "period", required = false, defaultValue = "all") String period,
+            @RequestParam Long cursor,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        CommunityResponseDTO.TotalPostListDto response = communityService.getSearchPost(query, filter, period, cursor, size);
+        return ApiResponse.onSuccess(response);
+    }
 }
