@@ -25,6 +25,8 @@ import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import chungbazi.chungbazi_be.global.s3.S3Manager;
+import chungbazi.chungbazi_be.global.utils.PaginationResult;
+import chungbazi.chungbazi_be.global.utils.PaginationUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,19 +65,17 @@ public class CommunityService {
                     : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, cursor, pageable).getContent();
         }
 
-        boolean hasNext = posts.size() > size;
-        Long nextCursor = 0L;
-
-        if(hasNext) {
-            Post lastPost = posts.get(size - 1);
-            nextCursor = lastPost.getId();
-            posts = posts.subList(0, size);
-        }
+        PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
+        posts = paginationResult.getItems();
 
         List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
         Long totalPostCount = postRepository.countPostByCategory(category);
 
-        return CommunityConverter.toTotalPostListDto(totalPostCount, postList, nextCursor, hasNext);
+        return CommunityConverter.toTotalPostListDto(
+                totalPostCount,
+                postList,
+                paginationResult.getNextCursor(),
+                paginationResult.isHasNext());
     }
     public CommunityResponseDTO.UploadAndGetPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
 
@@ -155,18 +155,15 @@ public class CommunityService {
             comments = commentRepository.findByPostIdAndIdGreaterThanOrderByIdAsc(postId, cursor, pageable).getContent();
         }
 
-        boolean hasNext = comments.size() > size;
-        Long nextCursor = 0L;
-
-        if(hasNext) {
-            Comment lastComment = comments.get(size - 1);
-            nextCursor = lastComment.getId();
-            comments = comments.subList(0, size);
-        }
+        PaginationResult<Comment> paginationResult = PaginationUtil.paginate(comments, size);
+        comments = paginationResult.getItems();
 
         List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments);
 
-        return CommunityConverter.toGetCommentsListDto(commentsList, nextCursor, hasNext);
+        return CommunityConverter.toGetCommentsListDto(
+                commentsList,
+                paginationResult.getNextCursor(),
+                paginationResult.isHasNext());
     }
 
     public void likePost(Long postId){
@@ -213,6 +210,7 @@ public class CommunityService {
         Pageable pageable = PageRequest.of(0, size + 1);
         List<Post> posts;
         LocalDateTime startDate = getStartDateByPeriod(period);
+
         if(!filter.equals("title") && !filter.equals("content")){
             throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
         }
@@ -228,19 +226,17 @@ public class CommunityService {
                     : postRepository.findByContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(query, startDate, cursor, pageable).getContent();
         }
 
-        boolean hasNext = posts.size() > size;
-        Long nextCursor = 0L;
-
-        if (hasNext) {
-            Post lastPost = posts.get(size - 1);
-            nextCursor = lastPost.getId();
-            posts = posts.subList(0, size);
-        }
-
         //updatePopularSearch(query); 인기검색어
 
+        PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
+        posts = paginationResult.getItems();
         List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
-        return CommunityConverter.toTotalPostListDto(null, postList, nextCursor, hasNext);
+
+        return CommunityConverter.toTotalPostListDto(
+                null,
+                postList,
+                paginationResult.getNextCursor(),
+                paginationResult.isHasNext());
     }
     private LocalDateTime getStartDateByPeriod(String period) {
         switch (period) {
