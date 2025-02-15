@@ -46,7 +46,7 @@ public class UserAuthService {
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-
-        userRepository.delete(user);
+        // 유저 익명화 (username & email 무력화)
+        userRepository.anonymizeUser(userId);
     }
 }
