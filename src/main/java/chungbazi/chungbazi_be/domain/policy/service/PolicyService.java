@@ -21,6 +21,7 @@ import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
+import chungbazi.chungbazi_be.global.utils.PopularSearch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.Tuple;
 import java.time.LocalDate;
@@ -50,6 +51,7 @@ public class PolicyService {
     private final RedisTemplate<String, String> redisTemplate;
     private final CartService cartService;
     private final CalendarDocumentService calendarDocumentService;
+    private final PopularSearch popularSearch;
 
 
     @Value("${webclient.openApiVlak}")
@@ -114,10 +116,8 @@ public class PolicyService {
             throw new GeneralException(ErrorStatus.NO_SEARCH_NAME);
         }
 
-        String normalizedName = normalizeSearchItem(name);
-
         // 인기 검색어에 반영
-        updatePopularSearch(normalizedName);
+        popularSearch.updatePopularSearch(name, "policy");
 
         // 검색 결과 반환
         List<Tuple> policies = policyRepository.searchPolicyWithName(name, cursor, size + 1, order);
@@ -144,21 +144,6 @@ public class PolicyService {
 
         return PolicyListResponse.of(policyDtoList, nextCursor, hasNext);
     }
-
-
-    // 인기 검색어 조회
-    public PopularSearchResponse getPopularSearch() {
-
-        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
-        String key = "ranking:" + LocalDate.now().format(DateTimeFormatter.ISO_DATE);
-
-        //상위 6개 검색어 반환
-        Set<String> result = zSetOperations.reverseRange(key, 0, 5);
-        List<String> resultList = result.stream().toList();
-        return PopularSearchResponse.from(resultList);
-
-    }
-
 
     // 카테고리별 정책 조회
     public PolicyListResponse getCategoryPolicy(Category categoryName, Long cursor, int size, String order) {
@@ -233,52 +218,6 @@ public class PolicyService {
         }
 
         return false;
-    }
-
-
-    // 띄어쓰기, 대소문자 구분 X
-    private String normalizeSearchItem(String searchItem) {
-
-        //소문자 변환
-        String normalized = searchItem.toLowerCase();
-
-        //띄어쓰기 제거
-        normalized = normalized.replaceAll("\\s+", " ");
-
-        return normalized;
-    }
-
-
-    // 인기 검색어에 반영
-    private void updatePopularSearch(String normalizedName) {
-        ZSetOperations<String, String> zSetOperations = redisTemplate.opsForZSet();  //Sorted Set을 다루기 위한 인터페이스
-
-        // 인기 검색어에 반영 (오늘 포함 3일치 key에 저장, 오늘+1/내일+0.6/내일모레+0.3
-        for (int i = 0; i < 3; i++) {
-
-            String key = "ranking:" + LocalDate.now().plusDays(i).format(DateTimeFormatter.ISO_DATE);
-
-            // 키 존재 여부 확인, TTL 설정
-            boolean keyExists = Boolean.TRUE.equals(redisTemplate.hasKey(key));
-            if (!keyExists) {
-                redisTemplate.expire(key, 3, TimeUnit.DAYS);
-            }
-
-            Double cnt = zSetOperations.score(key, normalizedName); // score는 double 타입을 반환
-
-            double num = switch (i) {
-                case 0 -> 1;
-                case 1 -> 0.6;
-                case 2 -> 0.3;
-                default -> 0;
-            };
-
-            if (cnt == null) {
-                zSetOperations.add(key, normalizedName, num);
-            } else {
-                zSetOperations.add(key, normalizedName, cnt + num);
-            }
-        }
     }
 
     public Policy findByPolicyId(Long policyId) {

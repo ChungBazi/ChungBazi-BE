@@ -4,17 +4,32 @@ import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingResDto;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.NotificationSetting;
+import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 
 public class NotificationConverter {
 
     public static NotificationResponseDTO.notificationDto toNotificationDto(Notification notification){
+        Long policyId = null;
+        Long postId = null;
+
+        // notification 타입에 따라 관련 ID를 할당해줘 피카~
+        if (notification.getType() == NotificationType.POLICY_ALARM) {
+            if (notification.getPolicy() != null) {
+                policyId = notification.getPolicy().getId();
+            }
+        } else if (notification.getType() == NotificationType.COMMUNITY_ALARM) {
+            if (notification.getPost() != null) {
+                postId = notification.getPost().getId();
+            }
+        }
+
         return NotificationResponseDTO.notificationDto.builder()
                 .notificationId(notification.getId())
                 .isRead(notification.isRead())
                 .message(notification.getMessage())
                 .type(notification.getType())
-                .policyId(notification.getPolicy().getId())
-                .postId(notification.getPost().getId())
+                .policyId(policyId)  // POLICY 타입일 경우에만 값이 들어감 피카~
+                .postId(postId)      // COMMUNITY 타입일 경우에만 값이 들어감 피카~
                 .formattedCreatedAt(notification.getFormattedCreatedAt())
                 .build();
     }

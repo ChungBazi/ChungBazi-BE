@@ -1,6 +1,6 @@
 package chungbazi.chungbazi_be.domain.community.entity;
 
-import chungbazi.chungbazi_be.domain.community.utils.TimeFormatter;
+import chungbazi.chungbazi_be.global.utils.TimeFormatter;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
@@ -78,5 +78,12 @@ public class Post extends BaseTimeEntity {
     }
     public void incrementViews() {
         this.views = this.views + 1;
+    }
+
+    public void incrementLike(){this.postLikes = this.postLikes + 1;}
+    public void decrementLike(){
+        if(this.postLikes > 0) {
+            this.postLikes -= 1;
+        }
     }
 }

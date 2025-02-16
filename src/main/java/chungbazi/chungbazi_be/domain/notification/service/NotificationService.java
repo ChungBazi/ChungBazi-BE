@@ -17,6 +17,8 @@ import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
+import chungbazi.chungbazi_be.global.utils.PaginationResult;
+import chungbazi.chungbazi_be.global.utils.PaginationUtil;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -53,7 +55,7 @@ public class NotificationService {
         //FCM 푸시 전송
         String fcmToken= fcmTokenService.getToken(user.getId());
         if(fcmToken!=null){
-            pushFCMNotification(fcmToken,type,message);
+            pushFCMNotification(fcmToken,message);
         }
         return NotificationResponseDTO.responseDto.builder()
                 .notificationId(notification.getId())
@@ -62,12 +64,11 @@ public class NotificationService {
     }
 
     //fcm한테 알림 요청
-    public void pushFCMNotification(String fcmToken,NotificationType type,String message) {
+    public void pushFCMNotification(String fcmToken,String message) {
         try {
             com.google.firebase.messaging.Notification notification =
                     com.google.firebase.messaging.Notification.builder()
                             .setTitle("새로운 알림이 도착했습니다.")
-                            .setBody("[" + type.toString() + "]" + message)
                             .build();
 
             Message firebaseMessage = Message.builder()
@@ -102,14 +103,9 @@ public class NotificationService {
 
         List<Notification> notificationList = notificationRepository.findNotificationsByUserIdAndNotificationType(userId, type, cursor, limit + 1);
 
-        Long nextCursor = null;
-        boolean hasNext=notificationList.size() > limit;
+        PaginationResult<Notification> paginationResult = PaginationUtil.paginate(notificationList, limit);
 
-        if (hasNext) {
-            Notification lastNotification = notificationList.get(limit - 1);
-            nextCursor = lastNotification.getId();
-            notificationList = notificationList.subList(0, limit);
-        }
+        notificationList=paginationResult.getItems();
 
         List<NotificationResponseDTO.notificationDto> notificationDtos=notificationList.stream()
                 .map(notification -> NotificationConverter.toNotificationDto(notification))
@@ -117,8 +113,8 @@ public class NotificationService {
 
         return NotificationResponseDTO.notificationListDto.builder()
                 .notifications(notificationDtos)
-                .nextCursor(nextCursor)
-                .hasNext(hasNext)
+                .nextCursor(paginationResult.getNextCursor())
+                .hasNext(paginationResult.isHasNext())
                 .build();
 
     }

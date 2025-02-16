@@ -1,7 +1,7 @@
 package chungbazi.chungbazi_be.domain.notification.entity;
 
 import chungbazi.chungbazi_be.domain.community.entity.Post;
-import chungbazi.chungbazi_be.domain.community.utils.TimeFormatter;
+import chungbazi.chungbazi_be.global.utils.TimeFormatter;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.user.entity.User;

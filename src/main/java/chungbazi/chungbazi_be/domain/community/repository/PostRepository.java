@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.domain.community.repository;
 
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,4 +30,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     //user의 게시글 수
     @Query("SELECT  COUNT(p) FROM Post p WHERE p.author.id= :authorId ")
     int countPostByAuthorId(@Param("authorId") Long authorId);
+    //제목으로 검색
+    Page<Post> findByTitleContainingAndCreatedAtAfterOrderByIdDesc(String title, LocalDateTime startDate, Pageable pageable);
+    Page<Post> findByTitleContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(String title, LocalDateTime startDate, Long cursor, Pageable pageable);
+    //내용으로 검색
+    Page<Post> findByContentContainingAndCreatedAtAfterOrderByIdDesc(String title, LocalDateTime startDate, Pageable pageable);
+    Page<Post> findByContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(String title, LocalDateTime startDate, Long cursor, Pageable pageable);
+
+
 }

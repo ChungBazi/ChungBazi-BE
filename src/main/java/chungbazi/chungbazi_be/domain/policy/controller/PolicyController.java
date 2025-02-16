@@ -9,6 +9,7 @@ import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.service.PolicyService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import chungbazi.chungbazi_be.global.service.PopularSearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class PolicyController {
 
     private final PolicyService policyService;
     private final CalendarDocumentService calendarDocumentService;
+    private final PopularSearchService popularSearchService;
 
     // 정책 검색
     @Operation(summary = "정책 검색 API", description = "정책 검색")
@@ -43,8 +45,7 @@ public class PolicyController {
     @Operation(summary = "인기 검색어 조회 API", description = "인기 검색어 조회")
     @GetMapping("/search/popular")
     public ApiResponse<PopularSearchResponse> getPopularSearch() {
-
-        PopularSearchResponse response = policyService.getPopularSearch();
+        PopularSearchResponse response = popularSearchService.getPopularSearch("policy");
         return ApiResponse.onSuccess(response);
     }
 
