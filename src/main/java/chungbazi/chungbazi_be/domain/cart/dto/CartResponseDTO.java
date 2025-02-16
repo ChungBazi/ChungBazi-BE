@@ -26,5 +26,6 @@ public class CartResponseDTO {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
         private LocalDate endDate;
         private Integer dDay;
+        private Long policyId;
     }
 }
