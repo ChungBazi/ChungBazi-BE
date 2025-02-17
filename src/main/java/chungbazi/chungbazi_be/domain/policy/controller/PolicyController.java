@@ -5,6 +5,7 @@ import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarDetailResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyRecommendResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.service.PolicyService;
@@ -90,5 +91,15 @@ public class PolicyController {
         return ApiResponse.onSuccess(response);
     }
 
+    // 추천 정책 조회
+    @Operation(summary = "추천 정책 조회 API", description = "추천 정책 상세 조회")
+    @GetMapping("/recommend")
+    public ApiResponse<PolicyRecommendResponse> getRecommendPolicy(@RequestParam Category category,
+                                                                   @RequestParam(value = "cursor", required = false) Long cursor,
+                                                                   @RequestParam(value = "size", defaultValue = "15", required = false) int size,
+                                                                   @RequestParam(value = "order", defaultValue = "latest", required = false) String order) {
 
+        PolicyRecommendResponse response = policyService.getRecommendPolicy(category, cursor, size, order);
+        return ApiResponse.onSuccess(response);
+    }
 }

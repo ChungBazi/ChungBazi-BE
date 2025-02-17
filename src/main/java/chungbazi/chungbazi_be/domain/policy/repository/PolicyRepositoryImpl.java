@@ -73,6 +73,19 @@ public class PolicyRepositoryImpl implements PolicyRepositoryCustom {
         return policies;
     }
 
+    @Override
+    public List<Policy> findByCategory(Category category, Long cursor, int size, String order) {
+        return jpaQueryFactory
+                .selectFrom(policy)
+                .where(
+                        policy.category.eq(category), // 정책 카테고리 필터링
+                        ltCursorId(cursor, policy)
+                )
+                .orderBy(orderSpecifiers(order, policy))
+                .limit(size)
+                .fetch();
+    }
+
 
     // 이름 검색
     private BooleanExpression searchName(String name, QPolicy policy) {

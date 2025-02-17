@@ -12,4 +12,7 @@ public interface PolicyRepositoryCustom {
     String generateNextCursor(Tuple policy, String name);
 
     List<Policy> getPolicyWithCategory(Category category, Long cursor, int size, String order);
+
+    List<Policy> findByCategory(Category category, Long cursor, int size, String order);
+
 }
