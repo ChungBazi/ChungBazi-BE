@@ -273,11 +273,18 @@ public class PolicyService {
 
         Set<Category> userCategories = getUserInterests(user);
         List<Policy> policies = policyRepository.findByCategory(category, cursor, size, order);
-        boolean hasNext = policies.size() > size;
+        List<Policy> filteredPolicies = policies.stream()
+                .filter(policy -> employment.getDescription().equals(policy.getEmployment())
+                        || policy.getEmployment() == null)
+                .toList();
+        boolean hasNext = filteredPolicies.size() > size;
+        if (hasNext) {
+            filteredPolicies = filteredPolicies.subList(0, size);
+        }
         return PolicyRecommendResponse.of(policies, userCategories, hasNext);
     }
 
-    
+
     private Set<Category> getUserInterests(User user) {
         List<UserInterest> userInterests = user.getUserInterestList();
 

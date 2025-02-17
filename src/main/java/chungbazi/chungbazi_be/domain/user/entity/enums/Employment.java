@@ -4,8 +4,8 @@ import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import java.util.Arrays;
+import lombok.Getter;
 
 public enum Employment {
     EMPLOYED("재직자"),
@@ -17,6 +17,7 @@ public enum Employment {
     TEMPORARY_WORKER("단기근로자"),
     AGRICULTURAL("영농종사자");
 
+    @Getter
     private final String description;
 
     Employment(String description) {
