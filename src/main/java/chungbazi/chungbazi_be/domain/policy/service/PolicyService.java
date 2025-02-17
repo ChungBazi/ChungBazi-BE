@@ -274,8 +274,8 @@ public class PolicyService {
         Set<Category> userCategories = getUserInterests(user);
         List<Policy> policies = policyRepository.findByCategory(category, cursor, size, order);
         List<Policy> filteredPolicies = policies.stream()
-                .filter(policy -> employment.getDescription().equals(policy.getEmployment())
-                        || policy.getEmployment() == null)
+                .filter(policy -> policy.getEmployment() == null || employment.getDescription()
+                        .equals(policy.getEmployment()))
                 .toList();
         boolean hasNext = filteredPolicies.size() > size;
         if (hasNext) {
