@@ -10,13 +10,17 @@ import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListOneResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyListResponse;
-import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
+import chungbazi.chungbazi_be.domain.policy.dto.PolicyRecommendResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyListResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.policy.entity.QPolicy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
+import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.entity.enums.Employment;
+import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
@@ -29,13 +33,13 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -52,6 +56,7 @@ public class PolicyService {
     private final CartService cartService;
     private final CalendarDocumentService calendarDocumentService;
     private final PopularSearch popularSearch;
+    private final UserHelper userHelper;
 
 
     @Value("${webclient.openApiVlak}")
@@ -255,5 +260,54 @@ public class PolicyService {
         List<CalendarDocument> documents = calendarDocumentService.findAllByCart_Id(cartId);
 
         return PolicyCalendarDetailResponse.of(cart, policy, documents);
+    }
+
+    public PolicyRecommendResponse getRecommendPolicy(Category category, Long cursor, int size, String order) {
+
+        User user = userHelper.getAuthenticatedUser();
+
+        //Education education = user.getEducation();
+        Employment employment = user.getEmployment();
+        //Income income = user.getIncome();
+        //List<UserAddition> userAdditions = user.getUserAdditionList();
+
+        Set<Category> userCategories = getUserInterests(user);
+        List<Policy> policies = policyRepository.findByCategory(category, cursor, size, order);
+        boolean hasNext = policies.size() > size;
+        return PolicyRecommendResponse.of(policies, userCategories, hasNext);
+    }
+
+    
+    private Set<Category> getUserInterests(User user) {
+        List<UserInterest> userInterests = user.getUserInterestList();
+
+        Set<Category> userCategories = new HashSet<>();
+
+        Set<String> jobs = new HashSet<>(Arrays.asList("일자리", "창업", "진로", "대외활동"));
+        Set<String> housing = new HashSet<>(Arrays.asList("주거", "금융", "생활지원"));
+        Set<String> education = new HashSet<>(Arrays.asList("문화예술", "대외활동", "금융", "마음건강", "생활지원", "신체건강"));
+        Set<String> culture = new HashSet<>(Arrays.asList("문화예술", "대외활동", "금융", "마음건강", "생활지원", "신체건강"));
+        Set<String> rights = new HashSet<>(Arrays.asList("대외활동", "금융", "생활지원"));
+
+        userInterests.forEach(userInterest -> {
+            String target = userInterest.getInterest().getName();
+
+            if (jobs.contains(target)) {
+                userCategories.add(Category.JOBS);
+            }
+            if (housing.contains(target)) {
+                userCategories.add(Category.HOUSING);
+            }
+            if (education.contains(target)) {
+                userCategories.add(Category.EDUCATION);
+            }
+            if (culture.contains(target)) {
+                userCategories.add(Category.WELFARE_CULTURE);
+            }
+            if (rights.contains(target)) {
+                userCategories.add(Category.PARTICIPATION_RIGHTS);
+            }
+        });
+        return userCategories;
     }
 }

@@ -19,7 +19,6 @@ import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -58,7 +57,7 @@ public class CartService {
         Cart cart = new Cart(policy, user);
         cartRepository.save(cart);
 
-        if(user.getNotificationSetting().isPolicyAlarm() &&policy.getEndDate()!=null) {
+        if (user.getNotificationSetting().isPolicyAlarm() && policy.getEndDate() != null) {
             sendPolicyNotification(policy);
         }
 
@@ -159,15 +158,16 @@ public class CartService {
         return cartRepository.findById(cartId).orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CART));
     }
 
-    public void sendPolicyNotification(Policy policy){
-        User user= userHelper.getAuthenticatedUser();
-        LocalDate notificationDate=policy.getEndDate().minusDays(3);
+    public void sendPolicyNotification(Policy policy) {
+        User user = userHelper.getAuthenticatedUser();
+        LocalDate notificationDate = policy.getEndDate().minusDays(3);
 
-        if(notificationDate.isAfter(LocalDate.now())){
-            taskScheduler.schedule(()->{
-                String message= policy.getName()+"가 3일 뒤 마감됩니다!";
-                notificationService.sendNotification(user, NotificationType.POLICY_ALARM,message,null,policy);
-            },notificationDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        if (notificationDate.isAfter(LocalDate.now())) {
+            taskScheduler.schedule(() -> {
+                String message = policy.getName() + "가 3일 뒤 마감됩니다!";
+                notificationService.sendNotification(user, NotificationType.POLICY_ALARM, message, null, policy);
+            }, notificationDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         }
     }
+
 }
