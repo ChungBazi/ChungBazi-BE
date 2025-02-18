@@ -14,12 +14,16 @@ public class PolicyRecommendResponse {
     private List<PolicyListOneResponse> policies;
     private Set<Category> interests;
     private boolean hasNext;
+    private Long nextCursor;
 
     public static PolicyRecommendResponse of(List<Policy> policies, Set<Category> interests, boolean hasNext) {
         List<PolicyListOneResponse> response = policies.stream()
                 .map(PolicyListOneResponse::from)
                 .toList();
 
-        return PolicyRecommendResponse.builder().policies(response).interests(interests).hasNext(hasNext).build();
+        Long nextCursor = hasNext ? policies.get(policies.size() - 1).getId() : null;
+
+        return PolicyRecommendResponse.builder().policies(response).interests(interests).hasNext(hasNext)
+                .nextCursor(nextCursor).build();
     }
 }

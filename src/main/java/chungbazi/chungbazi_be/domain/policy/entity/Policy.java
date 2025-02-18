@@ -3,12 +3,19 @@ package chungbazi.chungbazi_be.domain.policy.entity;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.policy.dto.YouthPolicyResponse;
 import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,11 +69,10 @@ public class Policy extends BaseTimeEntity {
     // 전공 요건 내용
     @Column(length = 1000)
     private String major;
-
+*/
     // 취업 상태 내용
     @Column(length = 1000)
     private String employment;
-    */
 
     // 소득 조건 코드
     //private String incomeCode;

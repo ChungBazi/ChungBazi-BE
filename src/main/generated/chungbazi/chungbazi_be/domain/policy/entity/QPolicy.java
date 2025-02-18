@@ -37,6 +37,8 @@ public class QPolicy extends EntityPathBase<Policy> {
 
     public final StringPath document = createString("document");
 
+    public final StringPath employment = createString("employment");
+
     public final DatePath<java.time.LocalDate> endDate = createDate("endDate", java.time.LocalDate.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
