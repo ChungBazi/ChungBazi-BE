@@ -3,7 +3,6 @@ package chungbazi.chungbazi_be.domain.notification.service;
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.converter.NotificationConverter;
-import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingReqDto;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingResDto;
@@ -15,6 +14,7 @@ import chungbazi.chungbazi_be.domain.notification.repository.NotificationSetting
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import chungbazi.chungbazi_be.global.utils.PaginationResult;
@@ -39,6 +39,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final FCMTokenService fcmTokenService;
     private final NotificationSettingRepository notificationSettingRepository;
+    private final UserHelper userHelper;
 
     public NotificationResponseDTO.responseDto sendNotification(User user, NotificationType type, String message, Post post, Policy policy) {
         Notification notification=Notification.builder()
@@ -145,6 +146,14 @@ public class NotificationService {
         NotificationSetting setting=user.getNotificationSetting();
 
         return NotificationConverter.toSettingResDto(setting);
+    }
+
+    //안 읽은 알림이 있는지 검사하는 로직
+    public boolean isReadAllNotification(){
+        User user=userHelper.getAuthenticatedUser();
+
+        return user.getNotificationList().stream()
+                .anyMatch(notification -> !notification.isRead());
     }
 
 
