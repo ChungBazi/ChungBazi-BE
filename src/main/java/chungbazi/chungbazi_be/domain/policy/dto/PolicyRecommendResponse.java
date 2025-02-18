@@ -13,10 +13,11 @@ public class PolicyRecommendResponse {
 
     private List<PolicyListOneResponse> policies;
     private Set<Category> interests;
+    private boolean isReadAllNotifications;
     private boolean hasNext;
     private Long nextCursor;
 
-    public static PolicyRecommendResponse of(List<Policy> policies, Set<Category> interests, boolean hasNext) {
+    public static PolicyRecommendResponse of(List<Policy> policies, Set<Category> interests, boolean hasNext,boolean isReadAllNotifications) {
         List<PolicyListOneResponse> response = policies.stream()
                 .map(PolicyListOneResponse::from)
                 .toList();
@@ -24,6 +25,6 @@ public class PolicyRecommendResponse {
         Long nextCursor = hasNext ? policies.get(policies.size() - 1).getId() : null;
 
         return PolicyRecommendResponse.builder().policies(response).interests(interests).hasNext(hasNext)
-                .nextCursor(nextCursor).build();
+                .isReadAllNotifications(isReadAllNotifications).nextCursor(nextCursor).build();
     }
 }
