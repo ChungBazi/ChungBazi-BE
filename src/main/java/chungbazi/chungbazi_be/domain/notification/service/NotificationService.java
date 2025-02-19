@@ -27,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +58,10 @@ public class NotificationService {
         //FCM 푸시 전송
         String fcmToken= fcmTokenService.getToken(user.getId());
         if(fcmToken!=null){
-            pushFCMNotification(fcmToken,message);
+            Long policyId = (policy != null) ? policy.getId() : null;
+            Long postId = (post != null) ? post.getId() : null;
+
+            pushFCMNotification(fcmToken,message,policyId, postId, type);
         }
         return NotificationResponseDTO.responseDto.builder()
                 .notificationId(notification.getId())
@@ -65,16 +70,27 @@ public class NotificationService {
     }
 
     //fcm한테 알림 요청
-    public void pushFCMNotification(String fcmToken,String message) {
+    public void pushFCMNotification(String fcmToken,String message,Long policyId, Long postId, NotificationType type) {
         try {
             com.google.firebase.messaging.Notification notification =
                     com.google.firebase.messaging.Notification.builder()
                             .setTitle("새로운 알림이 도착했습니다.")
+                            .setBody(message)
                             .build();
+
+            Map<String, String> data = new HashMap<>();
+            if (policyId != null) {
+                data.put("policyId", policyId.toString());
+            }
+            if (postId != null) {
+                data.put("postId", postId.toString());
+            }
+            data.put("notificationType", type.toString());
 
             Message firebaseMessage = Message.builder()
                     .setToken(fcmToken)
                     .setNotification(notification)
+                    .putAllData(data)
                     .build();
 
             String response = FirebaseMessaging.getInstance().send(firebaseMessage);
