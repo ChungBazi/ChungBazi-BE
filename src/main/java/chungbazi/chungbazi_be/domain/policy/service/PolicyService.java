@@ -286,7 +286,7 @@ public class PolicyService {
 
         boolean isReadAllNotifications=notificationService.isReadAllNotification();
 
-        return PolicyRecommendResponse.of(policies, userCategories, hasNext,isReadAllNotifications);
+        return PolicyRecommendResponse.of(policies, userCategories, hasNext,isReadAllNotifications, user.getName());
     }
 
 
