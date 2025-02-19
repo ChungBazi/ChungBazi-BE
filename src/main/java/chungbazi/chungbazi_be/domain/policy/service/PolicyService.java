@@ -281,7 +281,7 @@ public class PolicyService {
         if (hasNext) {
             filteredPolicies = filteredPolicies.subList(0, size);
         }
-        return PolicyRecommendResponse.of(policies, userCategories, hasNext);
+        return PolicyRecommendResponse.of(policies, userCategories, hasNext, user.getName());
     }
 
 
