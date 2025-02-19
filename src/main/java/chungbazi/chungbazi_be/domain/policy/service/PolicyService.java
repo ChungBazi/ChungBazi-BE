@@ -5,6 +5,7 @@ import chungbazi.chungbazi_be.domain.cart.entity.Cart;
 import chungbazi.chungbazi_be.domain.cart.service.CartService;
 import chungbazi.chungbazi_be.domain.document.entity.CalendarDocument;
 import chungbazi.chungbazi_be.domain.document.service.CalendarDocumentService;
+import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarDetailResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
@@ -57,6 +58,7 @@ public class PolicyService {
     private final CalendarDocumentService calendarDocumentService;
     private final PopularSearch popularSearch;
     private final UserHelper userHelper;
+    private final NotificationService notificationService;
 
 
     @Value("${webclient.openApiVlak}")
@@ -281,7 +283,10 @@ public class PolicyService {
         if (hasNext) {
             filteredPolicies = filteredPolicies.subList(0, size);
         }
-        return PolicyRecommendResponse.of(policies, userCategories, hasNext, user.getName());
+
+        boolean isReadAllNotifications=notificationService.isReadAllNotification();
+
+        return PolicyRecommendResponse.of(policies, userCategories, hasNext,isReadAllNotifications, user.getName());
     }
 
 
