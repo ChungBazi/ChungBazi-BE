@@ -9,6 +9,7 @@ import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.user.converter.UserConverter;
 import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
 import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
+import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO.CharacterImgDto;
 import chungbazi.chungbazi_be.domain.user.entity.Addition;
 import chungbazi.chungbazi_be.domain.user.entity.Interest;
 import chungbazi.chungbazi_be.domain.user.entity.User;
@@ -49,7 +50,10 @@ public class UserService {
         User user = userHelper.getAuthenticatedUser();
         return UserConverter.toProfileDto(user);
     }
-
+    public UserResponseDTO.CharacterImgDto getCharacterImg() {
+        User user = userHelper.getAuthenticatedUser();
+        return UserConverter.toCharacterImgDto(user);
+    }
     public UserResponseDTO.RewardDto getReward() {
         User user = userHelper.getAuthenticatedUser();
         int rewardLevel = user.getReward().getLevel();
