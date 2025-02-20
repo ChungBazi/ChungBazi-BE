@@ -6,6 +6,7 @@ import chungbazi.chungbazi_be.domain.cart.dto.CartRequestDTO;
 import chungbazi.chungbazi_be.domain.cart.dto.CartResponseDTO;
 import chungbazi.chungbazi_be.domain.cart.entity.Cart;
 import chungbazi.chungbazi_be.domain.cart.repository.CartRepository;
+import chungbazi.chungbazi_be.domain.document.repository.CalendarDocumentRepository;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
@@ -40,6 +41,7 @@ public class CartService {
     private final ThreadPoolTaskScheduler taskScheduler;
     private final NotificationService notificationService;
     private final UserHelper userHelper;
+    private final CalendarDocumentRepository calendarDocumentRepository;
 
     // 장바구니에 담기
     @Transactional
@@ -68,6 +70,9 @@ public class CartService {
 
         Long userId = SecurityUtils.getUserId();
         User user = userService.findByUserId(userId);
+
+        calendarDocumentRepository.deleteByCart_IdIn(deleteListDTO.getDeleteList());
+        calendarDocumentRepository.flush(); // for 즉시 삭제
 
         cartRepository.deleteByUser_IdAndPolicyIds(userId, deleteListDTO.getDeleteList());
     }

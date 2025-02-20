@@ -8,4 +8,6 @@ public interface CalendarDocumentRepository extends JpaRepository<CalendarDocume
     void deleteByIdIn(List<Long> deleteIds);
 
     List<CalendarDocument> findAllByCart_Id(Long cartId);
+
+    void deleteByCart_IdIn(List<Long> deleteList);
 }
