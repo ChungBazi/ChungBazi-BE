@@ -122,9 +122,7 @@ public class NotificationService {
 
         PaginationResult<Notification> paginationResult = PaginationUtil.paginate(notificationList, limit);
 
-        notificationList=paginationResult.getItems();
-
-        List<NotificationResponseDTO.notificationDto> notificationDtos=notificationList.stream()
+        List<NotificationResponseDTO.notificationDto> notificationDtos=paginationResult.getItems().stream()
                 .map(notification -> NotificationConverter.toNotificationDto(notification))
                 .collect(Collectors.toList());
 

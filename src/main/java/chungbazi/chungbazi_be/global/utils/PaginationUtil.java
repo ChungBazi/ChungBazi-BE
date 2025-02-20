@@ -2,6 +2,8 @@ package chungbazi.chungbazi_be.global.utils;
 
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
+import chungbazi.chungbazi_be.domain.notification.entity.Notification;
+
 import java.util.List;
 
 public class PaginationUtil {
@@ -16,7 +18,9 @@ public class PaginationUtil {
                 nextCursor = ((Post) lastItem).getId();
             } else if (lastItem instanceof Comment) {
                 nextCursor = ((Comment) lastItem).getId();
-            } else {
+            } else if (lastItem instanceof Notification) { // 🔥 Notification 추가
+                nextCursor = ((Notification) lastItem).getId();
+            }else {
                 throw new IllegalArgumentException("Unsupported entity type for pagination");
             }
 
