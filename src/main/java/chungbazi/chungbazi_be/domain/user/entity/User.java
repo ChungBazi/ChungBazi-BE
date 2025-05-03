@@ -39,6 +39,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    private String password;
+
     @Enumerated(EnumType.STRING)
     private OAuthProvider oAuthProvider;
 
