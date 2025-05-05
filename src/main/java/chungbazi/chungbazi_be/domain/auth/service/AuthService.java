@@ -1,5 +1,9 @@
 package chungbazi.chungbazi_be.domain.auth.service;
 
+import chungbazi.chungbazi_be.domain.auth.apple.AppleClient;
+import chungbazi.chungbazi_be.domain.auth.apple.ApplePublicKeyGenerator;
+import chungbazi.chungbazi_be.domain.auth.apple.ApplePublicKeys;
+import chungbazi.chungbazi_be.domain.auth.apple.AppleTokenParser;
 import chungbazi.chungbazi_be.domain.auth.converter.AuthConverter;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenRequestDTO;
@@ -14,9 +18,13 @@ import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
+import com.google.firebase.database.connection.ConnectionAuthTokenProvider;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.security.PublicKey;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +37,10 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AppleTokenParser appleTokenParser;
+    private final AppleClient appleClient;
+    private final ApplePublicKeyGenerator applePublicKeyGenerator;
+
 
     // 일반 회원가입
     public void registerUser(TokenRequestDTO.SignUpTokenRequestDTO request) {
@@ -63,15 +75,93 @@ public class AuthService {
         return tokenDTO;
     }
 
-    // 소셜 로그인
-    public TokenDTO socialLoginUser(TokenRequestDTO.SocialLoginTokenRequestDTO request, OAuthProvider oAuthProvider) {
-        User user = findOrCreateUserForSocialLogin(request, oAuthProvider);
+    // 카카오 로그인
+    public TokenDTO kakaolLoginUser(TokenRequestDTO.KakaoLoginTokenRequestDTO request, OAuthProvider oAuthProvider) {
+        User user = findOrCreateUserForKakaoLogin(request, oAuthProvider);
         boolean isFirst = determineIsFirst(user);
         TokenDTO tokenDTO = tokenGenerator.generate(user.getId(), user.getName(), isFirst);
         tokenAuthService.saveRefreshToken(user.getId(), tokenDTO.getRefreshToken(), tokenDTO.getRefreshExp());
         fcmTokenService.saveFcmToken(user.getId(), request.getFcmToken());
         return tokenDTO;
     }
+
+    public User findOrCreateUserForKakaoLogin(TokenRequestDTO.KakaoLoginTokenRequestDTO request, OAuthProvider oAuthProvider) {
+        return userRepository.findByEmail(request.getEmail())
+                .map(existingUser -> {
+                    if (existingUser.isDeleted()) {
+                        throw new BadRequestHandler(ErrorStatus.DEACTIVATED_ACCOUNT);
+                    }
+                    return existingUser;
+                })
+                .orElseGet(() -> createUserForKakaoLogin(request, oAuthProvider));
+    }
+
+
+    public User createUserForKakaoLogin(TokenRequestDTO.KakaoLoginTokenRequestDTO request, OAuthProvider oAuthProvider) {
+        User user = User.builder()
+                .email(request.getEmail())
+                .name(request.getName())
+                .password("")
+                .oAuthProvider(oAuthProvider)
+                .build();
+        return userRepository.save(user);
+    }
+
+    // 애플 로그인
+    public TokenDTO appleLoginUser(TokenRequestDTO.AppleLoginTokenRequestDTO request, OAuthProvider oAuthProvider) {
+        // AppleTokenService 를 통해 idToken 검증 + Claims 추출을 하나의 메서드로 캡슐화
+        Claims claims = parseAndValidateIdToken(request.getIdToken());
+
+        // 4. appleUserId 와 email 추출
+        String appleUserId = claims.getSubject();
+        String email = claims.get("email", String.class) != null
+                ? claims.get("email", String.class)
+                : appleUserId + "@apple.com";
+
+        // 5. 회원 조회 또는 신규 등록
+        User user = userRepository.findByEmail(email)
+                .map(existingUser -> {
+                    if (existingUser.isDeleted()) {
+                        throw new BadRequestHandler(ErrorStatus.DEACTIVATED_ACCOUNT);
+                    }
+                    return existingUser;
+                })
+                .orElseGet(() -> createUserForAppleLogin(email, appleUserId, oAuthProvider));
+
+        // 6. FCM 토큰 저장
+        fcmTokenService.saveFcmToken(user.getId(), request.getFcmToken());
+
+        // 7. JWT 토큰 발급 및 저장
+        boolean isFirst = determineIsFirst(user);
+        TokenDTO tokenDTO = tokenGenerator.generate(user.getId(), user.getName(), isFirst);
+        tokenAuthService.saveRefreshToken(user.getId(), tokenDTO.getRefreshToken(), tokenDTO.getRefreshExp());
+        fcmTokenService.saveFcmToken(user.getId(), request.getFcmToken());
+
+        return tokenDTO;
+    }
+
+
+    public Claims parseAndValidateIdToken(String idToken) {
+        var header = appleTokenParser.parseHeader(idToken);
+
+        // 공개키 가져오기 및 변환
+        ApplePublicKeys applePublicKeys = appleClient.getApplePublicKeys();
+        PublicKey publicKey = applePublicKeyGenerator.generate(header, applePublicKeys);
+
+        // idToken 검증 후 Claims 추출
+        return appleTokenParser.extractClaims(idToken, publicKey);
+    }
+
+    public User createUserForAppleLogin(String email, String appleUserId, OAuthProvider oAuthProvider) {
+        User user = User.builder()
+                .email(email)
+                .name(appleUserId)
+                .password("")
+                .oAuthProvider(oAuthProvider)
+                .build();
+        return userRepository.save(user);
+    }
+
 
     // JWT 토큰 관련 처리
     public TokenDTO recreateAccessToken(String refreshToken) {
@@ -121,28 +211,6 @@ public class AuthService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
     }
 
-
-    public User findOrCreateUserForSocialLogin(TokenRequestDTO.SocialLoginTokenRequestDTO request, OAuthProvider oAuthProvider) {
-        return userRepository.findByEmail(request.getEmail())
-                .map(existingUser -> {
-                    if (existingUser.isDeleted()) {
-                        throw new BadRequestHandler(ErrorStatus.DEACTIVATED_ACCOUNT);
-                    }
-                    return existingUser;
-                })
-                .orElseGet(() -> createUserForSocialLogin(request, oAuthProvider));
-    }
-
-
-    public User createUserForSocialLogin(TokenRequestDTO.SocialLoginTokenRequestDTO request, OAuthProvider oAuthProvider) {
-        User user = User.builder()
-                .email(request.getEmail())
-                .name(request.getName())
-                .password("")
-                .oAuthProvider(oAuthProvider)
-                .build();
-        return userRepository.save(user);
-    }
 
     public boolean determineIsFirst(User user) {
         return !user.isSurveyStatus();
