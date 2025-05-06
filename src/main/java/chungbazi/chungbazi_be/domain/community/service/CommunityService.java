@@ -51,13 +51,10 @@ public class CommunityService {
     private final CommentRepository commentRepository;
     private final S3Manager s3Manager;
     private final RewardService rewardService;
-    private final NotificationRepository notificationRepository;
-    private final FCMTokenService fcmTokenService;
     private final NotificationService notificationService;
     private final UserHelper userHelper;
     private final HeartRepository heartRepository;
     private final PopularSearch popularSearch;
-    private final RedisTemplate<String, String> redisTemplate;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -116,9 +113,7 @@ public class CommunityService {
     }
 
     public CommunityResponseDTO.UploadAndGetPostDto getPost(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
-
+        Post post = postRepository.getReferenceById(postId);
         // 자신의 조회는 조회수 증가 제외
         User user = userHelper.getAuthenticatedUser();
 
@@ -176,8 +171,7 @@ public class CommunityService {
 
     public void likePost(Long postId){
         User user = userHelper.getAuthenticatedUser();
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+        Post post = postRepository.getReferenceById(postId);
 
         //이미 좋아요한 경우
         if(heartRepository.existsByUserAndPost(user, post)) {
@@ -192,8 +186,7 @@ public class CommunityService {
     }
     public void unlikePost(Long postId){
         User user = userHelper.getAuthenticatedUser();
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+        Post post = postRepository.getReferenceById(postId);
 
         Heart heart = heartRepository.findByUserAndPost(user,post)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_LIKE));
@@ -206,8 +199,7 @@ public class CommunityService {
     public void sendCommunityNotification(Long postId){
         User user = userHelper.getAuthenticatedUser();
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+        Post post = postRepository.getReferenceById(postId);
 
         User author=post.getAuthor();
         String message=user.getName()+"님이 회원님의 게시글에 댓글을 달았습니다.";

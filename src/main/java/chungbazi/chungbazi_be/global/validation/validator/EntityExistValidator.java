@@ -39,8 +39,8 @@ public class EntityExistValidator implements ConstraintValidator<ExistEntity, Lo
             context.disableDefaultConstraintViolation();
 
             //동적 메세지 설정
-            String msg = errorStatusMap.get(entityType).getMessage();
-            context.buildConstraintViolationWithTemplate(msg).addConstraintViolation();
+            String codeName = errorStatusMap.get(entityType).name();
+            context.buildConstraintViolationWithTemplate(codeName).addConstraintViolation();
         }
 
         return exists;
