@@ -18,7 +18,7 @@ public class EntityExistValidator implements ConstraintValidator<ExistEntity, Lo
     private Class<?> entityType;
 
     @Override
-    public void initialize(ExistEntity constraintAnnotation) {this.entityType = constraintAnnotation.entityType()};
+    public void initialize(ExistEntity constraintAnnotation) {this.entityType = constraintAnnotation.entityType();}
 
     @Override
     public boolean isValid(Long value, ConstraintValidatorContext context) {
