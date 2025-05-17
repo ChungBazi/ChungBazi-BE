@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -60,6 +61,18 @@ public class TokenAuthService {
         if (isBlackListed(token)) {
             throw new BadRequestHandler(ErrorStatus.BLOCKED_TOKEN);
         }
+    }
+
+    public void setAuthCode(String key, String value, Duration duration) {
+        redisTemplate.opsForValue().set(key, value, duration);
+    }
+
+    public String getAuthCode(String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
+
+    public boolean checkExistsAuthCode(String value) {
+        return value != null && !value.isEmpty();
     }
 }
 

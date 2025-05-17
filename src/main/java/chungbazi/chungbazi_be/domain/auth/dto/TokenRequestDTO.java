@@ -44,6 +44,21 @@ public class TokenRequestDTO {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class ResetPasswordRequestDTO {
+
+        @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
+        @Schema(example = "password1234!", description = "사용자의 비밀번호")
+        private String newPassword;
+
+        @NotBlank(message = "비밀번호 확인은 필수 입력 항목입니다.")
+        @Schema(example = "password1234!", description = "사용자의 비밀번호")
+        private String checkNewPassword;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class LoginTokenRequestDTO {
 
         @NotBlank(message = "이메일은 필수 입력 항목입니다.")
@@ -109,4 +124,18 @@ public class TokenRequestDTO {
         @Schema(example = "eKD_mr9SG0XftaFoKFB9L5ABA91bF1cpjv7g6Khw...", description = "유효한 refresh Token")
         private String refreshToken;
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AuthCodeRequestDTO{
+        @NotBlank
+        @Schema(example = "123456", description = "유효한 인증코드")
+        private String authCode;
+    }
+
+
+
+
 }
