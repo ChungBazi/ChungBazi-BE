@@ -118,6 +118,7 @@ public class User {
     public void updateRegion(Region region) { this.region = region;}
     public void updateIsDeleted(Boolean isDeleted){this.isDeleted = isDeleted;}
     public void updateRewardLevel(RewardLevel reward) {this.reward = reward;}
+    public void updatePassword(String newPassword) {this.password = newPassword;}
 
     // 알람 관련
     public void updateNotificationSetting(NotificationSetting notificationSetting) {this.notificationSetting = notificationSetting;}
