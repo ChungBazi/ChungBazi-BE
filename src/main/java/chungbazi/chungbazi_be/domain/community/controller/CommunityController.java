@@ -2,16 +2,19 @@ package chungbazi.chungbazi_be.domain.community.controller;
 
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
+import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.service.CommunityService;
 import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import chungbazi.chungbazi_be.global.service.PopularSearchService;
+import chungbazi.chungbazi_be.global.validation.annotation.ExistEntity;
 import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/community")
+@Validated
 public class CommunityController {
     private final CommunityService communityService;
     private final PopularSearchService popularSearchService;
@@ -68,7 +72,7 @@ public class CommunityController {
     @GetMapping(value = "/posts/{postId}")
     @Operation(summary = "개별 게시글 조회 API", description = "개별 게시글 조회 API")
     public ApiResponse<CommunityResponseDTO.UploadAndGetPostDto> getPost(
-            @PathVariable Long postId) {
+            @PathVariable @ExistEntity(entityType = Post.class) Long postId) {
         return ApiResponse.onSuccess(communityService.getPost(postId));
     }
 
@@ -82,20 +86,20 @@ public class CommunityController {
     @GetMapping(value = "/comments")
     @Operation(summary = "개별 게시글에 해당하는 댓글 조회 API", description = "개별 게시글에 해당하는 댓글 조회 API")
     public ApiResponse<CommunityResponseDTO.CommentListDto> getComments(
-            @RequestParam Long postId,
+            @RequestParam @ExistEntity(entityType = Post.class) Long postId,
             @RequestParam Long cursor,
             @RequestParam(defaultValue = "10") int size){
         return ApiResponse.onSuccess(communityService.getComments(postId, cursor, size));
     }
     @PostMapping(value = "/likes")
     @Operation(summary = "개별 게시글 좋아요 API", description = "개별 게시글 좋아요 API")
-    public ApiResponse<Void> likePost(@RequestParam Long postId){
+    public ApiResponse<Void> likePost(@RequestParam @ExistEntity(entityType = Post.class) Long postId){
         communityService.likePost(postId);
         return ApiResponse.onSuccess(null);
     }
     @DeleteMapping(value = "/likes")
     @Operation(summary = "개별 게시글 좋아요 취소 API", description = "개별 게시글 좋아요 취소 API")
-    public ApiResponse<Void> unlikePost(@RequestParam Long postId){
+    public ApiResponse<Void> unlikePost(@RequestParam @ExistEntity(entityType = Post.class) Long postId){
         communityService.unlikePost(postId);
         return ApiResponse.onSuccess(null);
     }
