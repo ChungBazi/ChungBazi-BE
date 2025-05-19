@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.global.apiPayload.code.status;
 
 import chungbazi.chungbazi_be.global.apiPayload.code.BaseErrorCode;
 import chungbazi.chungbazi_be.global.apiPayload.code.ErrorReasonDTO;
+import com.google.api.Http;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -62,6 +63,9 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_ARGUMENTS(HttpStatus.BAD_REQUEST, "TOKEN4018", "잘못된 인자가 제공되었습니다."),
     BLOCKED_TOKEN(HttpStatus.FORBIDDEN, "TOKEN4019", "차단된 사용자의 토큰입니다."),
     DEACTIVATED_ACCOUNT(HttpStatus.BAD_REQUEST, "TOKEN4020", "삭제된 계정입니다."),
+    UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST,"TOKEN4021","이메일을 보낼 수 없습니다."),
+    NO_SUCH_ALGORITHM(HttpStatus.BAD_REQUEST,"TOKEN4022","인증 코드 생성 중 문제가 발생했습니다."),
+    INVALID_AUTHCODE(HttpStatus.BAD_REQUEST,"TOKEN4023","인증코드가 불일치 합니다."),
 
     //s3 관련 에러
     NO_FILE_EXTENTION(HttpStatus.BAD_REQUEST, "UPLOAD400", "파일의 이름에 확장자가 존재하지 않습니다."),

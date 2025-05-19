@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
-
     private final AuthService authService;
 
     // 일반 사용자 회원가입 API
@@ -72,4 +71,10 @@ public class AuthController {
         authService.deleteUserAccount(token);
         return ApiResponse.onSuccess("Account deletion successful.");
     }
+    @PostMapping("/reset-password")
+    public ApiResponse<String> resetPassword(@RequestBody @Valid TokenRequestDTO.ResetPasswordRequestDTO request) {
+        authService.resetPassword(request.getNewPassword());
+        return ApiResponse.onSuccess("비밀번호가 성공적으로 변경되었습니다.");
+    }
+
 }

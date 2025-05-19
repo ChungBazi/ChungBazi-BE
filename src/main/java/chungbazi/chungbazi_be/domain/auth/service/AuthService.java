@@ -15,10 +15,10 @@ import chungbazi.chungbazi_be.domain.notification.service.FCMTokenService;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
-import com.google.firebase.database.connection.ConnectionAuthTokenProvider;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,9 +26,11 @@ import org.springframework.stereotype.Service;
 
 import java.security.PublicKey;
 
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
 
     private final TokenGenerator tokenGenerator;
     private final TokenAuthService tokenAuthService;
@@ -40,7 +42,7 @@ public class AuthService {
     private final AppleTokenParser appleTokenParser;
     private final AppleClient appleClient;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
-
+    private final UserHelper userHelper;
 
     // 일반 회원가입
     public void registerUser(TokenRequestDTO.SignUpTokenRequestDTO request) {
@@ -188,7 +190,7 @@ public class AuthService {
         tokenAuthService.addToBlackList(token, "delete-account", 3600L);
         tokenAuthService.deleteRefreshToken(userId);
         deleteUser(userId);
-        fcmTokenService.deleteToken(Long.valueOf(userId));
+        fcmTokenService.deleteToken(userId);
     }
 
     // 응답
@@ -226,5 +228,13 @@ public class AuthService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
         // 유저 익명화 (username & email 무력화)
         userRepository.anonymizeUser(userId);
+    }
+
+    // 비밀번호 재설정
+    public void resetPassword(String newPassword) {
+        User user = userHelper.getAuthenticatedUser();
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.updatePassword(encodedPassword);
+        userRepository.save(user);
     }
 }
