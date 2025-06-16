@@ -1,91 +1,74 @@
 package chungbazi.chungbazi_be.global.config;
 
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableRabbit
+@RequiredArgsConstructor
 public class RabbitConfig {
-    private static final String CHAT_QUEUE_NAME = "chat.queue";
-    private static final String CHAT_EXCHANGE_NAME = "chat.exchange";
-    private static final String ROUTING_KEY = "*.room.*";
+    public static final String CHAT_EXCHANGE = "chat.exchange";
+    public static final String CHAT_QUEUE_NAME = "chat.queue";
+    public static final String CHAT_ROUTING_KEY = "chat.room";
 
     @Value("${spring.rabbitmq.host}")
-    private String rabbitmqHost;
+    private String rabbitHost;
 
     @Value("${spring.rabbitmq.port}")
-    private int rabbitmqPort;
+    private int rabbitPort;
 
     @Value("${spring.rabbitmq.username}")
-    private String rabbitmqUsername;
+    private String rabbitUsername;
 
     @Value("${spring.rabbitmq.password}")
-    private String rabbitmqPassword;
+    private String rabbitPassword;
 
     @Bean
-    public Queue queue(){
+    public TopicExchange chatExchange() {
+        return new TopicExchange(CHAT_EXCHANGE);
+    }
+
+    @Bean
+    public Queue chatQueue() {
         return new Queue(CHAT_QUEUE_NAME, true);
     }
 
     @Bean
-    public TopicExchange exchange(){
-        return new TopicExchange(CHAT_EXCHANGE_NAME);
-    }
-
-    @Bean
-    public Binding binding(Queue queue, TopicExchange topicExchange){
+    public Binding binding(Queue queue, TopicExchange exchange) {
         return BindingBuilder
                 .bind(queue)
-                .to(topicExchange)
-                .with(ROUTING_KEY);
+                .to(exchange)
+                .with(CHAT_ROUTING_KEY);
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter){
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(messageConverter);
+    public RabbitTemplate rabbitTemplate() {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
+        rabbitTemplate.setMessageConverter(jacksonMessageConverter());
         return rabbitTemplate;
     }
 
     @Bean
-    public ConnectionFactory connectionFactory(){
-        CachingConnectionFactory factory= new CachingConnectionFactory();
-        factory.setHost(rabbitmqHost);
-        factory.setPort(rabbitmqPort);
-        factory.setUsername(rabbitmqUsername);
-        factory.setPassword(rabbitmqPassword);
-        factory.setVirtualHost("/");
-
-        return factory;
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setHost(rabbitHost);
+        connectionFactory.setPort(rabbitPort);
+        connectionFactory.setUsername(rabbitUsername);
+        connectionFactory.setPassword(rabbitPassword);
+        return connectionFactory;
     }
 
     @Bean
-    public Jackson2JsonMessageConverter messageConverter(){
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,true);
-        objectMapper.registerModule(dateTimeModule());
-
-        return new Jackson2JsonMessageConverter(objectMapper);
-    }
-
-    @Bean
-    public Module dateTimeModule(){
-        return new JavaTimeModule();
+    public Jackson2JsonMessageConverter jacksonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 
 }
