@@ -15,10 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChatBotService {
     private final PolicyRepository policyRepository;
+    private final ChatGptClient chatGptClient;
 
     public List<ChatBotResponseDTO.PolicyDto> getPolicies(Category category) {
         List<Policy> policies = policyRepository.findTop5ByCategoryOrderByCreatedAtDesc(category);
         return ChatBotConverter.toPolicyListDto(policies);
+    }
+
+    public ChatBotResponseDTO.ChatDto askGpt(String userMessage){
+        String systemPrompt = "당신은 청년 정책을 설명해주는 챗봇입니다."; // 프롬프트 정적 지정
+        String answer = chatGptClient.askChatGpt(userMessage, systemPrompt);
+        return ChatBotConverter.toChatDto(answer);
     }
 
 }

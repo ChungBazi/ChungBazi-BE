@@ -15,4 +15,8 @@ public class ChatBotConverter {
                             .build()
                 ).toList();
     }
+
+    public static ChatBotResponseDTO.ChatDto toChatDto(String answer){
+        return ChatBotResponseDTO.ChatDto.builder().answer(answer).build();
+    }
 }

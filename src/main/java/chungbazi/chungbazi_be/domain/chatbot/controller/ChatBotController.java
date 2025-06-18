@@ -1,17 +1,22 @@
 package chungbazi.chungbazi_be.domain.chatbot.controller;
 
+import chungbazi.chungbazi_be.domain.chatbot.dto.ChatBotRequestDTO;
 import chungbazi.chungbazi_be.domain.chatbot.dto.ChatBotResponseDTO;
 import chungbazi.chungbazi_be.domain.chatbot.service.ChatBotService;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.service.annotation.PostExchange;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,5 +31,12 @@ public class ChatBotController {
             @RequestParam(value = "category")Category category
             ) {
         return ApiResponse.onSuccess(chatBotService.getPolicies(category));
+    }
+
+    @PostMapping("/ask")
+    @Operation(summary = "chatbot 질문 API", description = "chatbot 질문 API")
+    public ApiResponse<ChatBotResponseDTO.ChatDto> askGpt(@RequestBody ChatBotRequestDTO.ChatDto request){
+        String userMessage = request.getMessage();
+        return ApiResponse.onSuccess(chatBotService.askGpt(userMessage));
     }
 }

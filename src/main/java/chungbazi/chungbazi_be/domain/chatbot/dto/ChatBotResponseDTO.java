@@ -14,4 +14,11 @@ public class ChatBotResponseDTO {
         String title;
         Category category; //추후 추가
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class ChatDto {
+        String answer;
+    }
 }
