@@ -5,7 +5,6 @@ import chungbazi.chungbazi_be.domain.chatbot.dto.ChatBotResponseDTO;
 import chungbazi.chungbazi_be.domain.chatbot.service.ChatBotService;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
-import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.service.annotation.PostExchange;
 
 @RestController
 @RequiredArgsConstructor
