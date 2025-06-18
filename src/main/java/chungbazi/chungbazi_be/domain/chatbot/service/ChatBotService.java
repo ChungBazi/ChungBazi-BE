@@ -7,6 +7,7 @@ import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +24,20 @@ public class ChatBotService {
     }
 
     public ChatBotResponseDTO.ChatDto askGpt(String userMessage){
+        if (isMeaningless(userMessage)) {
+            return ChatBotConverter.toChatDto("죄송해요, 정책과 관련된 질문을 해주세요.");
+        }
         String systemPrompt = "당신은 청년 정책을 설명해주는 챗봇입니다."; // 프롬프트 정적 지정
         String answer = chatGptClient.askChatGpt(userMessage, systemPrompt);
         return ChatBotConverter.toChatDto(answer);
     }
 
+    private boolean isMeaningless(String message){ //의미 없는 질문 방지
+        if (message == null || message.trim().isEmpty()) return true;
+
+        String trimmed = message.trim().replaceAll("[^ㄱ-ㅎ가-힣a-zA-Z0-9]", "");
+        if (trimmed.length() < 3) return true;
+
+        return false;
+    }
 }
