@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
     public static final String CHAT_EXCHANGE = "chat.exchange";
     public static final String CHAT_QUEUE_NAME = "chat.queue";
-    public static final String CHAT_ROUTING_KEY = "chat.room";
+    public static final String CHAT_ROUTING_KEY = "room.";
 
     @Value("${spring.rabbitmq.host}")
     private String rabbitHost;

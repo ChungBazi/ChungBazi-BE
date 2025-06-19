@@ -74,7 +74,11 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //community 관련 에러
     FILE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "UPLOAD400", "파일은 10장을 초과할 수 없습니다."),
-    ALREADY_LIKED(HttpStatus.BAD_REQUEST, "LIKE400", "이미 좋아요를 했습니다.")
+    ALREADY_LIKED(HttpStatus.BAD_REQUEST, "LIKE400", "이미 좋아요를 했습니다."),
+
+    //채팅 관련 에러
+    NOT_FOUND_CHATROOM(HttpStatus.NOT_FOUND, "CHATROOM404", "존재하지 않는 채팅방입니다."),
+
     ;
 
 

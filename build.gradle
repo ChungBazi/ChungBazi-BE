@@ -104,9 +104,13 @@ dependencies {
 
     //websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     //rabbitMQ
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'io.projectreactor.netty:reactor-netty'
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
+
 
 }
 //tasks.named('test') {
