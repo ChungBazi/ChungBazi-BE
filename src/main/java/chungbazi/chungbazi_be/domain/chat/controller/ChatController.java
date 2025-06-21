@@ -2,17 +2,22 @@ package chungbazi.chungbazi_be.domain.chat.controller;
 
 import chungbazi.chungbazi_be.domain.chat.dto.ChatRequestDTO;
 import chungbazi.chungbazi_be.domain.chat.dto.ChatResponseDTO;
+import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.service.ChatService;
+import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+import static chungbazi.chungbazi_be.domain.chat.entity.QChatRoom.chatRoom;
 
 @Slf4j
 @RestController
@@ -29,8 +34,24 @@ public class ChatController {
     @MessageMapping("/chat.message.{chatRoomId}")
     public void sendMessage(@DestinationVariable Long chatRoomId, ChatRequestDTO.messagedto dto) {
         log.info("sendMessage: chatRoomId={}, message={}", chatRoomId, dto.getContent());
-        ChatResponseDTO.messageResponse response = chatService.sendMessage(chatRoomId, dto);
+        chatService.sendMessage(chatRoomId, dto);
 
     }
+
+    @GetMapping("/rooms/{chatRoomId}")
+    @Operation(summary = "채팅방 상세 조회",description = "채팅방의 상세 정보와 메세지들을 조회합니다.")
+    public ApiResponse<ChatResponseDTO.chatRoomResponse> getChatRoomDetail(@PathVariable Long chatRoomId, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") int limit) {
+        return ApiResponse.onSuccess(chatService.getChatRoomDetail(chatRoomId,cursorId,limit));
+    }
+
+//    @MessageMapping("/chat.read.{chatRoomId}")
+//    public void markAsRead(@DestinationVariable Long chatRoomId, Map<String, Object> payload) {
+//        try {
+//            Long userId = ((Number) payload.get("userId")).longValue();
+//            chatService.markMessagesAsRead(chatRoomId, userId);
+//        } catch (Exception e) {
+//            log.error("Error marking messages as read: {}", e.getMessage(), e);
+//        }
+//    }
 
 }

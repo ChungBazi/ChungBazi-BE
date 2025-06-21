@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.global.utils;
 
+import chungbazi.chungbazi_be.domain.chat.entity.Message;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
@@ -18,9 +19,13 @@ public class PaginationUtil {
                 nextCursor = ((Post) lastItem).getId();
             } else if (lastItem instanceof Comment) {
                 nextCursor = ((Comment) lastItem).getId();
-            } else if (lastItem instanceof Notification) { // 🔥 Notification 추가
+            } else if (lastItem instanceof Notification) {
                 nextCursor = ((Notification) lastItem).getId();
-            }else {
+            } else if (lastItem instanceof Message) {
+                nextCursor = ((Message) lastItem).getId();
+            }
+
+            else {
                 throw new IllegalArgumentException("Unsupported entity type for pagination");
             }
 

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ChatResponseDTO {
 
@@ -25,10 +26,32 @@ public class ChatResponseDTO {
     public static class messageResponse{
         Long id;
         Long senderId;
+        Long receiverId;
         Long chatRoomId;
         String content;
         boolean isRead;
-        private LocalDateTime createdAt;
+        LocalDateTime createdAt;
+    }
+
+    @Getter @Builder @AllArgsConstructor
+    public static class chatDetailMessage {
+        Long id;
+        Long senderId;
+        String content;
+        boolean isRead;
+        LocalDateTime createdAt;
+        boolean isMyMessage;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class chatRoomResponse{
+        Long chatRoomId;
+        String postTitle;
+        String receiverName;
+        Long receiverId;
+        List<chatDetailMessage> messageList;
     }
 
 

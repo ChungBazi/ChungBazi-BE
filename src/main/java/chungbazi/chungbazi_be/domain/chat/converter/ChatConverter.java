@@ -4,6 +4,7 @@ import chungbazi.chungbazi_be.domain.chat.dto.ChatRequestDTO;
 import chungbazi.chungbazi_be.domain.chat.dto.ChatResponseDTO;
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.entity.Message;
+import chungbazi.chungbazi_be.domain.user.entity.User;
 
 public class ChatConverter {
 
@@ -23,6 +24,17 @@ public class ChatConverter {
                 .senderId(message.getSender().getId())
                 .content(message.getContent())
                 .createdAt(message.getCreatedAt())
+                .build();
+    }
+
+    public static ChatResponseDTO.chatDetailMessage toChatDetailMessageDTO(Message message, Long userId) {
+        return ChatResponseDTO.chatDetailMessage.builder()
+                .id(message.getId())
+                .content(message.getContent())
+                .senderId(message.getSender().getId())
+                .isRead(message.isRead())
+                .createdAt(message.getCreatedAt())
+                .isMyMessage(message.getSender().getId().equals(userId))
                 .build();
     }
 
