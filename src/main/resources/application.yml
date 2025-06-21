@@ -48,6 +48,7 @@ spring:
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASSWORD}
 
+
 server:
   servlet:
     context-path: ${SPRING_SERVER_SERVLET_CONTEXT_PATH}
