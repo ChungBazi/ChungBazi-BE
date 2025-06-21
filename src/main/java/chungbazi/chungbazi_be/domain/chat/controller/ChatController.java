@@ -44,14 +44,13 @@ public class ChatController {
         return ApiResponse.onSuccess(chatService.getChatRoomDetail(chatRoomId,cursorId,limit));
     }
 
-//    @MessageMapping("/chat.read.{chatRoomId}")
-//    public void markAsRead(@DestinationVariable Long chatRoomId, Map<String, Object> payload) {
-//        try {
-//            Long userId = ((Number) payload.get("userId")).longValue();
-//            chatService.markMessagesAsRead(chatRoomId, userId);
-//        } catch (Exception e) {
-//            log.error("Error marking messages as read: {}", e.getMessage(), e);
-//        }
-//    }
+    @DeleteMapping("/rooms/{chatRoomId}/leave")
+    @Operation(summary = "채팅방 나가기", description = "채팅방에서 나가는 API입니다.")
+    public ApiResponse<Void> leaveChatRoom(
+            @PathVariable Long chatRoomId) {
+
+        chatService.leaveChatRoom(chatRoomId);
+        return ApiResponse.onSuccess(null);
+    }
 
 }

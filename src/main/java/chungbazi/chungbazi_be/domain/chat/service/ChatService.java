@@ -131,4 +131,25 @@ public class ChatService {
     private boolean isParticipant (ChatRoom chatRoom,User user){
         return chatRoom.getSender().equals(user) || chatRoom.getReceiver().equals(user);
     }
+
+    public void leaveChatRoom(Long charRoomId){
+        ChatRoom chatRoom = chatRoomRepository.findById(charRoomId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
+
+        if (isParticipant(chatRoom,userHelper.getAuthenticatedUser())){
+            throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
+        }
+
+        chatRoom.deactivate();
+        chatRoomRepository.save(chatRoom);
+
+        User receiver = chatRoom.getSender().equals(userHelper.getAuthenticatedUser())
+                ? chatRoom.getReceiver() : chatRoom.getSender();
+
+        simpMessagingTemplate.convertAndSend(
+                receiver.getId().toString(),
+                "/queue/chat-room-left",
+                Map.of("chatRoomId",charRoomId,"message", "상대방이 채팅방을 나갔습니다")
+        );
+    }
 }
