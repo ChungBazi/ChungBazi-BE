@@ -5,7 +5,7 @@ import chungbazi.chungbazi_be.domain.chat.dto.ChatRequestDTO;
 import chungbazi.chungbazi_be.domain.chat.dto.ChatResponseDTO;
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.entity.Message;
-import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository;
+import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository.ChatRoomRepository;
 import chungbazi.chungbazi_be.domain.chat.repository.MessageRepository.MessageRepository;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
@@ -15,11 +15,9 @@ import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
-import chungbazi.chungbazi_be.global.config.RabbitConfig;
 import chungbazi.chungbazi_be.global.utils.PaginationResult;
 import chungbazi.chungbazi_be.global.utils.PaginationUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +71,15 @@ public class ChatService {
                 .isRead(false)
                 .build();
 
-        ChatResponseDTO.messageResponse response=ChatConverter.from(message);
+        ChatResponseDTO.messageResponse response=ChatResponseDTO.messageResponse.builder()
+                .id(message.getId())
+                .receiverId(dto.getReceiverId())
+                .senderId(message.getSender().getId())
+                .createdAt(message.getCreatedAt())
+                .chatRoomId(chatRoomId)
+                .content(dto.getContent())
+                .isRead(message.isRead())
+                .build();
 
         messageRepository.save(message);
         simpMessagingTemplate.convertAndSend("/topic/chat.room." + chatRoomId, response);
@@ -152,4 +158,21 @@ public class ChatService {
                 Map.of("chatRoomId",charRoomId,"message", "상대방이 채팅방을 나갔습니다")
         );
     }
+
+    public List<ChatResponseDTO.chatRoomListResponse> getChatRoomList(){
+        User user=userHelper.getAuthenticatedUser();
+        List<ChatRoom> chatRooms = chatRoomRepository.findActiveRoomsByUserId(user.getId());
+        List<ChatResponseDTO.chatRoomListResponse> chatRoomListResponses = chatRooms.stream()
+                .map(chatRoom -> {
+                    Message lastMessage = messageRepository.findLastMessageByChatRoomId(chatRoom.getId())
+                            .orElse(null);
+                            //.orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
+                    return ChatConverter.toChatRoomListResponse(chatRoom, lastMessage);
+                })
+                .collect(Collectors.toList());
+
+        return chatRoomListResponses;
+    }
+
+
 }

@@ -54,5 +54,19 @@ public class ChatResponseDTO {
         List<chatDetailMessage> messageList;
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class chatRoomListResponse{
+        Long chatRoomId;
+        String postTile;
+        String receiverName;
+        Long receiverId;
+        String lastMessage;
+        LocalDateTime lastMessageTime;
+        boolean isRead;
+        boolean isActive;
+    }
+
 
 }

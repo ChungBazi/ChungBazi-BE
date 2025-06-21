@@ -15,6 +15,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 import static chungbazi.chungbazi_be.domain.chat.entity.QChatRoom.chatRoom;
@@ -38,19 +39,23 @@ public class ChatController {
 
     }
 
-    @GetMapping("/rooms/{chatRoomId}")
+    @GetMapping("/chatRooms/{chatRoomId}")
     @Operation(summary = "채팅방 상세 조회",description = "채팅방의 상세 정보와 메세지들을 조회합니다.")
     public ApiResponse<ChatResponseDTO.chatRoomResponse> getChatRoomDetail(@PathVariable Long chatRoomId, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") int limit) {
         return ApiResponse.onSuccess(chatService.getChatRoomDetail(chatRoomId,cursorId,limit));
     }
 
-    @DeleteMapping("/rooms/{chatRoomId}/leave")
+    @DeleteMapping("/chatRooms/{chatRoomId}/leave")
     @Operation(summary = "채팅방 나가기", description = "채팅방에서 나가는 API입니다.")
-    public ApiResponse<Void> leaveChatRoom(
-            @PathVariable Long chatRoomId) {
-
+    public ApiResponse<Void> leaveChatRoom(@PathVariable Long chatRoomId) {
         chatService.leaveChatRoom(chatRoomId);
         return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/chatRooms")
+    @Operation(summary = "채팅방 목록 조회", description = "유저의 채팅방 목록을 조회하는 API입니다")
+    public ApiResponse<List<ChatResponseDTO.chatRoomListResponse>> getChatRooms() {
+        return ApiResponse.onSuccess(chatService.getChatRoomList());
     }
 
 }
