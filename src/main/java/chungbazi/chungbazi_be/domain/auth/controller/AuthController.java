@@ -27,6 +27,14 @@ public class AuthController {
         return ApiResponse.onSuccess("Signup successful.");
     }
 
+    // 일반 사용자 닉네임 등록 API
+    @PostMapping("/register-nickname")
+    @Operation(summary = "일반 사용자 닉네임 등록 API", description = "사용자 닉네임 등록")
+    public ApiResponse<String> registerNickName(@Valid @RequestBody TokenRequestDTO.NickNameRequestDTO request) {
+        authService.registerNickName(request);
+        return ApiResponse.onSuccess("register nickName successful.");
+    }
+
     // 일반 사용자 로그인 API
     @PostMapping("/login")
     @Operation(summary = "일반 사용자 로그인 API", description = "이메일과 비밀번호로 로그인하여 JWT 토큰을 생성")

@@ -18,6 +18,33 @@ public class TokenRequestDTO {
     @AllArgsConstructor
     public static class SignUpTokenRequestDTO {
 
+        @NotBlank(message = "이메일은 필수 입력 항목입니다.")
+        @Pattern(
+                regexp = RegexConstants.EMAIL_REGEX,
+                message = "유효한 이메일 주소여야 합니다."
+        )
+        @Schema(example = "chungbazi@example.com", description = "유효한 이메일 주소")
+        private String email;
+
+        @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
+        @Pattern(
+                regexp = RegexConstants.PASSWORD_REGEX,
+                message = "비밀번호는 8자 이상이며, 대소문자, 숫자, 특수문자를 포함해야 합니다."
+        )
+        @Schema(example = "Password1234!", description = "사용자의 비밀번호")
+        private String password;
+
+        @NotBlank(message = "비밀번호 확인은 필수 입력 항목입니다.")
+        @Schema(example = "Password1234!", description = "사용자의 비밀번호")
+        private String checkPassword;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NickNameRequestDTO {
+
         @NotBlank(message = "이름은 필수 입력 항목입니다.")
         @Size(min = 1, max = 10, message = "이름은 10자 이하")
         @Schema(example = "김바지", description = "사용자의 이름")
@@ -30,14 +57,6 @@ public class TokenRequestDTO {
         )
         @Schema(example = "chungbazi@example.com", description = "유효한 이메일 주소")
         private String email;
-
-        @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
-        @Schema(example = "password1234!", description = "사용자의 비밀번호")
-        private String password;
-
-        @NotBlank(message = "비밀번호 확인은 필수 입력 항목입니다.")
-        @Schema(example = "password1234!", description = "사용자의 비밀번호")
-        private String checkPassword;
     }
 
     @Getter
@@ -47,11 +66,15 @@ public class TokenRequestDTO {
     public static class ResetPasswordRequestDTO {
 
         @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
-        @Schema(example = "password1234!", description = "사용자의 비밀번호")
+        @Pattern(
+                regexp = RegexConstants.PASSWORD_REGEX,
+                message = "비밀번호는 8자 이상이며, 대소문자, 숫자, 특수문자를 포함해야 합니다."
+        )
+        @Schema(example = "Password1234!", description = "사용자의 비밀번호")
         private String newPassword;
 
         @NotBlank(message = "비밀번호 확인은 필수 입력 항목입니다.")
-        @Schema(example = "password1234!", description = "사용자의 비밀번호")
+        @Schema(example = "Password1234!", description = "사용자의 비밀번호")
         private String checkNewPassword;
     }
 
@@ -70,7 +93,7 @@ public class TokenRequestDTO {
         private String email;
 
         @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
-        @Schema(example = "password1234!", description = "사용자의 비밀번호")
+        @Schema(example = "Password1234!", description = "사용자의 비밀번호")
         private String password;
 
         @Schema(example = "eKD_mr9SG0XftaFoKFB9L5ABA91bF1cpjv7g6Khw...", description = "유효한 FCM Token")
