@@ -10,6 +10,7 @@ import chungbazi.chungbazi_be.domain.chat.repository.MessageRepository.MessageRe
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.repository.UserBlockRepository.UserBlockRepository;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
@@ -24,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +35,7 @@ public class ChatService {
     private final PostRepository postRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
+    private final UserBlockRepository userBlockRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Transactional
@@ -63,6 +64,10 @@ public class ChatService {
 
         User sender = userRepository.findById(dto.getSenderId())
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        if (userBlockRepository.existsBlockBetweenUsers(dto.getSenderId(), dto.getReceiverId())){
+            throw new GeneralException(ErrorStatus.BLOCKED_CHATROOM);
+        }
 
         Message message = Message.builder()
                 .chatRoom(chatRoom)
@@ -96,8 +101,14 @@ public class ChatService {
             throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
         }
 
-        User receiver = chatRoom.getSender().equals(userHelper.getAuthenticatedUser())
+        User sender = userHelper.getAuthenticatedUser();
+
+        User receiver = chatRoom.getSender().equals(sender)
                 ? chatRoom.getReceiver() : chatRoom.getSender();
+
+        if (userBlockRepository.existsBlockBetweenUsers(sender.getId(), receiver.getId())){
+            throw new GeneralException(ErrorStatus.BLOCKED_CHATROOM);
+        }
 
         markMessagesAsRead(chatRoomId,userHelper.getAuthenticatedUser().getId());
 
@@ -105,7 +116,7 @@ public class ChatService {
         PaginationResult<Message> paginationResult = PaginationUtil.paginate(messages,limit);
 
         List<ChatResponseDTO.chatDetailMessage> messageList = paginationResult.getItems().stream()
-                .map(message -> ChatConverter.toChatDetailMessageDTO(message, userHelper.getAuthenticatedUser().getId()))
+                .map(message -> ChatConverter.toChatDetailMessageDTO(message, sender.getId()))
                 .collect(Collectors.toList());
 
         return ChatResponseDTO.chatRoomResponse.builder()
