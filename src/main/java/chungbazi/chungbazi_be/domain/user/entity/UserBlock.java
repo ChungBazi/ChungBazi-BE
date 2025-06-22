@@ -27,8 +27,8 @@ public class UserBlock extends BaseTimeEntity {
     @Builder.Default
     private boolean isActive = true;
 
-    public void unblock() {
-        this.isActive = false;
+    public void setIsActive(boolean active){
+        this.isActive = active;
     }
 }
 

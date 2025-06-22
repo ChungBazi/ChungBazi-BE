@@ -8,5 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface UserBlockRepository extends JpaRepository<UserBlock, Long>,UserBlockRepositoryCustom {
-    Optional<UserBlock> findByBlockerIdAndBlockedIdAndIsActiveTrue(Long blockerId, Long blockedId);
 }

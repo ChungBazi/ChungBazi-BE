@@ -20,33 +20,19 @@ public class UserBlockService {
 
     public void blockUser(Long blockedUserId){
         User blocker = userHelper.getAuthenticatedUser();
-
-        if(blockedUserId.equals(blocker.getId())){
-            throw new GeneralException(ErrorStatus.INVALID_BLOCK);
-        } else if (userBlockRepository.findByBlockerIdAndBlockedIdAndIsActiveTrue(blocker.getId(), blockedUserId).isPresent()){
-            throw new GeneralException(ErrorStatus.ALEADY_BLOCKED);
-        }
-
         User blockedUser = userRepository.findById(blockedUserId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
-        UserBlock userBlock = UserBlock.builder()
-                .blocker(blocker)
-                .blocked(blockedUser)
-                .isActive(true)
-                .build();
+        if(blockedUserId.equals(blocker.getId())){
+            throw new GeneralException(ErrorStatus.INVALID_BLOCK);
+        }
 
-        userBlockRepository.save(userBlock);
-
+        userBlockRepository.block(blocker.getId(),blockedUserId);
     }
 
     public void unblockUser(Long blockedUserId){
         User blocker = userHelper.getAuthenticatedUser();
+        userBlockRepository.unblock(blocker.getId(), blockedUserId);
 
-        UserBlock userBlock = userBlockRepository.findByBlockerIdAndBlockedIdAndIsActiveTrue(blocker.getId(),blockedUserId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USERBLOCK));
-
-        userBlock.unblock();
-        userBlockRepository.save(userBlock);
     }
 }

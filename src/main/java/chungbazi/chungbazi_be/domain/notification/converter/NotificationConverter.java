@@ -12,7 +12,7 @@ public class NotificationConverter {
         Long policyId = null;
         Long postId = null;
 
-        // notification 타입에 따라 관련 ID를 할당해줘 피카~
+        // notification 타입에 따라 관련 ID를 할당
         if (notification.getType() == NotificationType.POLICY_ALARM) {
             if (notification.getPolicy() != null) {
                 policyId = notification.getPolicy().getId();
@@ -28,8 +28,8 @@ public class NotificationConverter {
                 .isRead(notification.isRead())
                 .message(notification.getMessage())
                 .type(notification.getType())
-                .policyId(policyId)  // POLICY 타입일 경우에만 값이 들어감 피카~
-                .postId(postId)      // COMMUNITY 타입일 경우에만 값이 들어감 피카~
+                .policyId(policyId)  // POLICY 타입일 경우에만 값이 들어감
+                .postId(postId)      // COMMUNITY 타입일 경우에만 값이 들어감
                 .formattedCreatedAt(notification.getFormattedCreatedAt())
                 .build();
     }
