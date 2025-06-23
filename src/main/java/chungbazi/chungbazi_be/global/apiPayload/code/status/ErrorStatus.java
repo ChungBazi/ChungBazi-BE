@@ -35,6 +35,7 @@ public enum ErrorStatus implements BaseErrorCode {
     ALREADY_EXISTS_EMAIL(HttpStatus.BAD_REQUEST,"USER4005","중복된 이메일 입니다."),
     INVALID_CREDENTIALS(HttpStatus.BAD_REQUEST,"USER4006","잘못된 비밀번호 입니다."),
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST,"USER4007","비밀번호와 확인 비밀번호가 일치하지 않습니다."),
+    SAME_AS_OLD_PASSWORD(HttpStatus.BAD_REQUEST,"USER4008","기존 비밀번호와 같습니다."),
 
     //Policy
     CATEGORY_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "POLICY5001", "존재하지 않는 정책 코드 입니다."),
@@ -66,6 +67,8 @@ public enum ErrorStatus implements BaseErrorCode {
     UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST,"TOKEN4021","이메일을 보낼 수 없습니다."),
     NO_SUCH_ALGORITHM(HttpStatus.BAD_REQUEST,"TOKEN4022","인증 코드 생성 중 문제가 발생했습니다."),
     INVALID_AUTHCODE(HttpStatus.BAD_REQUEST,"TOKEN4023","인증코드가 불일치 합니다."),
+    UNABLE_TO_READ_EMAIL_TEMPLATE(HttpStatus.BAD_REQUEST,"TOKEN4024","이메일 템플릿을 읽어올 수 없습니다."),
+
 
     //s3 관련 에러
     NO_FILE_EXTENTION(HttpStatus.BAD_REQUEST, "UPLOAD400", "파일의 이름에 확장자가 존재하지 않습니다."),

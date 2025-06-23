@@ -134,3 +134,8 @@ sourceSets {
 clean {
     delete file(generated)
 }
+// Gradle 빌드 결과 파일명을 고정하기
+jar {
+    archiveBaseName.set('ChungBazi_BE')
+    archiveVersion.set('0.0.1-SNAPSHOT')
+}

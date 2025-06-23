@@ -23,7 +23,7 @@ import static chungbazi.chungbazi_be.domain.chat.entity.QChatRoom.chatRoom;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ChatController {
+public class ChatController { // 컨트롤러 나오는지 확인용 커밋.
     private final ChatService chatService;
 
     @PostMapping("/chat/{postId}/create-room")

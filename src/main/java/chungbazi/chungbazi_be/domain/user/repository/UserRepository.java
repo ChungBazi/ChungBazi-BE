@@ -1,6 +1,5 @@
 package chungbazi.chungbazi_be.domain.user.repository;
 
-import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
 
+    Optional<User> findByName(String name);
     boolean existsByName(String name);
 
     @Modifying
