@@ -2,17 +2,23 @@ package chungbazi.chungbazi_be.domain.chat.controller;
 
 import chungbazi.chungbazi_be.domain.chat.dto.ChatRequestDTO;
 import chungbazi.chungbazi_be.domain.chat.dto.ChatResponseDTO;
+import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.service.ChatService;
+import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+import static chungbazi.chungbazi_be.domain.chat.entity.QChatRoom.chatRoom;
 
 @Slf4j
 @RestController
@@ -29,8 +35,31 @@ public class ChatController { // 컨트롤러 나오는지 확인용 커밋.
     @MessageMapping("/chat.message.{chatRoomId}")
     public void sendMessage(@DestinationVariable Long chatRoomId, ChatRequestDTO.messagedto dto) {
         log.info("sendMessage: chatRoomId={}, message={}", chatRoomId, dto.getContent());
-        ChatResponseDTO.messageResponse response = chatService.sendMessage(chatRoomId, dto);
+        chatService.sendMessage(chatRoomId, dto);
 
+    }
+
+    @GetMapping("/chatRooms/{chatRoomId}")
+    @Operation(summary = "채팅방 상세 조회",description = "채팅방의 상세 정보와 메세지들을 조회합니다.")
+    public ApiResponse<ChatResponseDTO.chatRoomResponse> getChatRoomDetail(@PathVariable Long chatRoomId, @RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "10") int limit) {
+        return ApiResponse.onSuccess(chatService.getChatRoomDetail(chatRoomId,cursorId,limit));
+    }
+
+    @DeleteMapping("/chatRooms/{chatRoomId}/leave")
+    @Operation(summary = "채팅방 나가기", description = "채팅방에서 나가는 API입니다.")
+    public ApiResponse<Void> leaveChatRoom(@PathVariable Long chatRoomId) {
+        chatService.leaveChatRoom(chatRoomId);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/chatRooms")
+    @Operation(summary = "채팅방 목록 조회", description = """
+            유저의 채팅방 목록을 조회하는 API입니다.
+            isBlocked == true인 경우, 차단된 채팅방 목록을,
+            isBlocked == false인 경우, 활성화된 채팅방 목록을 반환합니다.
+            """)
+    public ApiResponse<List<ChatResponseDTO.chatRoomListResponse>> getChatRooms(@RequestParam(required = false) boolean isBlocked) {
+        return ApiResponse.onSuccess(chatService.getChatRoomList(isBlocked));
     }
 
 }

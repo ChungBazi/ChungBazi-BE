@@ -81,7 +81,15 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //채팅 관련 에러
     NOT_FOUND_CHATROOM(HttpStatus.NOT_FOUND, "CHATROOM404", "존재하지 않는 채팅방입니다."),
+    ACCESS_DENIED_CHATROOM(HttpStatus.FORBIDDEN, "CHATROOM400", "채팅방에 접근할 권한이 없습니다."),
+    NOT_FOUND_MESSAGE(HttpStatus.NOT_FOUND,"MESSAGE400","존재하지 않는 메세지입니다."),
+    BLOCKED_CHATROOM(HttpStatus.FORBIDDEN,"CHATROOM401","차단된 채팅방입니다."),
 
+
+    //차단 관련 에러
+    INVALID_BLOCK(HttpStatus.BAD_REQUEST,"BLOCK400","자기 자신을 차단할 수 없습니다."),
+    ALEADY_BLOCKED(HttpStatus.BAD_REQUEST,"BLOCK401","이미 차단된 사용자입니다."),
+    NOT_FOUND_USERBLOCK(HttpStatus.NOT_FOUND, "BLOCK404", "존재하지 않는 차단정보입니다."),
     ;
 
 

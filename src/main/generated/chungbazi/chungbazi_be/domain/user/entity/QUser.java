@@ -40,6 +40,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final BooleanPath isDeleted = createBoolean("isDeleted");
 
+    public final ListPath<chungbazi.chungbazi_be.domain.chat.entity.Message, chungbazi.chungbazi_be.domain.chat.entity.QMessage> messages = this.<chungbazi.chungbazi_be.domain.chat.entity.Message, chungbazi.chungbazi_be.domain.chat.entity.QMessage>createList("messages", chungbazi.chungbazi_be.domain.chat.entity.Message.class, chungbazi.chungbazi_be.domain.chat.entity.QMessage.class, PathInits.DIRECT2);
+
     public final StringPath name = createString("name");
 
     public final ListPath<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification> notificationList = this.<chungbazi.chungbazi_be.domain.notification.entity.Notification, chungbazi.chungbazi_be.domain.notification.entity.QNotification>createList("notificationList", chungbazi.chungbazi_be.domain.notification.entity.Notification.class, chungbazi.chungbazi_be.domain.notification.entity.QNotification.class, PathInits.DIRECT2);

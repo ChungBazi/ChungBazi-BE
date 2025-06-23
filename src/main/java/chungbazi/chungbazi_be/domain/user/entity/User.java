@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.user.entity;
 
 import chungbazi.chungbazi_be.domain.character.entity.Character;
+import chungbazi.chungbazi_be.domain.chat.entity.Message;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
@@ -103,6 +104,10 @@ public class User {
 
     @OneToOne(mappedBy = "user",cascade = {CascadeType.ALL})
     private NotificationSetting notificationSetting;
+
+    //채팅 관련
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> messages= new ArrayList<>();
 
 
     // 유저 정보 관련

@@ -1,9 +1,10 @@
 package chungbazi.chungbazi_be.domain.chat.converter;
 
-import chungbazi.chungbazi_be.domain.chat.dto.ChatRequestDTO;
 import chungbazi.chungbazi_be.domain.chat.dto.ChatResponseDTO;
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.entity.Message;
+
+import java.util.Optional;
 
 public class ChatConverter {
 
@@ -16,13 +17,25 @@ public class ChatConverter {
                 .build();
     }
 
-    public static ChatResponseDTO.messageResponse from(Message message) {
-        return ChatResponseDTO.messageResponse.builder()
+    public static ChatResponseDTO.chatDetailMessage toChatDetailMessageDTO(Message message, Long userId) {
+        return ChatResponseDTO.chatDetailMessage.builder()
                 .id(message.getId())
-                .chatRoomId(message.getChatRoom().getId())
-                .senderId(message.getSender().getId())
                 .content(message.getContent())
+                .senderId(message.getSender().getId())
+                .isRead(message.isRead())
                 .createdAt(message.getCreatedAt())
+                .isMyMessage(message.getSender().getId().equals(userId))
+                .build();
+    }
+
+    public static ChatResponseDTO.chatRoomListResponse toChatRoomListResponse(ChatRoom chatRoom, Message lastMessage) {
+        return ChatResponseDTO.chatRoomListResponse.builder()
+                .chatRoomId(chatRoom.getId())
+                .postTile(chatRoom.getPost().getTitle())
+                .lastMessage(lastMessage != null ? lastMessage.getContent() : "")
+                .lastMessageTime(lastMessage != null ? lastMessage.getCreatedAt() : null)
+                .receiverName(chatRoom.getReceiver().getName())
+                .isRead(lastMessage != null ? lastMessage.isRead() : false)
                 .build();
     }
 
