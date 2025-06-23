@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ChatController { // 컨트롤러 나오는지 확인용 커밋
+public class ChatController { // 컨트롤러 나오는지 확인용 커밋.
     private final ChatService chatService;
 
     @PostMapping("/chat/{postId}/create-room")
