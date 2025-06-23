@@ -65,7 +65,6 @@ public class ChatResponseDTO {
         String lastMessage;
         LocalDateTime lastMessageTime;
         boolean isRead;
-        boolean isActive;
     }
 
 

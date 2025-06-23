@@ -36,7 +36,6 @@ public class ChatConverter {
                 .lastMessageTime(lastMessage != null ? lastMessage.getCreatedAt() : null)
                 .receiverName(chatRoom.getReceiver().getName())
                 .isRead(lastMessage != null ? lastMessage.isRead() : false)
-                .isActive(chatRoom.isActive())
                 .build();
     }
 

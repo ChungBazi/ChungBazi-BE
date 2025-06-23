@@ -53,9 +53,13 @@ public class ChatController {
     }
 
     @GetMapping("/chatRooms")
-    @Operation(summary = "채팅방 목록 조회", description = "유저의 채팅방 목록을 조회하는 API입니다")
-    public ApiResponse<List<ChatResponseDTO.chatRoomListResponse>> getChatRooms() {
-        return ApiResponse.onSuccess(chatService.getChatRoomList());
+    @Operation(summary = "채팅방 목록 조회", description = """
+            유저의 채팅방 목록을 조회하는 API입니다.
+            isBlocked == true인 경우, 차단된 채팅방 목록을,
+            isBlocked == false인 경우, 활성화된 채팅방 목록을 반환합니다.
+            """)
+    public ApiResponse<List<ChatResponseDTO.chatRoomListResponse>> getChatRooms(@RequestParam(required = false) boolean isBlocked) {
+        return ApiResponse.onSuccess(chatService.getChatRoomList(isBlocked));
     }
 
 }

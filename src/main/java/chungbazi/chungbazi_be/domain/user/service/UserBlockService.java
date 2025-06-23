@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.user.service;
 
+import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.UserBlock;
 import chungbazi.chungbazi_be.domain.user.repository.UserBlockRepository.UserBlockRepository;
@@ -10,6 +11,7 @@ import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class UserBlockService {
         }
 
         userBlockRepository.block(blocker.getId(),blockedUserId);
+
     }
 
     public void unblockUser(Long blockedUserId){
@@ -35,4 +38,12 @@ public class UserBlockService {
         userBlockRepository.unblock(blocker.getId(), blockedUserId);
 
     }
+
+    @Transactional(readOnly = true)
+    public boolean isUserBlocked(Long targetUserId){
+        User currentUser = userHelper.getAuthenticatedUser();
+        return userBlockRepository.existsBlockBetweenUsers(currentUser.getId(), targetUserId);
+    }
+
+
 }

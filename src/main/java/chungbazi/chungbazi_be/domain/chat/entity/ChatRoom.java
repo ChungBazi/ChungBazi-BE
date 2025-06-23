@@ -37,7 +37,7 @@ public class ChatRoom extends BaseTimeEntity {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
 
-    public void deactivate() {
-        this.isActive = false;
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 }

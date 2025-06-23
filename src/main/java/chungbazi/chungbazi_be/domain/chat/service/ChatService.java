@@ -12,6 +12,7 @@ import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserBlockRepository.UserBlockRepository;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.user.service.UserBlockService;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
@@ -37,6 +38,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final UserBlockRepository userBlockRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final UserBlockService userBlockService;
 
     @Transactional
     public ChatResponseDTO.createChatRoomResponse createChatRoom(Long postId){
@@ -103,8 +105,7 @@ public class ChatService {
 
         User sender = userHelper.getAuthenticatedUser();
 
-        User receiver = chatRoom.getSender().equals(sender)
-                ? chatRoom.getReceiver() : chatRoom.getSender();
+        User receiver = getOtherUser(chatRoom,sender);
 
         if (userBlockRepository.existsBlockBetweenUsers(sender.getId(), receiver.getId())){
             throw new GeneralException(ErrorStatus.BLOCKED_CHATROOM);
@@ -153,15 +154,15 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(charRoomId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
 
-        if (isParticipant(chatRoom,userHelper.getAuthenticatedUser())){
+        User receiver = getOtherUser(chatRoom,userHelper.getAuthenticatedUser());
+
+        if (isParticipant(chatRoom,receiver)){
             throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
         }
 
-        chatRoom.deactivate();
+        chatRoom.setIsActive(false);
         chatRoomRepository.save(chatRoom);
 
-        User receiver = chatRoom.getSender().equals(userHelper.getAuthenticatedUser())
-                ? chatRoom.getReceiver() : chatRoom.getSender();
 
         simpMessagingTemplate.convertAndSend(
                 receiver.getId().toString(),
@@ -170,9 +171,21 @@ public class ChatService {
         );
     }
 
-    public List<ChatResponseDTO.chatRoomListResponse> getChatRoomList(){
+    public List<ChatResponseDTO.chatRoomListResponse> getChatRoomList(boolean isBlocked){
         User user=userHelper.getAuthenticatedUser();
-        List<ChatRoom> chatRooms = chatRoomRepository.findActiveRoomsByUserId(user.getId());
+        List<ChatRoom> chatRooms;
+
+        if (!isBlocked){
+            chatRooms = chatRoomRepository.findActiveRoomsByUserId(user.getId()).stream()
+                            .filter(chatRoom -> {
+                                Long otherUserId = getOtherUser(chatRoom,user).getId();
+                            return !userBlockService.isUserBlocked(otherUserId);
+                            })
+                    .collect(Collectors.toList());
+        }else {
+            chatRooms = chatRoomRepository.findBlockedChatRoomsByUserId(user.getId());
+
+        }
         List<ChatResponseDTO.chatRoomListResponse> chatRoomListResponses = chatRooms.stream()
                 .map(chatRoom -> {
                     Message lastMessage = messageRepository.findLastMessageByChatRoomId(chatRoom.getId())
@@ -186,4 +199,9 @@ public class ChatService {
     }
 
 
+    public User getOtherUser(ChatRoom chatRoom, User currentUser) {
+        return chatRoom.getSender().getId().equals(currentUser.getId())
+                ? chatRoom.getReceiver()
+                : chatRoom.getSender();
+    }
 }
