@@ -119,6 +119,7 @@ public class User {
     public void updateIsDeleted(Boolean isDeleted){this.isDeleted = isDeleted;}
     public void updateRewardLevel(RewardLevel reward) {this.reward = reward;}
     public void updatePassword(String newPassword) {this.password = newPassword;}
+    public void updateName(String newName){this.name = newName;}
 
     // 알람 관련
     public void updateNotificationSetting(NotificationSetting notificationSetting) {this.notificationSetting = notificationSetting;}

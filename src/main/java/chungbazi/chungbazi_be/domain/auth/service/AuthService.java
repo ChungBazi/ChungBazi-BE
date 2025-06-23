@@ -56,16 +56,42 @@ public class AuthService {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         User user = User.builder()
                 .email(request.getEmail())
-                .name(request.getName())
                 .password(encodedPassword)
+                .name("닉네임을 등록해주세요.")
                 .oAuthProvider(OAuthProvider.LOCAL)
                 .build();
         userRepository.save(user);
     }
 
+    // 일반 회원가입 닉네임 등록
+    public void registerNickName(TokenRequestDTO.NickNameRequestDTO request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .map(existingUser -> {
+                    if (existingUser.isDeleted()) {
+                        throw new BadRequestHandler(ErrorStatus.DEACTIVATED_ACCOUNT);
+                    }
+                    return existingUser;
+                })
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        if(userRepository.findByName(request.getName()).isPresent()) {
+            throw new BadRequestHandler(ErrorStatus.INVALID_NICKNAME);
+        }
+
+        user.updateName(request.getName());
+        userRepository.save(user);
+    }
+
     // 일반 로그인
     public TokenDTO loginUser(TokenRequestDTO.LoginTokenRequestDTO request) {
-        User user = findUser(request);
+        User user = userRepository.findByEmail(request.getEmail())
+                .map(existingUser -> {
+                    if (existingUser.isDeleted()) {
+                        throw new BadRequestHandler(ErrorStatus.DEACTIVATED_ACCOUNT);
+                    }
+                    return existingUser;
+                })
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BadRequestHandler(ErrorStatus.INVALID_CREDENTIALS);
@@ -202,17 +228,6 @@ public class AuthService {
         return authConverter.toRefreshTokenResponse(token);
     }
 
-    public User findUser(TokenRequestDTO.LoginTokenRequestDTO request) {
-        return userRepository.findByEmail(request.getEmail())
-                .map(existingUser -> {
-                    if (existingUser.isDeleted()) {
-                        throw new BadRequestHandler(ErrorStatus.DEACTIVATED_ACCOUNT);
-                    }
-                    return existingUser;
-                })
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-    }
-
 
     public boolean determineIsFirst(User user) {
         return !user.isSurveyStatus();
@@ -233,8 +248,15 @@ public class AuthService {
     // 비밀번호 재설정
     public void resetPassword(String newPassword) {
         User user = userHelper.getAuthenticatedUser();
+
+        // 새 비밀번호가 기존 비밀번호와 같은지 확인
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new BadRequestHandler(ErrorStatus.SAME_AS_OLD_PASSWORD);
+        }
+        // 새 비밀번호 인코딩 및 저장
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.updatePassword(encodedPassword);
         userRepository.save(user);
     }
+
 }
