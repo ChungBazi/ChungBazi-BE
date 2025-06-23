@@ -156,7 +156,7 @@ public class ChatService {
 
         User receiver = getOtherUser(chatRoom,userHelper.getAuthenticatedUser());
 
-        if (isParticipant(chatRoom,receiver)){
+        if (!isParticipant(chatRoom,receiver)){
             throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
         }
 
