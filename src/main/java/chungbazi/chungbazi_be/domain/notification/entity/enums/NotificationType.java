@@ -4,6 +4,7 @@ public enum NotificationType {
     POLICY_ALARM,
     COMMUNITY_ALARM,
     REWARD_ALARM,
-    NOTICE_ALARM
+    NOTICE_ALARM,
+    CHAT_ALARM
 
 }

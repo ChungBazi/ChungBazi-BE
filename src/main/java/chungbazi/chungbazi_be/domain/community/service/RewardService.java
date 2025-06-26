@@ -63,7 +63,7 @@ public class RewardService {
         User user=userHelper.getAuthenticatedUser();
         String message = rewardLevel + "단계에 달성하여 캐릭터가 지급되었습니다.";
 
-        notificationService.sendNotification(user, NotificationType.REWARD_ALARM, message, null, null);
+        notificationService.sendNotification(user, NotificationType.REWARD_ALARM, message, null, null, null);
     }
 
     public NextLevelInfo calNextLevelInfo(User user, Character character){

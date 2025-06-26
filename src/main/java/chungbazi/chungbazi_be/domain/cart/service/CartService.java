@@ -170,7 +170,7 @@ public class CartService {
         if (notificationDate.isAfter(LocalDate.now())) {
             taskScheduler.schedule(() -> {
                 String message = policy.getName() + "가 3일 뒤 마감됩니다!";
-                notificationService.sendNotification(user, NotificationType.POLICY_ALARM, message, null, policy);
+                notificationService.sendNotification(user, NotificationType.POLICY_ALARM, message, null, policy,null);
             }, notificationDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         }
     }

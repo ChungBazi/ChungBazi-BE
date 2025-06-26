@@ -43,7 +43,7 @@ public class NotificationService {
     private final NotificationSettingRepository notificationSettingRepository;
     private final UserHelper userHelper;
 
-    public NotificationResponseDTO.responseDto sendNotification(User user, NotificationType type, String message, Post post, Policy policy) {
+    public NotificationResponseDTO.responseDto sendNotification(User user, NotificationType type, String message, Post post, Policy policy, chungbazi.chungbazi_be.domain.chat.entity.Message chat) {
         Notification notification=Notification.builder()
                 .user(user)
                 .type(type)
@@ -51,6 +51,7 @@ public class NotificationService {
                 .isRead(false)
                 .post(post)
                 .policy(policy)
+                .chat(chat)
                 .build();
 
         notificationRepository.save(notification);
@@ -60,8 +61,9 @@ public class NotificationService {
         if(fcmToken!=null){
             Long policyId = (policy != null) ? policy.getId() : null;
             Long postId = (post != null) ? post.getId() : null;
+            Long chatId = (chat != null) ? chat.getId() : null;
 
-            pushFCMNotification(fcmToken,message,policyId, postId, type);
+            pushFCMNotification(fcmToken,message,policyId, postId, chatId,type);
         }
         return NotificationResponseDTO.responseDto.builder()
                 .notificationId(notification.getId())
@@ -70,7 +72,7 @@ public class NotificationService {
     }
 
     //fcm한테 알림 요청
-    public void pushFCMNotification(String fcmToken,String message,Long policyId, Long postId, NotificationType type) {
+    public void pushFCMNotification(String fcmToken,String message,Long policyId, Long postId, Long chatId, NotificationType type) {
         try {
             com.google.firebase.messaging.Notification notification =
                     com.google.firebase.messaging.Notification.builder()
@@ -84,6 +86,9 @@ public class NotificationService {
             }
             if (postId != null) {
                 data.put("postId", postId.toString());
+            }
+            if (chatId != null) {
+                data.put("chatId", chatId.toString());
             }
             data.put("notificationType", type.toString());
 

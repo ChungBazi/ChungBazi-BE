@@ -9,6 +9,8 @@ import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository.ChatRoom
 import chungbazi.chungbazi_be.domain.chat.repository.MessageRepository.MessageRepository;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
+import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
+import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserBlockRepository.UserBlockRepository;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
@@ -39,6 +41,7 @@ public class ChatService {
     private final UserBlockRepository userBlockRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final UserBlockService userBlockService;
+    private final NotificationService notificationService;
 
     @Transactional
     public ChatResponseDTO.createChatRoomResponse createChatRoom(Long postId){
@@ -89,9 +92,17 @@ public class ChatService {
                 .build();
 
         messageRepository.save(message);
+        sendChatNotification(dto.getReceiverId(),message);
         simpMessagingTemplate.convertAndSend("/topic/chat.room." + chatRoomId, response);
 
         return response;
+    }
+
+    public void sendChatNotification(Long receiverId, Message chat){
+        User receiver = userRepository.findById(receiverId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        String message = chat.getSender().getName() + "님이 쪽지를 보내셨습니다.";
+        notificationService.sendNotification(receiver, NotificationType.CHAT_ALARM,message,null,null,chat);
     }
 
     @Transactional
