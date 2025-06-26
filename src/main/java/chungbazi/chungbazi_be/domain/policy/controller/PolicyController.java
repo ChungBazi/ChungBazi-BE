@@ -16,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,13 @@ public class PolicyController {
     private final PolicyService policyService;
     private final CalendarDocumentService calendarDocumentService;
     private final PopularSearchService popularSearchService;
+
+    //정책 open api 수동 호출 확인 api
+    @PostMapping("/fetch")
+    public ApiResponse<String> fetchPoliciesManually() {
+        policyService.getPolicy();  // 👈 여기서 강제 호출
+        return ApiResponse.onSuccess("정책 수동 업데이트 완료!");
+    }
 
     // 정책 검색
     @Operation(summary = "정책 검색 API", description = "정책 검색")
