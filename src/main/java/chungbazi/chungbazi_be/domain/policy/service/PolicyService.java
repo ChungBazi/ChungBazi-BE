@@ -61,6 +61,10 @@ public class PolicyService {
     private final UserHelper userHelper;
     private final NotificationService notificationService;
 
+    private static final Set<String> VALID_KEYWORDS = Set.of(
+            "계속", "상시", "매년", "2025~", "연 2회", "별도 종료 시기 없음", "당해 연도"
+    );
+
 
     @Value("${webclient.openApiVlak}")
     private String openApiVlak;
@@ -214,18 +218,19 @@ public class PolicyService {
 
     // 날짜 나와있는지 + 2달 이내 정책인지 검증
     private boolean isDateAvail(YouthPolicyResponse response, LocalDate twoMonthAgo) {
-
         LocalDate endDate = response.getEndDate();
-
-        // 종료일 없는 경우지만 '계속'이면 출력 허용
-        if (endDate == null && "계속".equals(response.getBizPrdEtcCn())) {
-            return true; // 화면 출력 O, 날짜 필터링은 안 함
-        }
+        String bizPeriod = response.getBizPrdEtcCn();
 
         if (endDate == null) {
+            if (bizPeriod != null) {
+                for (String keyword : VALID_KEYWORDS) {
+                    if (bizPeriod.contains(keyword)) {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
-
         return endDate.isAfter(twoMonthAgo);
     }
 

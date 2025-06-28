@@ -47,7 +47,7 @@ public class YouthPolicyResponse {
     @JsonProperty("sprtTrgtMinAge")
     private String sprtTrgtMinAge;  // 지원대상 최소 연령
 
-    @JsonProperty("ssprtTrgtMaxAge")
+    @JsonProperty("sprtTrgtMaxAge")
     private String sprtTrgtMaxAge;  // 지원대상 최대 연령
     /*
         @JacksonXmlProperty(localName = "majrRqisCn")
@@ -80,7 +80,7 @@ public class YouthPolicyResponse {
     @JsonProperty("aplyUrlAddr")
     private String aplyUrlAddr; // 신청 사이트 주소
 
-    @JsonProperty("lsbmsnDcmntCn")
+    @JsonProperty("sbmsnDcmntCn")
     private String sbmsnDcmntCn; // 제출 서류 내용
 
     @JsonProperty("srngMthdCn")
