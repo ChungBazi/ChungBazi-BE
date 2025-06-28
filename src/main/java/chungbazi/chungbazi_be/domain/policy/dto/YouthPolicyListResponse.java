@@ -8,6 +8,12 @@ import lombok.Getter;
 @Getter
 public class YouthPolicyListResponse {
 
+    @JsonProperty("resultCode") //추가
+    private String resultCode;
+
+    @JsonProperty("resultMessage")  // ← 요거 추가!
+    private String resultMessage;
+
     @JsonProperty("result")
     @JsonIgnoreProperties(ignoreUnknown = true)   // 명시되지 않은 필드는 매핑 시 무시
     private Result result;

@@ -35,6 +35,9 @@ public class YouthPolicyResponse {
     // 종료날짜
     private String bizPrdEndYmd;
 
+    @JsonProperty("bizPrdEtcCn")
+    private String bizPrdEtcCn; // 예: "계속"
+
     private LocalDate startDate;
     private LocalDate endDate;
     /*
@@ -95,20 +98,26 @@ public class YouthPolicyResponse {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    @JsonSetter("bizPrdBgngYmd") // JSON에서 값이 들어올 때 startDate 세팅
+    @JsonSetter("bizPrdBgngYmd")
     public void setBizPrdBgngYmd(String bizPrdBgngYmd) {
         this.bizPrdBgngYmd = bizPrdBgngYmd;
-        if (bizPrdBgngYmd != null && !bizPrdBgngYmd.trim().isEmpty() && !bizPrdBgngYmd.trim().equals("        ")) {
+        if (isValidDate(bizPrdBgngYmd)) {
             this.startDate = LocalDate.parse(bizPrdBgngYmd, FORMATTER);
         }
     }
 
-    @JsonSetter("bizPrdEndYmd") // JSON에서 값이 들어올 때 endDate 세팅
-    public void setbizPrdEndYmd(String bizPrdEndYmd) {
+    @JsonSetter("bizPrdEndYmd")
+    public void setBizPrdEndYmd(String bizPrdEndYmd) {
         this.bizPrdEndYmd = bizPrdEndYmd;
-        if (bizPrdEndYmd != null && !bizPrdEndYmd.trim().isEmpty() && !bizPrdEndYmd.trim().equals("        ")) {
-            this.startDate = LocalDate.parse(bizPrdEndYmd, FORMATTER);
+        if (isValidDate(bizPrdEndYmd)) {
+            this.endDate = LocalDate.parse(bizPrdEndYmd, FORMATTER);
         }
+    }
+
+    private boolean isValidDate(String value) {
+        return value != null &&
+                !value.trim().isEmpty() &&
+                !value.trim().equals("        ");
     }
 
 

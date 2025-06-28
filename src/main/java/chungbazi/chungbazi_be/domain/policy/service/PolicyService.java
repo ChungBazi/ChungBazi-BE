@@ -41,6 +41,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -64,8 +65,8 @@ public class PolicyService {
     @Value("${webclient.openApiVlak}")
     private String openApiVlak;
 
-    /*
-        @Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
+
+        //@Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
         @Transactional
         public void schedulePolicyFetch() {
             getPolicy();
@@ -82,8 +83,9 @@ public class PolicyService {
             LocalDate twoMonthAgo = LocalDate.now().minusMonths(2);
 
             while (true) {
-                // XML -> DTO
+                // JSON -> DTO
                 YouthPolicyListResponse policies = fetchPolicy(display, pageIndex, srchPolyBizSecd);
+                System.out.println("가져온 정책 수: " + policies.getResult().getYouthPolicyList().size());
 
                 if (policies == null) {
                     break;
@@ -93,7 +95,7 @@ public class PolicyService {
                 List<Policy> validPolicies = new ArrayList<>();
                 for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
                     if (policyRepository.existsByBizId(response.getPlcyNo())) {
-                        break;
+                        continue;
                     }
                     if (isDateAvail(response, twoMonthAgo)) {
                         validPolicies.add(Policy.toEntity(response));
@@ -115,7 +117,7 @@ public class PolicyService {
 
         }
 
-    */
+
     // 정책 검색
     public PolicyListResponse getSearchPolicy(String name, String cursor, int size, String order) {
 
@@ -181,20 +183,19 @@ public class PolicyService {
 
         String responseBody = webclient
                 .get()
-                .uri(uriBuilder -> {
-                    return uriBuilder.path("") // 추가 경로 없이 기본 URL 그대로 사용
-                            .queryParam("apiKeyNum", openApiVlak) // 인증키
+                .uri(uriBuilder ->
+                            uriBuilder.path("/go/ythip/getPlcy")
+                            .queryParam("apiKeyNm", openApiVlak) // 인증키
                             .queryParam("pageSize", display) // 출력 건수
                             .queryParam("pageNum", pageIndex) // 조회 페이지
+                            .queryParam("rtnType", "json")
                             //.queryParam("srchPolyBizSecd", srchPolyBizSecd)
-                            .build();
-                })
+                            .build())
                 .retrieve()
                 .bodyToMono(String.class)   // 서버 response content-type이 text/plain 라서
-                .flux()
-                .toStream()
-                .findFirst()
-                .orElse(null);
+                .block();
+
+        System.out.println("API 응답: " + responseBody);
 
         // text/plain-> JSON
         try {
@@ -207,6 +208,7 @@ public class PolicyService {
             return null;
         }
 
+
     }
 
 
@@ -215,16 +217,16 @@ public class PolicyService {
 
         LocalDate endDate = response.getEndDate();
 
-        // 날짜 안 나옴
+        // 종료일 없는 경우지만 '계속'이면 출력 허용
+        if (endDate == null && "계속".equals(response.getBizPrdEtcCn())) {
+            return true; // 화면 출력 O, 날짜 필터링은 안 함
+        }
+
         if (endDate == null) {
             return false;
         }
-        // 2달 이내 정책인지
-        if (endDate.isAfter(twoMonthAgo)) {
-            return true;
-        }
 
-        return false;
+        return endDate.isAfter(twoMonthAgo);
     }
 
     public Policy findByPolicyId(Long policyId) {
