@@ -24,6 +24,8 @@ public class QChatRoom extends EntityPathBase<ChatRoom> {
 
     public final chungbazi.chungbazi_be.global.entity.QBaseTimeEntity _super = new chungbazi.chungbazi_be.global.entity.QBaseTimeEntity(this);
 
+    public final ListPath<chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting, chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting> chatRoomSettings = this.<chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting, chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting>createList("chatRoomSettings", chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting.class, chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting.class, PathInits.DIRECT2);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
@@ -34,10 +36,6 @@ public class QChatRoom extends EntityPathBase<ChatRoom> {
     public final ListPath<Message, QMessage> messages = this.<Message, QMessage>createList("messages", Message.class, QMessage.class, PathInits.DIRECT2);
 
     public final chungbazi.chungbazi_be.domain.community.entity.QPost post;
-
-    public final chungbazi.chungbazi_be.domain.user.entity.QUser receiver;
-
-    public final chungbazi.chungbazi_be.domain.user.entity.QUser sender;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -61,8 +59,6 @@ public class QChatRoom extends EntityPathBase<ChatRoom> {
     public QChatRoom(Class<? extends ChatRoom> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.post = inits.isInitialized("post") ? new chungbazi.chungbazi_be.domain.community.entity.QPost(forProperty("post"), inits.get("post")) : null;
-        this.receiver = inits.isInitialized("receiver") ? new chungbazi.chungbazi_be.domain.user.entity.QUser(forProperty("receiver"), inits.get("receiver")) : null;
-        this.sender = inits.isInitialized("sender") ? new chungbazi.chungbazi_be.domain.user.entity.QUser(forProperty("sender"), inits.get("sender")) : null;
     }
 
 }

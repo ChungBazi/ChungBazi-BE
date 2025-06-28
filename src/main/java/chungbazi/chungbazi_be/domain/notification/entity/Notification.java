@@ -48,7 +48,7 @@ public class Notification extends BaseTimeEntity {
 
     //쪽지 알림인 경우
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "message_id")
+    @JoinColumn(name = "chat_id")
     private Message chat;
 
 

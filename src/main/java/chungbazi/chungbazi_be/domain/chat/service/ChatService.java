@@ -9,7 +9,9 @@ import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository.ChatRoom
 import chungbazi.chungbazi_be.domain.chat.repository.MessageRepository.MessageRepository;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
+import chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
+import chungbazi.chungbazi_be.domain.notification.service.ChatRoomSettingService;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserBlockRepository.UserBlockRepository;
@@ -42,27 +44,36 @@ public class ChatService {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final UserBlockService userBlockService;
     private final NotificationService notificationService;
+    private final ChatRoomSettingService chatRoomSettingService;
 
     @Transactional
     public ChatResponseDTO.createChatRoomResponse createChatRoom(Long postId){
         User sender = userHelper.getAuthenticatedUser();
-
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
         ChatRoom chatRoom=ChatRoom.builder()
-                .sender(sender)
-                .receiver(post.getAuthor())
                 .post(post)
                 .isActive(true)
                 .build();
 
+        //chatRoomRepository.save(chatRoom);
+
+        List<User> participants = List.of(sender, post.getAuthor());
+        participants.forEach(user -> {
+            ChatRoomSetting setting = ChatRoomSetting.builder()
+                    .user(user)
+                    .chatRoom(chatRoom)
+                    .enabled(true)
+                    .build();
+            chatRoom.getChatRoomSettings().add(setting);
+        });
         chatRoomRepository.save(chatRoom);
 
-        return ChatConverter.toChatRoomDTO(chatRoom);
+        return ChatConverter.toChatRoomDTO(chatRoom,sender.getId(), post.getAuthor().getId());
     }
 
-
+    @Transactional
     public ChatResponseDTO.messageResponse sendMessage(Long chatRoomId,ChatRequestDTO.messagedto dto){
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
@@ -70,6 +81,9 @@ public class ChatService {
         User sender = userRepository.findById(dto.getSenderId())
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
+        if (!chatRoom.isParticipant(sender)) {
+            throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
+        }
         if (userBlockRepository.existsBlockBetweenUsers(dto.getSenderId(), dto.getReceiverId())){
             throw new GeneralException(ErrorStatus.BLOCKED_CHATROOM);
         }
@@ -81,6 +95,9 @@ public class ChatService {
                 .isRead(false)
                 .build();
 
+        messageRepository.save(message);
+        sendChatNotification(dto.getReceiverId(),message);
+
         ChatResponseDTO.messageResponse response=ChatResponseDTO.messageResponse.builder()
                 .id(message.getId())
                 .receiverId(dto.getReceiverId())
@@ -90,19 +107,19 @@ public class ChatService {
                 .content(dto.getContent())
                 .isRead(message.isRead())
                 .build();
-
-        messageRepository.save(message);
-        sendChatNotification(dto.getReceiverId(),message);
         simpMessagingTemplate.convertAndSend("/topic/chat.room." + chatRoomId, response);
 
         return response;
     }
 
+    @Transactional
     public void sendChatNotification(Long receiverId, Message chat){
         User receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
-        String message = chat.getSender().getName() + "님이 쪽지를 보내셨습니다.";
-        notificationService.sendNotification(receiver, NotificationType.CHAT_ALARM,message,null,null,chat);
+        if(chatRoomSettingService.getChatRoomSettingIsEnabled(receiverId,chat.getChatRoom().getId())){
+            String message = chat.getSender().getName() + "님이 쪽지를 보내셨습니다.";
+            notificationService.sendNotification(receiver, NotificationType.CHAT_ALARM,message,null,null,chat);
+        }
     }
 
     @Transactional
@@ -110,45 +127,45 @@ public class ChatService {
         ChatRoom chatRoom=chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
 
-        if (!isParticipant(chatRoom,userHelper.getAuthenticatedUser())){
+        if (!chatRoom.isParticipant(userHelper.getAuthenticatedUser())){
             throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
         }
 
-        User sender = userHelper.getAuthenticatedUser();
+        User currentUser = userHelper.getAuthenticatedUser();
 
-        User receiver = getOtherUser(chatRoom,sender);
+        User other = getOtherUser(chatRoom,currentUser);
 
-        if (userBlockRepository.existsBlockBetweenUsers(sender.getId(), receiver.getId())){
+        boolean chatRoomIsEnabled= chatRoomSettingService.getChatRoomSettingIsEnabled(currentUser.getId(), chatRoom.getId());
+
+        if (userBlockRepository.existsBlockBetweenUsers(currentUser.getId(), other.getId())){
             throw new GeneralException(ErrorStatus.BLOCKED_CHATROOM);
         }
 
-        markMessagesAsRead(chatRoomId,userHelper.getAuthenticatedUser().getId());
+        markMessagesAsRead(chatRoom,currentUser);
 
         List<Message> messages = messageRepository.findMessagesByChatRoomId(chatRoomId,cursor,limit+1);
         PaginationResult<Message> paginationResult = PaginationUtil.paginate(messages,limit);
 
         List<ChatResponseDTO.chatDetailMessage> messageList = paginationResult.getItems().stream()
-                .map(message -> ChatConverter.toChatDetailMessageDTO(message, sender.getId()))
+                .map(message -> ChatConverter.toChatDetailMessageDTO(message, currentUser.getId()))
                 .collect(Collectors.toList());
 
         return ChatResponseDTO.chatRoomResponse.builder()
                 .chatRoomId(chatRoomId)
                 .postTitle(chatRoom.getPost().getTitle())
+                .chatRoomNotification(chatRoomIsEnabled)
                 .messageList(messageList)
-                .receiverId(receiver.getId())
-                .receiverName(receiver.getName())
+                .receiverId(other.getId())
+                .receiverName(other.getName())
                 .build();
     }
 
-    public void markMessagesAsRead(Long chatRoomId, Long userId){
-        ChatRoom chatRoom=chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
+    public void markMessagesAsRead(ChatRoom chatRoom, User currentUser){
 
-        long updatedCount = messageRepository.markAllAsRead(chatRoom.getId(),userId);
+        long updatedCount = messageRepository.markAllAsRead(chatRoom.getId(),currentUser.getId());
 
         if (updatedCount>0){
-            User receiver = chatRoom.getSender().getId().equals(userId)
-                    ? chatRoom.getReceiver() : chatRoom.getSender();
+            User receiver = getOtherUser(chatRoom,currentUser);
 
             simpMessagingTemplate.convertAndSend(
                     receiver.getId().toString(),
@@ -157,17 +174,13 @@ public class ChatService {
         }
     }
 
-    private boolean isParticipant (ChatRoom chatRoom,User user){
-        return chatRoom.getSender().equals(user) || chatRoom.getReceiver().equals(user);
-    }
-
     public void leaveChatRoom(Long charRoomId){
         ChatRoom chatRoom = chatRoomRepository.findById(charRoomId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
 
         User receiver = getOtherUser(chatRoom,userHelper.getAuthenticatedUser());
 
-        if (!isParticipant(chatRoom,receiver)){
+        if (chatRoom.isParticipant(receiver)){
             throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
         }
 
@@ -202,17 +215,18 @@ public class ChatService {
                     Message lastMessage = messageRepository.findLastMessageByChatRoomId(chatRoom.getId())
                             .orElse(null);
                             //.orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
-                    return ChatConverter.toChatRoomListResponse(chatRoom, lastMessage);
+                    return ChatConverter.toChatRoomListResponse(chatRoom, lastMessage,getOtherUser(chatRoom,user));
                 })
                 .collect(Collectors.toList());
 
         return chatRoomListResponses;
     }
 
-
     public User getOtherUser(ChatRoom chatRoom, User currentUser) {
-        return chatRoom.getSender().getId().equals(currentUser.getId())
-                ? chatRoom.getReceiver()
-                : chatRoom.getSender();
+        return chatRoom.getChatRoomSettings().stream()
+                .map(ChatRoomSetting::getUser)
+                .filter(u -> !u.getId().equals(currentUser.getId()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
     }
 }

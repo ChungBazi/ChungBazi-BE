@@ -51,6 +51,7 @@ public class ChatResponseDTO {
         String postTitle;
         String receiverName;
         Long receiverId;
+        boolean chatRoomNotification;
         List<chatDetailMessage> messageList;
     }
 

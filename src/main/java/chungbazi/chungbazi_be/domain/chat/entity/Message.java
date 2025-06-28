@@ -30,7 +30,7 @@ public class Message extends BaseTimeEntity {
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
-    @OneToOne(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
     private Notification notification;
 
     @Column(nullable = false)
