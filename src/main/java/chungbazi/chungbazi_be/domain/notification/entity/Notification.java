@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.notification.entity;
 
+import chungbazi.chungbazi_be.domain.chat.entity.Message;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.global.utils.TimeFormatter;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
@@ -44,6 +45,11 @@ public class Notification extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "policy_id")
     private Policy policy;
+
+    //쪽지 알림인 경우
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_id")
+    private Message chat;
 
 
     public void markAsRead() {

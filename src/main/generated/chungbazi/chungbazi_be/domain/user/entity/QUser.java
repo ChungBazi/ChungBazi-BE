@@ -26,6 +26,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter> characters = this.<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter>createList("characters", chungbazi.chungbazi_be.domain.character.entity.Character.class, chungbazi.chungbazi_be.domain.character.entity.QCharacter.class, PathInits.DIRECT2);
 
+    public final ListPath<chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting, chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting> chatRoomSettings = this.<chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting, chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting>createList("chatRoomSettings", chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting.class, chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting.class, PathInits.DIRECT2);
+
     public final ListPath<chungbazi.chungbazi_be.domain.community.entity.Comment, chungbazi.chungbazi_be.domain.community.entity.QComment> comments = this.<chungbazi.chungbazi_be.domain.community.entity.Comment, chungbazi.chungbazi_be.domain.community.entity.QComment>createList("comments", chungbazi.chungbazi_be.domain.community.entity.Comment.class, chungbazi.chungbazi_be.domain.community.entity.QComment.class, PathInits.DIRECT2);
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Education> education = createEnum("education", chungbazi.chungbazi_be.domain.user.entity.enums.Education.class);

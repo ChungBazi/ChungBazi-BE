@@ -204,7 +204,7 @@ public class CommunityService {
         User author=post.getAuthor();
         String message=user.getName()+"님이 회원님의 게시글에 댓글을 달았습니다.";
 
-        notificationService.sendNotification(author, NotificationType.COMMUNITY_ALARM, message, post, null);
+        notificationService.sendNotification(author, NotificationType.COMMUNITY_ALARM, message, post, null,null);
     }
     public CommunityResponseDTO.TotalPostListDto getSearchPost(String query, String filter, String period, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);

@@ -4,6 +4,8 @@ import chungbazi.chungbazi_be.domain.chat.dto.ChatRequestDTO;
 import chungbazi.chungbazi_be.domain.chat.dto.ChatResponseDTO;
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.service.ChatService;
+import chungbazi.chungbazi_be.domain.notification.service.ChatRoomSettingService;
+import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -23,8 +25,9 @@ import static chungbazi.chungbazi_be.domain.chat.entity.QChatRoom.chatRoom;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ChatController { // 컨트롤러 나오는지 확인용 커밋.
+public class ChatController {
     private final ChatService chatService;
+    private final ChatRoomSettingService chatRoomSettingService;
 
     @PostMapping("/chat/{postId}/create-room")
     @Operation(summary = "채팅방 생성 API", description = "채팅방을 생성하는 API입니다.")
@@ -62,4 +65,10 @@ public class ChatController { // 컨트롤러 나오는지 확인용 커밋.
         return ApiResponse.onSuccess(chatService.getChatRoomList(isBlocked));
     }
 
+    @PatchMapping("/chatRooms/{chatRoomId}/setting")
+    @Operation(summary = "채팅방 알림 설정", description = "채팅방 알림을 설정하는 API입니다.")
+    public ApiResponse<Void> setChatRoomSetting(@PathVariable Long chatRoomId, @RequestParam(required = false) boolean enabled) {
+        chatRoomSettingService.setChatRoomSettingIsEnabled(chatRoomId, enabled);
+        return ApiResponse.onSuccess(null);
+    }
 }

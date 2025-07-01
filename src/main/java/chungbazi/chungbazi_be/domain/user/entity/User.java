@@ -4,6 +4,7 @@ import chungbazi.chungbazi_be.domain.character.entity.Character;
 import chungbazi.chungbazi_be.domain.chat.entity.Message;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
+import chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.NotificationSetting;
 import chungbazi.chungbazi_be.domain.user.entity.enums.*;
@@ -104,6 +105,9 @@ public class User {
 
     @OneToOne(mappedBy = "user",cascade = {CascadeType.ALL})
     private NotificationSetting notificationSetting;
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
+    private List<ChatRoomSetting> chatRoomSettings = new ArrayList<>();
 
     //채팅 관련
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
