@@ -11,9 +11,18 @@ public class ChatBotConverter {
                     ChatBotResponseDTO.PolicyDto.builder()
                             .policyId(policy.getId())
                             .title(policy.getName())
-                            .category(policy.getCategory())
                             .build()
                 ).toList();
+    }
+
+    public static ChatBotResponseDTO.PolicyDetailDto toPolicyDetailDto(Policy policy) {
+        return ChatBotResponseDTO.PolicyDetailDto.builder()
+                .policyId(policy.getId())
+                .title(policy.getName())
+                .category(policy.getCategory())
+                .intro(policy.getIntro())
+                .bizId(policy.getBizId())
+                .build();
     }
 
     public static ChatBotResponseDTO.ChatDto toChatDto(String answer){
