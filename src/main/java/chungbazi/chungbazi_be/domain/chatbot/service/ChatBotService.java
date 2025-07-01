@@ -5,6 +5,8 @@ import chungbazi.chungbazi_be.domain.chatbot.dto.ChatBotResponseDTO;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.policy.repository.PolicyRepository;
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,13 @@ public class ChatBotService {
     public List<ChatBotResponseDTO.PolicyDto> getPolicies(Category category) {
         List<Policy> policies = policyRepository.findTop5ByCategoryOrderByCreatedAtDesc(category);
         return ChatBotConverter.toPolicyListDto(policies);
+    }
+
+    public ChatBotResponseDTO.PolicyDetailDto getPolicyDetails(Long policyId) {
+        Policy policy = policyRepository.findById(policyId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.POLICY_NOT_FOUND));
+
+        return ChatBotConverter.toPolicyDetailDto(policy);
     }
 
     public ChatBotResponseDTO.ChatDto askGpt(String userMessage){

@@ -12,7 +12,17 @@ public class ChatBotResponseDTO {
     public static class PolicyDto {
         Long policyId;
         String title;
-        Category category; //추후 추가
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class PolicyDetailDto {
+        Long policyId;
+        String title;
+        Category category;
+        String intro;
+        String bizId; //신청 기간 추가
     }
 
     @Getter

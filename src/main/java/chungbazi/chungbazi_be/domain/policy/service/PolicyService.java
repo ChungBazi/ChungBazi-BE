@@ -70,7 +70,7 @@ public class PolicyService {
     private String openApiVlak;
 
 
-        //@Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
+        @Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
         @Transactional
         public void schedulePolicyFetch() {
             getPolicy();
