@@ -44,12 +44,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class PolicyService {
 
@@ -71,8 +72,7 @@ public class PolicyService {
     private String openApiVlak;
 
 
-        @Scheduled(cron = "0 30 9 * * *")
-        @Transactional
+        @Scheduled(cron = "15 22 11 * * *")
         public void schedulePolicyFetch() {
             log.info("✅ 정책 스케줄러 실행 시작!");
             getPolicy();
@@ -80,7 +80,6 @@ public class PolicyService {
         }
 
         // OpenAPI에서 정책 가져오기
-        @Transactional
         public void getPolicy() {
 
             int display = 20;
@@ -102,34 +101,52 @@ public class PolicyService {
                 log.info("✅ 가져온 정책 수: {} (pageIndex={})", policies.getResult().getYouthPolicyList().size(), pageIndex);
 
                 // DB에 이미 존재하는 bizId가 있는지 확인 & 날짜 유효한 것만 DTO -> Entity
-                List<Policy> validPolicies = new ArrayList<>();
-                for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
-                    if (policyRepository.existsByBizId(response.getPlcyNo())) {
-                        continue;
-                    }
-                    if (isDateAvail(response, twoMonthAgo)) {
-                        validPolicies.add(Policy.toEntity(response));
-                    }
-                }
-                if (!validPolicies.isEmpty()) {
-                    policyRepository.saveAll(validPolicies);
-                }
+                    List<Policy> validPolicies = new ArrayList<>();
+                    for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
+                        if (response.getPlcyNo() == null) {
+                            continue;
+                        }
 
-                // 마지막 정책 마감날짜
-                YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
+                        if (policyRepository.existsByBizId(response.getPlcyNo())) {
+                            continue;
+                        }
+
+                        if (!isDateAvail(response, twoMonthAgo)) {
+                            continue;
+                        }
+
+                        Policy policy = Policy.toEntity(response);
+                        validPolicies.add(policy);
+                    }
+
+                    if (validPolicies.isEmpty()) {
+                        log.info("✅ 유효한 정책이 없어서 종료 (pageIndex={})", pageIndex);
+                        break;
+                    }
+
+                    savePolicies(validPolicies);
+
+                    // 마지막 정책 마감날짜
+                    YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
                         .get(policies.getResult().getYouthPolicyList().size() - 1);
-                if (!isDateAvail(lastPolicy, twoMonthAgo)) {
-                    break;
-                }
 
-                pageIndex++;
-            } catch (Exception e) {
+                    if (!isDateAvail(lastPolicy, twoMonthAgo)) {
+                        log.info("✅ 마지막 정책의 유효기간이 지남 → 루프 종료 (pageIndex={})", pageIndex);
+                        break;
+                    }
+
+                    pageIndex++;
+                } catch (Exception e) {
                     log.error("❌ 페이지 {} 요청 중 오류 발생 → 루프 종료", pageIndex, e);
                     break;
                 }
             }
 
         }
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public void savePolicies(List<Policy> policies) {
+        policyRepository.saveAll(policies);
+    }
 
 
     // 정책 검색

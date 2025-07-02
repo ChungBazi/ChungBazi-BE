@@ -107,6 +107,7 @@ public class Policy extends BaseTimeEntity {
     */
 
     // 신청 사이트 주소
+    @Column(columnDefinition = "TEXT")
     private String registerUrl;
 
     // Open API 내 정책 ID
@@ -114,7 +115,7 @@ public class Policy extends BaseTimeEntity {
     private String bizId;
 
     // 제출 서류 내용
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String document;
 
     // 심사 발표 내용
