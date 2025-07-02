@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,7 +47,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -70,10 +71,12 @@ public class PolicyService {
     private String openApiVlak;
 
 
-        @Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
+        @Scheduled(cron = "0 30 9 * * *")
         @Transactional
         public void schedulePolicyFetch() {
+            log.info("✅ 정책 스케줄러 실행 시작!");
             getPolicy();
+            log.info("✅ 정책 스케줄러 실행 완료!");
         }
 
         // OpenAPI에서 정책 가져오기
@@ -87,13 +90,16 @@ public class PolicyService {
             LocalDate twoMonthAgo = LocalDate.now().minusMonths(2);
 
             while (true) {
+                try {
                 // JSON -> DTO
                 YouthPolicyListResponse policies = fetchPolicy(display, pageIndex, srchPolyBizSecd);
-                System.out.println("가져온 정책 수: " + policies.getResult().getYouthPolicyList().size());
 
-                if (policies == null) {
+                if (policies == null || policies.getResult() == null || policies.getResult().getYouthPolicyList().isEmpty()) {
+                    log.warn("✅ 더 이상 가져올 정책이 없어서 종료 (pageIndex={})", pageIndex);
                     break;
                 }
+
+                log.info("✅ 가져온 정책 수: {} (pageIndex={})", policies.getResult().getYouthPolicyList().size(), pageIndex);
 
                 // DB에 이미 존재하는 bizId가 있는지 확인 & 날짜 유효한 것만 DTO -> Entity
                 List<Policy> validPolicies = new ArrayList<>();
@@ -117,6 +123,10 @@ public class PolicyService {
                 }
 
                 pageIndex++;
+            } catch (Exception e) {
+                    log.error("❌ 페이지 {} 요청 중 오류 발생 → 루프 종료", pageIndex, e);
+                    break;
+                }
             }
 
         }
