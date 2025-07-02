@@ -62,7 +62,7 @@ public class PolicyService {
     private final UserHelper userHelper;
     private final NotificationService notificationService;
 
-    private static final Set<String> VALID_KEYWORDS = Set.of(
+    public static final Set<String> VALID_KEYWORDS = Set.of(
             "계속", "상시", "매년", "2025~", "연 2회", "별도 종료 시기 없음", "당해 연도"
     );
 

@@ -12,6 +12,7 @@ public class ChatBotResponseDTO {
     public static class PolicyDto {
         Long policyId;
         String title;
+        String status;
     }
 
     @Getter
@@ -22,7 +23,8 @@ public class ChatBotResponseDTO {
         String title;
         Category category;
         String intro;
-        String bizId; //신청 기간 추가
+        String bizId;
+        String status;
     }
 
     @Getter
