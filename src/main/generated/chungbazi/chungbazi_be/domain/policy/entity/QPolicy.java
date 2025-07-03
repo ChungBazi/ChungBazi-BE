@@ -28,6 +28,8 @@ public class QPolicy extends EntityPathBase<Policy> {
 
     public final StringPath bizId = createString("bizId");
 
+    public final StringPath bizPrdEtcCn = createString("bizPrdEtcCn");
+
     public final EnumPath<Category> category = createEnum("category", Category.class);
 
     public final StringPath content = createString("content");

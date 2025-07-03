@@ -2,26 +2,27 @@ package chungbazi.chungbazi_be.domain.chatbot.converter;
 
 import chungbazi.chungbazi_be.domain.chatbot.dto.ChatBotResponseDTO;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public class ChatBotConverter {
-    public static List<ChatBotResponseDTO.PolicyDto> toPolicyListDto(List<Policy> policies) {
-        return policies.stream()
-                .map(policy ->
-                    ChatBotResponseDTO.PolicyDto.builder()
-                            .policyId(policy.getId())
-                            .title(policy.getName())
-                            .build()
-                ).toList();
+    public static ChatBotResponseDTO.PolicyDto toPolicyDto(Policy policy, LocalDate today, Set<String> validKeywords) {
+        return ChatBotResponseDTO.PolicyDto.builder()
+                .policyId(policy.getId())
+                .title(policy.getName())
+                .status(policy.getStatus(today, validKeywords))
+                .build();
     }
 
-    public static ChatBotResponseDTO.PolicyDetailDto toPolicyDetailDto(Policy policy) {
+    public static ChatBotResponseDTO.PolicyDetailDto toPolicyDetailDto(Policy policy, LocalDate today, Set<String> validKeywords) {
         return ChatBotResponseDTO.PolicyDetailDto.builder()
                 .policyId(policy.getId())
                 .title(policy.getName())
                 .category(policy.getCategory())
                 .intro(policy.getIntro())
                 .bizId(policy.getBizId())
+                .status(policy.getStatus(today, validKeywords))
                 .build();
     }
 

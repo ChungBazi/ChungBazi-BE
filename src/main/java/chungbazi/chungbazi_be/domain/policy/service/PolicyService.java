@@ -39,16 +39,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-
+@Slf4j
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class PolicyService {
 
@@ -61,7 +63,7 @@ public class PolicyService {
     private final UserHelper userHelper;
     private final NotificationService notificationService;
 
-    private static final Set<String> VALID_KEYWORDS = Set.of(
+    public static final Set<String> VALID_KEYWORDS = Set.of(
             "계속", "상시", "매년", "2025~", "연 2회", "별도 종료 시기 없음", "당해 연도"
     );
 
@@ -70,14 +72,14 @@ public class PolicyService {
     private String openApiVlak;
 
 
-        @Scheduled(cron = "0 40 18 * * *") // 매일 오전 3시 20분에 실행
-        @Transactional
+        @Scheduled(cron = "15 22 11 * * *")
         public void schedulePolicyFetch() {
+            log.info("✅ 정책 스케줄러 실행 시작!");
             getPolicy();
+            log.info("✅ 정책 스케줄러 실행 완료!");
         }
 
         // OpenAPI에서 정책 가져오기
-        @Transactional
         public void getPolicy() {
 
             int display = 20;
@@ -87,39 +89,64 @@ public class PolicyService {
             LocalDate twoMonthAgo = LocalDate.now().minusMonths(2);
 
             while (true) {
+                try {
                 // JSON -> DTO
                 YouthPolicyListResponse policies = fetchPolicy(display, pageIndex, srchPolyBizSecd);
-                System.out.println("가져온 정책 수: " + policies.getResult().getYouthPolicyList().size());
 
-                if (policies == null) {
+                if (policies == null || policies.getResult() == null || policies.getResult().getYouthPolicyList().isEmpty()) {
+                    log.warn("✅ 더 이상 가져올 정책이 없어서 종료 (pageIndex={})", pageIndex);
                     break;
                 }
+
+                log.info("✅ 가져온 정책 수: {} (pageIndex={})", policies.getResult().getYouthPolicyList().size(), pageIndex);
 
                 // DB에 이미 존재하는 bizId가 있는지 확인 & 날짜 유효한 것만 DTO -> Entity
-                List<Policy> validPolicies = new ArrayList<>();
-                for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
-                    if (policyRepository.existsByBizId(response.getPlcyNo())) {
-                        continue;
-                    }
-                    if (isDateAvail(response, twoMonthAgo)) {
-                        validPolicies.add(Policy.toEntity(response));
-                    }
-                }
-                if (!validPolicies.isEmpty()) {
-                    policyRepository.saveAll(validPolicies);
-                }
+                    List<Policy> validPolicies = new ArrayList<>();
+                    for (YouthPolicyResponse response : policies.getResult().getYouthPolicyList()) {
+                        if (response.getPlcyNo() == null) {
+                            continue;
+                        }
 
-                // 마지막 정책 마감날짜
-                YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
+                        if (policyRepository.existsByBizId(response.getPlcyNo())) {
+                            continue;
+                        }
+
+                        if (!isDateAvail(response, twoMonthAgo)) {
+                            continue;
+                        }
+
+                        Policy policy = Policy.toEntity(response);
+                        validPolicies.add(policy);
+                    }
+
+                    if (validPolicies.isEmpty()) {
+                        log.info("✅ 유효한 정책이 없어서 종료 (pageIndex={})", pageIndex);
+                        break;
+                    }
+
+                    savePolicies(validPolicies);
+
+                    // 마지막 정책 마감날짜
+                    YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
                         .get(policies.getResult().getYouthPolicyList().size() - 1);
-                if (!isDateAvail(lastPolicy, twoMonthAgo)) {
+
+                    if (!isDateAvail(lastPolicy, twoMonthAgo)) {
+                        log.info("✅ 마지막 정책의 유효기간이 지남 → 루프 종료 (pageIndex={})", pageIndex);
+                        break;
+                    }
+
+                    pageIndex++;
+                } catch (Exception e) {
+                    log.error("❌ 페이지 {} 요청 중 오류 발생 → 루프 종료", pageIndex, e);
                     break;
                 }
-
-                pageIndex++;
             }
 
         }
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public void savePolicies(List<Policy> policies) {
+        policyRepository.saveAll(policies);
+    }
 
 
     // 정책 검색
