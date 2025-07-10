@@ -18,6 +18,8 @@ public class CommunityResponseDTO {
         Category category;
         String formattedCreatedAt;
 
+        boolean anonymous; //익명 여부 추가
+
         Integer views;
         Long commentCount;
         Integer postLikes;

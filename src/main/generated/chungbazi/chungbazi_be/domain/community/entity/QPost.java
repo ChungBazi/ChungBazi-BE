@@ -24,6 +24,8 @@ public class QPost extends EntityPathBase<Post> {
 
     public final chungbazi.chungbazi_be.global.entity.QBaseTimeEntity _super = new chungbazi.chungbazi_be.global.entity.QBaseTimeEntity(this);
 
+    public final BooleanPath anonymous = createBoolean("anonymous");
+
     public final chungbazi.chungbazi_be.domain.user.entity.QUser author;
 
     public final EnumPath<chungbazi.chungbazi_be.domain.policy.entity.Category> category = createEnum("category", chungbazi.chungbazi_be.domain.policy.entity.Category.class);

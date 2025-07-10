@@ -56,6 +56,7 @@ public class CommunityConverter {
                 .thumbnailUrl(post.getThumbnailUrl())
                 .imageUrls(post.getImageUrls())
                 .postLikes(post.getPostLikes())
+                .anonymous(post.isAnonymous())
                 .build();
     }
 
