@@ -52,6 +52,8 @@ public class CommunityResponseDTO {
         Category category;
         String formattedCreatedAt;
 
+        boolean anonymous;
+
         Integer views;
         Long commentCount;
         Integer postLikes;
