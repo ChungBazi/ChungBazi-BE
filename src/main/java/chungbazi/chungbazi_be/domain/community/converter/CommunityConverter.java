@@ -35,6 +35,7 @@ public class CommunityConverter {
                     .commentCount(commentCount)
                     .category(post.getCategory())
                     .postLikes(post.getPostLikes())
+                    .anonymous(post.isAnonymous())
                 .build();
         }).toList();
     }
@@ -56,6 +57,7 @@ public class CommunityConverter {
                 .thumbnailUrl(post.getThumbnailUrl())
                 .imageUrls(post.getImageUrls())
                 .postLikes(post.getPostLikes())
+                .anonymous(post.isAnonymous())
                 .build();
     }
 

@@ -102,6 +102,7 @@ public class CommunityService {
                 .views(0)
                 .postLikes(0)
                 .imageUrls(uploadedUrls)
+                .anonymous(uploadPostDto.isAnonymous())
                 .build();
         postRepository.save(post);
 

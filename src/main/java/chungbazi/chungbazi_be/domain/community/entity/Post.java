@@ -51,6 +51,8 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
 
+    private boolean anonymous; //익명 여부
+
     @Builder.Default
     @Column(columnDefinition = "integer default 0")
     private Integer views = 0;
