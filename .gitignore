@@ -1,5 +1,6 @@
 serviceAccountKey.json
 docker-compose.yml
+application.yml
 
 HELP.md
 .gradle
