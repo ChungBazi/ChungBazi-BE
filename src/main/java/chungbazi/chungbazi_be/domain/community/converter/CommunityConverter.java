@@ -18,29 +18,34 @@ public class CommunityConverter {
                 .hasNext(hasNext)
                 .build();
     }
-    public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts, CommentRepository commentRepository) {
+    public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts, CommentRepository commentRepository, Long currentUserId) {
         return posts.stream().map(post ->{
             Long commentCount = commentRepository.countByPostId(post.getId());
+            boolean isMine = false;
+            if (currentUserId != null && post.getAuthor() != null) {
+                isMine = currentUserId.equals(post.getAuthor().getId());
+            }
             return CommunityResponseDTO.PostListDto.builder()
-                .postId(post.getId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .formattedCreatedAt(post.getFormattedCreatedAt())
-                .views(post.getViews())
-                .thumbnailUrl(post.getThumbnailUrl())
-                .userId(post.getAuthor().getId())
-                .userName(post.getAuthor().getName())
-                .reward(post.getAuthor().getReward())
-                .characterImg(post.getAuthor().getCharacterImg())
+                    .isMine(isMine)
+                    .postId(post.getId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .formattedCreatedAt(post.getFormattedCreatedAt())
+                    .views(post.getViews())
+                    .thumbnailUrl(post.getThumbnailUrl())
+                    .userId(post.getAuthor().getId())
+                    .userName(post.getAuthor().getName())
+                    .reward(post.getAuthor().getReward())
+                    .characterImg(post.getAuthor().getCharacterImg())
                     .commentCount(commentCount)
                     .category(post.getCategory())
                     .postLikes(post.getPostLikes())
                     .anonymous(post.isAnonymous())
-                .build();
+                    .build();
         }).toList();
     }
 
-    public static CommunityResponseDTO.UploadAndGetPostDto toUploadAndGetPostDto(Post post, Long commentCount) {
+    public static CommunityResponseDTO.UploadAndGetPostDto toUploadAndGetPostDto(Post post, Long commentCount,boolean isMine) {
         return CommunityResponseDTO.UploadAndGetPostDto.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
@@ -58,24 +63,30 @@ public class CommunityConverter {
                 .imageUrls(post.getImageUrls())
                 .postLikes(post.getPostLikes())
                 .anonymous(post.isAnonymous())
+                .isMine(isMine)
                 .build();
     }
 
-    public static CommunityResponseDTO.UploadAndGetCommentDto toUploadAndGetCommentDto(Comment comment) {
+    public static CommunityResponseDTO.UploadAndGetCommentDto toUploadAndGetCommentDto(Comment comment, Long currentUserId) {
+        boolean isMine = false;
+        if (currentUserId != null && comment.getAuthor() != null) {
+            isMine = currentUserId.equals(comment.getAuthor().getId());
+        }
         return CommunityResponseDTO.UploadAndGetCommentDto.builder()
                 .postId(comment.getPost().getId())
                 .content(comment.getContent())
                 .formattedCreatedAt(comment.getFormattedCreatedAt())
                 .userId(comment.getAuthor().getId())
                 .userName(comment.getAuthor().getName())
+                .isMine(isMine)
                 .reward(comment.getAuthor().getReward())
                 .characterImg(comment.getAuthor().getCharacterImg())
                 .commentId(comment.getId())
                 .build();
     }
-    public static List<CommunityResponseDTO.UploadAndGetCommentDto> toListCommentDto(List<Comment> comments){
+    public static List<CommunityResponseDTO.UploadAndGetCommentDto> toListCommentDto(List<Comment> comments, Long currentUserId) {
         return comments.stream()
-                .map(CommunityConverter::toUploadAndGetCommentDto)
+                .map(comment -> toUploadAndGetCommentDto(comment, currentUserId))
                 .toList();
     }
     public static CommunityResponseDTO.CommentListDto toGetCommentsListDto(List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList, Long nextCursor, boolean hasNext) {

@@ -55,6 +55,7 @@ public class CommunityService {
     private final UserHelper userHelper;
     private final HeartRepository heartRepository;
     private final PopularSearch popularSearch;
+    private final UserRepository userRepository;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -73,7 +74,9 @@ public class CommunityService {
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
         posts = paginationResult.getItems();
 
-        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
+        Long currentUserId = isLogin();
+
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,currentUserId);
         Long totalPostCount = postRepository.countPostByCategory(category);
 
         return CommunityConverter.toTotalPostListDto(
@@ -110,7 +113,7 @@ public class CommunityService {
 
         rewardService.checkRewards();
 
-        return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
+        return CommunityConverter.toUploadAndGetPostDto(post, commentCount, true);
     }
 
     public CommunityResponseDTO.UploadAndGetPostDto getPost(Long postId) {
@@ -123,7 +126,13 @@ public class CommunityService {
         }
         Long commentCount = commentRepository.countByPostId(postId);
 
-        return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
+        if(post.getAuthor().getId().equals(user.getId())){
+
+        }
+
+        boolean isMine = post.getAuthor().equals(user);
+
+        return CommunityConverter.toUploadAndGetPostDto(post, commentCount, isMine);
     }
 
     public CommunityResponseDTO.UploadAndGetCommentDto uploadComment(CommunityRequestDTO.UploadCommentDto uploadCommentDto) {
@@ -146,7 +155,8 @@ public class CommunityService {
         }
         rewardService.checkRewards();
 
-        return CommunityConverter.toUploadAndGetCommentDto(comment);
+
+        return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId());
     }
 
     public CommunityResponseDTO.CommentListDto getComments(Long postId, Long cursor, int size){
@@ -162,7 +172,9 @@ public class CommunityService {
         PaginationResult<Comment> paginationResult = PaginationUtil.paginate(comments, size);
         comments = paginationResult.getItems();
 
-        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments);
+        Long currentUserId = isLogin();
+
+        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments, currentUserId);
 
         return CommunityConverter.toGetCommentsListDto(
                 commentsList,
@@ -231,7 +243,10 @@ public class CommunityService {
 
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
         posts = paginationResult.getItems();
-        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
+
+        Long currentUserId = isLogin();
+
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,currentUserId);
 
         return CommunityConverter.toTotalPostListDto(
                 null,
@@ -250,4 +265,16 @@ public class CommunityService {
             default: return LocalDateTime.of(2025, 1, 1, 0, 0); // 전체 조회
         }
     }
+
+    private Long isLogin() {
+        Long currentUserId = null;
+        try {
+            return currentUserId = userHelper.getAuthenticatedUser().getId();
+        } catch (NotFoundHandler e) {
+            return currentUserId = null;
+        } catch (Exception e) {
+            return currentUserId = null;
+        }
+    }
+
 }
