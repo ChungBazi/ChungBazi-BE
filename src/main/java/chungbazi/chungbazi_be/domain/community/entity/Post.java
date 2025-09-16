@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.community.entity;
 
+import chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason;
 import chungbazi.chungbazi_be.global.utils.TimeFormatter;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
@@ -71,6 +72,21 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Notification> notifications=new ArrayList<>();
+
+    @Column(columnDefinition = "integer default 0")
+    private Integer reportCount = 0;
+
+    @Column(name = "report_reason")
+    @Enumerated(EnumType.STRING)
+    private ReportReason reportReason;
+
+    public void increaseReportCount() {
+        this.reportCount++;
+    }
+
+    public void delete(ReportReason reason) {
+        this.reportReason = reason;
+    }
 
     public String getThumbnailUrl() {
         return (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;

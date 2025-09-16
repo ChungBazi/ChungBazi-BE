@@ -22,6 +22,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_FOUND_NOTIFICATION(HttpStatus.NOT_FOUND, "NOTIFICATION001", "알림이 존재하지 않습니다."),
     NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, "TOKEN4021", "토큰이 존재하지 않습니다."),
     NOT_FOUND_POST(HttpStatus.NOT_FOUND, "POST404", "해당 게시글을 찾을 수 없습니다."),
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND,"COMMENT404","해당 댓글을 찾을 수 없습니다."),
     NOT_FOUND_CHARACTER(HttpStatus.NOT_FOUND, "CHARACTER404", "해당 케릭터를 찾을 수 없습니다."),
     NOT_FOUND_DOCUMENT(HttpStatus.NOT_FOUND, "DOCUMENT401", "해당 문서를 찾을 수 없습니다."),
     NOT_FOUND_CART(HttpStatus.NOT_FOUND, "CART401", "해당 장바구니를 찾을 수 없습니다."),
@@ -91,6 +92,10 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_BLOCK(HttpStatus.BAD_REQUEST,"BLOCK400","자기 자신을 차단할 수 없습니다."),
     ALEADY_BLOCKED(HttpStatus.BAD_REQUEST,"BLOCK401","이미 차단된 사용자입니다."),
     NOT_FOUND_USERBLOCK(HttpStatus.NOT_FOUND, "BLOCK404", "존재하지 않는 차단정보입니다."),
+
+    //신고 관련 에러
+    ALREADY_REPORT(HttpStatus.BAD_REQUEST,"REPORT6001","이미 신고한 id입니다."),
+    UNABLE_REPORT_MYSELF(HttpStatus.BAD_REQUEST,"REPORT6002","자기 자신을 신고할 수 없습니다"),
     ;
 
 
