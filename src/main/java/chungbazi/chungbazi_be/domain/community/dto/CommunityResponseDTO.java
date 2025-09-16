@@ -17,6 +17,7 @@ public class CommunityResponseDTO {
         String content;
         Category category;
         String formattedCreatedAt;
+        boolean isMine;
 
         boolean anonymous; //익명 여부 추가
 
@@ -51,6 +52,7 @@ public class CommunityResponseDTO {
         String content;
         Category category;
         String formattedCreatedAt;
+        boolean isMine;
 
         boolean anonymous;
 
@@ -80,6 +82,7 @@ public class CommunityResponseDTO {
         String userName;
         RewardLevel reward;
         RewardLevel characterImg;
+        boolean isMine;
     }
 
     @Getter

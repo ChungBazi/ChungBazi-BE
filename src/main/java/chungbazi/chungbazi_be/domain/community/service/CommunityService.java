@@ -1,6 +1,5 @@
 package chungbazi.chungbazi_be.domain.community.service;
 
-import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.community.converter.CommunityConverter;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
@@ -10,16 +9,11 @@ import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.HeartRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
-import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
-import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
-import chungbazi.chungbazi_be.domain.notification.service.FCMTokenService;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
-import chungbazi.chungbazi_be.domain.policy.dto.PolicyDetailsResponse;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
-import chungbazi.chungbazi_be.domain.user.service.UserService;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
@@ -28,17 +22,12 @@ import chungbazi.chungbazi_be.global.s3.S3Manager;
 import chungbazi.chungbazi_be.global.utils.PaginationResult;
 import chungbazi.chungbazi_be.global.utils.PaginationUtil;
 import chungbazi.chungbazi_be.global.utils.PopularSearch;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,6 +44,7 @@ public class CommunityService {
     private final UserHelper userHelper;
     private final HeartRepository heartRepository;
     private final PopularSearch popularSearch;
+    private final UserRepository userRepository;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -73,7 +63,9 @@ public class CommunityService {
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
         posts = paginationResult.getItems();
 
-        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
+        Long currentUserId = isLogin();
+
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,currentUserId);
         Long totalPostCount = postRepository.countPostByCategory(category);
 
         return CommunityConverter.toTotalPostListDto(
@@ -110,7 +102,7 @@ public class CommunityService {
 
         rewardService.checkRewards();
 
-        return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
+        return CommunityConverter.toUploadAndGetPostDto(post, commentCount, true);
     }
 
     public CommunityResponseDTO.UploadAndGetPostDto getPost(Long postId) {
@@ -123,7 +115,13 @@ public class CommunityService {
         }
         Long commentCount = commentRepository.countByPostId(postId);
 
-        return CommunityConverter.toUploadAndGetPostDto(post, commentCount);
+        if(post.getAuthor().getId().equals(user.getId())){
+
+        }
+
+        boolean isMine = post.getAuthor().equals(user);
+
+        return CommunityConverter.toUploadAndGetPostDto(post, commentCount, isMine);
     }
 
     public CommunityResponseDTO.UploadAndGetCommentDto uploadComment(CommunityRequestDTO.UploadCommentDto uploadCommentDto) {
@@ -146,7 +144,8 @@ public class CommunityService {
         }
         rewardService.checkRewards();
 
-        return CommunityConverter.toUploadAndGetCommentDto(comment);
+
+        return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId());
     }
 
     public CommunityResponseDTO.CommentListDto getComments(Long postId, Long cursor, int size){
@@ -162,7 +161,9 @@ public class CommunityService {
         PaginationResult<Comment> paginationResult = PaginationUtil.paginate(comments, size);
         comments = paginationResult.getItems();
 
-        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments);
+        Long currentUserId = isLogin();
+
+        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments, currentUserId);
 
         return CommunityConverter.toGetCommentsListDto(
                 commentsList,
@@ -231,7 +232,10 @@ public class CommunityService {
 
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
         posts = paginationResult.getItems();
-        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository);
+
+        Long currentUserId = isLogin();
+
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,currentUserId);
 
         return CommunityConverter.toTotalPostListDto(
                 null,
@@ -250,4 +254,16 @@ public class CommunityService {
             default: return LocalDateTime.of(2025, 1, 1, 0, 0); // 전체 조회
         }
     }
+
+    private Long isLogin() {
+        Long currentUserId = null;
+        try {
+            return currentUserId = userHelper.getAuthenticatedUser().getId();
+        } catch (NotFoundHandler e) {
+            return currentUserId = null;
+        } catch (Exception e) {
+            return currentUserId = null;
+        }
+    }
+
 }
