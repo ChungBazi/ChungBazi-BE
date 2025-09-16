@@ -1,0 +1,127 @@
+package chungbazi.chungbazi_be.domain.report.service;
+
+import chungbazi.chungbazi_be.domain.community.entity.Comment;
+import chungbazi.chungbazi_be.domain.community.entity.Post;
+import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
+import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
+import chungbazi.chungbazi_be.domain.report.dto.ReportRequest;
+import chungbazi.chungbazi_be.domain.report.entity.Report;
+import chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason;
+import chungbazi.chungbazi_be.domain.report.entity.enums.ReportType;
+import chungbazi.chungbazi_be.domain.report.repository.ReportRepository;
+import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
+import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
+import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
+import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class ReportService {
+    private final ReportRepository reportRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+    private final UserHelper userHelper;
+
+    // 신고 임계값 설정
+    private static final int POST_REPORT_THRESHOLD = 5;
+    private static final int USER_REPORT_THRESHOLD = 10;
+    private static final int COMMENT_REPORT_THRESHOLD = 3;
+
+    public void reportPost(Long postId, ReportRequest.ReportRequestDto dto) {
+        User reporter  = userHelper.getAuthenticatedUser();
+        report(ReportType.POST, postId, reporter, dto.getReason(), dto.getDescription());
+    }
+
+    public void reportUser(Long userId, ReportRequest.ReportRequestDto dto) {
+        User reporter  = userHelper.getAuthenticatedUser();
+        report(ReportType.USER, userId, reporter, dto.getReason(), dto.getDescription());
+    }
+
+    public void reportComment(Long commentId, ReportRequest.ReportRequestDto dto) {
+        User reporter  = userHelper.getAuthenticatedUser();
+        report(ReportType.COMMENT, commentId, reporter, dto.getReason(), dto.getDescription());
+    }
+
+    public void report(ReportType reportType,Long targetId, User reporter, ReportReason reason, String description) {
+
+        if(reportRepository.existsByReporterAndReportTypeAndTargetId(reporter, reportType, targetId)) {
+            throw new GeneralException(ErrorStatus.ALREADY_REPORT);
+        }
+
+        switch (reportType) {
+            case POST :
+                Post post = postRepository.findById(targetId)
+                        .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+                if (post.getAuthor().equals(reporter)) {
+                    throw new GeneralException(ErrorStatus.UNABLE_REPORT_MYSELF);
+                }
+
+                post.increaseReportCount();
+
+                if(post.getReportCount() >= POST_REPORT_THRESHOLD) {
+                    post.delete(reason);
+                }
+
+                post.getAuthor().increaseReportCount();
+                checkAndBlacklistUser(post.getAuthor());
+
+                postRepository.save(post);
+                break;
+
+            case COMMENT :
+                Comment comment = commentRepository.findById(targetId)
+                        .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_COMMENT));
+
+                if (comment.getAuthor().equals(reporter)) {
+                    throw new GeneralException(ErrorStatus.UNABLE_REPORT_MYSELF);
+                }
+
+                comment.increaseReportCount();
+                if (comment.getReportCount() >= COMMENT_REPORT_THRESHOLD) {
+                    comment.delete(reason);
+
+                }
+
+                comment.getAuthor().increaseReportCount();
+                checkAndBlacklistUser(comment.getAuthor());
+
+                commentRepository.save(comment);
+                break;
+
+            case USER:
+                User user = userHelper.getAuthenticatedUser();
+
+                if (user.equals(reporter)) {
+                    throw new GeneralException(ErrorStatus.UNABLE_REPORT_MYSELF);
+                }
+                user.increaseReportCount();
+                checkAndBlacklistUser(user);
+
+                userRepository.save(user);
+
+                break;
+        }
+
+        Report report = Report.builder()
+                .reporter(reporter)
+                .reportType(reportType)
+                .reportReason(reason)
+                .description(description)
+                .targetId(targetId)
+                .build();
+
+        reportRepository.save(report);
+    }
+
+    private void checkAndBlacklistUser(User user) {
+        if (!user.isBlacklisted() && user.getReportCount() >= USER_REPORT_THRESHOLD) {
+            user.blacklist(ReportReason.HARASSMENT);
+        }
+    }
+}
