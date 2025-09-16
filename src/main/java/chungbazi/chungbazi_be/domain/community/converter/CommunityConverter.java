@@ -1,7 +1,6 @@
 package chungbazi.chungbazi_be.domain.community.converter;
 
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
-import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO.CommentListDto;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
