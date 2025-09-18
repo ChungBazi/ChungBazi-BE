@@ -121,4 +121,19 @@ public class CommunityController {
         PopularSearchResponse response = popularSearchService.getPopularSearch("community");
         return ApiResponse.onSuccess(response);
     }
+
+    @DeleteMapping("/posts/{postId}")
+    @Operation(summary = "게시글 삭제 API", description = "해당하는 id의 게시글을 삭제하는 API입니다.")
+    public ApiResponse<String> deletePost(@PathVariable Long postId){
+        communityService.deletePost(postId);
+        return ApiResponse.onSuccess("해당 게시글이 삭제되었습니다.");
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    @Operation(summary = "댓글 삭제 API", description = "해당하는 id의 댓글을 삭제하는 API입니다.")
+    public ApiResponse<String> deleteComment(@PathVariable Long commentId){
+        communityService.deleteComment(commentId);
+        return ApiResponse.onSuccess("해당 댓글이 삭제되었습니다.");
+    }
+
 }

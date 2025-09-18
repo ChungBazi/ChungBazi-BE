@@ -266,4 +266,30 @@ public class CommunityService {
         }
     }
 
+    public void deletePost(Long postId){
+        User user = userHelper.getAuthenticatedUser();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+        if (!post.getAuthor().equals(user)) {
+            throw new BadRequestHandler(ErrorStatus.UNABLE_TO_DELETE_POST);
+        }
+
+        postRepository.delete(post);
+    }
+
+    public void deleteComment(Long commentId){
+        User user = userHelper.getAuthenticatedUser();
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_COMMENT));
+
+        if (!comment.getAuthor().equals(user)) {
+            throw new BadRequestHandler(ErrorStatus.UNABLE_TO_DELETE_COMMENT);
+        }
+
+        commentRepository.delete(comment);
+    }
+
 }

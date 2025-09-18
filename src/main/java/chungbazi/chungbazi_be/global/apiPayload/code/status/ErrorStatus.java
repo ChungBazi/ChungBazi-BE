@@ -2,7 +2,6 @@ package chungbazi.chungbazi_be.global.apiPayload.code.status;
 
 import chungbazi.chungbazi_be.global.apiPayload.code.BaseErrorCode;
 import chungbazi.chungbazi_be.global.apiPayload.code.ErrorReasonDTO;
-import com.google.api.Http;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -26,6 +25,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_FOUND_DOCUMENT(HttpStatus.NOT_FOUND, "DOCUMENT401", "해당 문서를 찾을 수 없습니다."),
     NOT_FOUND_CART(HttpStatus.NOT_FOUND, "CART401", "해당 장바구니를 찾을 수 없습니다."),
     NOT_FOUND_LIKE(HttpStatus.NOT_FOUND, "LIKE404", "해당 좋아요를 찾을 수 없습니다."),
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND,"COMMENT404","해당 댓글을 찾을 수 없습니다."),
 
     // User 관련 에러
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "닉네임은 필수입니다."),
@@ -78,6 +78,9 @@ public enum ErrorStatus implements BaseErrorCode {
     //community 관련 에러
     FILE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "UPLOAD400", "파일은 10장을 초과할 수 없습니다."),
     ALREADY_LIKED(HttpStatus.BAD_REQUEST, "LIKE400", "이미 좋아요를 했습니다."),
+    UNABLE_TO_DELETE_POST(HttpStatus.BAD_REQUEST,"POST400", "게시글은 본인만 삭제할 수 있습니다"),
+    UNABLE_TO_DELETE_COMMENT(HttpStatus.BAD_REQUEST,"COMMENT400", "댓글은 본인만 삭제할 수 있습니다"),
+
 
     //채팅 관련 에러
     NOT_FOUND_CHATROOM(HttpStatus.NOT_FOUND, "CHATROOM404", "존재하지 않는 채팅방입니다."),
