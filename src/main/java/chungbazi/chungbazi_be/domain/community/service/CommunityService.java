@@ -266,4 +266,19 @@ public class CommunityService {
         }
     }
 
+    public void deletePost(Long postId){
+        User user = userHelper.getAuthenticatedUser();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+        if (!post.getAuthor().equals(user)) {
+            throw new BadRequestHandler(ErrorStatus.UNABLE_TO_DELETE_POST);
+        }
+
+        postRepository.delete(post);
+    }
+
+
+
 }
