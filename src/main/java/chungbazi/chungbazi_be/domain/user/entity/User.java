@@ -7,11 +7,14 @@ import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.NotificationSetting;
+import chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason;
 import chungbazi.chungbazi_be.domain.user.entity.enums.*;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
 import chungbazi.chungbazi_be.global.entity.Uuid;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -113,6 +116,29 @@ public class User {
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages= new ArrayList<>();
 
+    //신고 관련
+    @Column(columnDefinition = "integer default 0")
+    private Integer reportCount = 0;
+
+    @Column(name ="blacklist_reason")
+    private ReportReason blacklistReason;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean isBlacklisted=false;
+
+    private LocalDateTime blacklistedAt;
+
+    //신고 횟수 증가
+    public void increaseReportCount() {
+        this.reportCount++;
+    }
+
+    // 블랙리스트 처리
+    public void blacklist(ReportReason reason) {
+        this.isBlacklisted = true;
+        this.blacklistReason = reason;
+        this.blacklistedAt = LocalDateTime.now();
+    }
 
     // 유저 정보 관련
     public void updateEducation(Education education) {

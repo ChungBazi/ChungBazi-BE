@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.domain.community.converter;
 
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
+import chungbazi.chungbazi_be.domain.community.entity.ContentStatus;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import java.util.List;
@@ -19,7 +20,7 @@ public class CommunityConverter {
     }
     public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts, CommentRepository commentRepository, Long currentUserId) {
         return posts.stream().map(post ->{
-            Long commentCount = commentRepository.countByPostId(post.getId());
+            Long commentCount = commentRepository.countByPostIdAndStatus(post.getId(), ContentStatus.VISIBLE);
             boolean isMine = false;
             if (currentUserId != null && post.getAuthor() != null) {
                 isMine = currentUserId.equals(post.getAuthor().getId());
@@ -63,6 +64,7 @@ public class CommunityConverter {
                 .postLikes(post.getPostLikes())
                 .anonymous(post.isAnonymous())
                 .isMine(isMine)
+                .status(post.getStatus())
                 .build();
     }
 

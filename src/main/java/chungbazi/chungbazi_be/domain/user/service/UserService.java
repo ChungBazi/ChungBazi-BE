@@ -1,19 +1,16 @@
 package chungbazi.chungbazi_be.domain.user.service;
 
 
-import static chungbazi.chungbazi_be.domain.user.entity.QUser.user;
-
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.community.entity.ContentStatus;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.user.converter.UserConverter;
 import chungbazi.chungbazi_be.domain.user.dto.UserRequestDTO;
 import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO;
-import chungbazi.chungbazi_be.domain.user.dto.UserResponseDTO.CharacterImgDto;
 import chungbazi.chungbazi_be.domain.user.entity.Addition;
 import chungbazi.chungbazi_be.domain.user.entity.Interest;
 import chungbazi.chungbazi_be.domain.user.entity.User;
-import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserAddition;
 import chungbazi.chungbazi_be.domain.user.entity.mapping.UserInterest;
 import chungbazi.chungbazi_be.domain.user.repository.*;
@@ -21,14 +18,11 @@ import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
-import chungbazi.chungbazi_be.global.s3.S3Manager;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Optional;
 
 
@@ -58,7 +52,7 @@ public class UserService {
         User user = userHelper.getAuthenticatedUser();
         int rewardLevel = user.getReward().getLevel();
         int postCount = postRepository.countPostByAuthorId(user.getId());
-        int commentCount = commentRepository.countCommentByAuthorId(user.getId());
+        int commentCount = commentRepository.countCommentByAuthorIdAndStatus(user.getId(), ContentStatus.VISIBLE);
         return UserConverter.toRewardDto(rewardLevel, postCount, commentCount);
     }
 

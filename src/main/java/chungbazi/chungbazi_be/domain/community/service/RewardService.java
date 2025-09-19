@@ -1,11 +1,10 @@
 package chungbazi.chungbazi_be.domain.community.service;
 
-import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
 import chungbazi.chungbazi_be.domain.character.dto.CharacterResponseDTO.NextLevelInfo;
 import chungbazi.chungbazi_be.domain.character.entity.Character;
+import chungbazi.chungbazi_be.domain.community.entity.ContentStatus;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
-import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
 import chungbazi.chungbazi_be.domain.notification.service.FCMTokenService;
@@ -14,12 +13,9 @@ import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
-import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
-import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.N;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,7 +41,7 @@ public class RewardService {
             if (nextRewardLevel != null) {
                 int requiredCount = nextRewardLevel.getThreashold();
                 int postCount = postRepository.countPostByAuthorId(user.getId());
-                int commentCount = commentRepository.countCommentByAuthorId(user.getId());
+                int commentCount = commentRepository.countCommentByAuthorIdAndStatus(user.getId(), ContentStatus.VISIBLE);
 
                 if (postCount >= requiredCount && commentCount >= requiredCount) {
                     user.updateRewardLevel(nextRewardLevel);
@@ -79,7 +75,7 @@ public class RewardService {
             int requiredPosts = Math.max(0,
                     nextRewardLevel.getThreashold() - postRepository.countPostByAuthorId(user.getId()));
             int requiredComments = Math.max(0,
-                    nextRewardLevel.getThreashold() - commentRepository.countCommentByAuthorId(user.getId()));
+                    nextRewardLevel.getThreashold() - commentRepository.countCommentByAuthorIdAndStatus(user.getId(),ContentStatus.VISIBLE));
 
             return new NextLevelInfo(nextRewardLevel.name(), requiredPosts, requiredComments);
         }

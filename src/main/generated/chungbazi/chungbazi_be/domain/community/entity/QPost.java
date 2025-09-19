@@ -45,6 +45,12 @@ public class QPost extends EntityPathBase<Post> {
 
     public final NumberPath<Integer> postLikes = createNumber("postLikes", Integer.class);
 
+    public final NumberPath<Integer> reportCount = createNumber("reportCount", Integer.class);
+
+    public final EnumPath<chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason> reportReason = createEnum("reportReason", chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason.class);
+
+    public final EnumPath<ContentStatus> status = createEnum("status", ContentStatus.class);
+
     public final StringPath title = createString("title");
 
     //inherited

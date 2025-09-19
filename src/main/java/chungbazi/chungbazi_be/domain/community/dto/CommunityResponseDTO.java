@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.community.dto;
 
+import chungbazi.chungbazi_be.domain.community.entity.ContentStatus;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
 import java.util.List;
@@ -18,6 +19,7 @@ public class CommunityResponseDTO {
         Category category;
         String formattedCreatedAt;
         boolean isMine;
+        ContentStatus status;
 
         boolean anonymous; //익명 여부 추가
 
