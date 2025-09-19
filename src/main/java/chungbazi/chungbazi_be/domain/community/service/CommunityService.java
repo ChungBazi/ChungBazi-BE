@@ -4,6 +4,7 @@ import chungbazi.chungbazi_be.domain.community.converter.CommunityConverter;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
 import chungbazi.chungbazi_be.domain.community.entity.Comment;
+import chungbazi.chungbazi_be.domain.community.entity.ContentStatus;
 import chungbazi.chungbazi_be.domain.community.entity.Heart;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
@@ -52,12 +53,12 @@ public class CommunityService {
 
         if (category == null || category.toString().isEmpty()){ // 전체 게시글 조회
             posts = (cursor == 0)
-                    ? postRepository.findByOrderByIdDesc(pageable).getContent()
-                    : postRepository.findByIdLessThanOrderByIdDesc(cursor, pageable).getContent();
+                    ? postRepository.findByStatusOrderByIdDesc(ContentStatus.VISIBLE,pageable).getContent()
+                    : postRepository.findByStatusAndIdLessThanOrderByIdDesc(ContentStatus.VISIBLE,cursor, pageable).getContent();
         } else { // 카테고리별 게시글 조회
             posts = (cursor == 0)
-                    ? postRepository.findByCategoryOrderByIdDesc(category, pageable).getContent()
-                    : postRepository.findByCategoryAndIdLessThanOrderByIdDesc(category, cursor, pageable).getContent();
+                    ? postRepository.findByCategoryAndStatusOrderByIdDesc(category, ContentStatus.VISIBLE, pageable).getContent()
+                    : postRepository.findByCategoryAndStatusAndIdLessThanOrderByIdDesc(category, ContentStatus.VISIBLE, cursor, pageable).getContent();
         }
 
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
@@ -66,7 +67,7 @@ public class CommunityService {
         Long currentUserId = isLogin();
 
         List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,currentUserId);
-        Long totalPostCount = postRepository.countPostByCategory(category);
+        Long totalPostCount = postRepository.countPostByCategoryAndStatus(category,ContentStatus.VISIBLE);
 
         return CommunityConverter.toTotalPostListDto(
                 totalPostCount,
@@ -98,7 +99,7 @@ public class CommunityService {
                 .build();
         postRepository.save(post);
 
-        Long commentCount = commentRepository.countByPostId(post.getId());
+        Long commentCount = commentRepository.countByPostIdAndStatus(post.getId(),ContentStatus.VISIBLE);
 
         rewardService.checkRewards();
 
@@ -113,11 +114,7 @@ public class CommunityService {
         if(!post.getAuthor().getId().equals(user.getId())){
             post.incrementViews(); // 조회수 증가
         }
-        Long commentCount = commentRepository.countByPostId(postId);
-
-        if(post.getAuthor().getId().equals(user.getId())){
-
-        }
+        Long commentCount = commentRepository.countByPostIdAndStatus(postId,ContentStatus.VISIBLE);
 
         boolean isMine = post.getAuthor().equals(user);
 
@@ -153,9 +150,9 @@ public class CommunityService {
 
         List<Comment> comments;
         if (cursor == 0) {
-            comments = commentRepository.findByPostIdOrderByIdAsc(postId, pageable).getContent();
+            comments = commentRepository.findByStatusAndPostIdOrderByIdAsc(ContentStatus.VISIBLE,postId, pageable).getContent();
         } else {
-            comments = commentRepository.findByPostIdAndIdGreaterThanOrderByIdAsc(postId, cursor, pageable).getContent();
+            comments = commentRepository.findByStatusAndPostIdAndIdGreaterThanOrderByIdAsc(ContentStatus.VISIBLE,postId, cursor, pageable).getContent();
         }
 
         PaginationResult<Comment> paginationResult = PaginationUtil.paginate(comments, size);
@@ -220,12 +217,12 @@ public class CommunityService {
 
         if (searchField.equals("title")) { // 제목으로 검색
             posts = (cursor == 0)
-                    ? postRepository.findByTitleContainingAndCreatedAtAfterOrderByIdDesc(query, startDate, pageable).getContent()
-                    : postRepository.findByTitleContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(query, startDate, cursor, pageable).getContent();
+                    ? postRepository.findByStatusAndTitleContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus.VISIBLE,query, startDate, pageable).getContent()
+                    : postRepository.findByStatusAndTitleContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus.VISIBLE,query, startDate, cursor, pageable).getContent();
         } else { // 내용으로 검색
             posts = (cursor == 0)
-                    ? postRepository.findByContentContainingAndCreatedAtAfterOrderByIdDesc(query, startDate, pageable).getContent()
-                    : postRepository.findByContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(query, startDate, cursor, pageable).getContent();
+                    ? postRepository.findByStatusAndContentContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus.VISIBLE,query, startDate, pageable).getContent()
+                    : postRepository.findByStatusAndContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus.VISIBLE,query, startDate, cursor, pageable).getContent();
         }
 
         popularSearch.updatePopularSearch(query, "community");
