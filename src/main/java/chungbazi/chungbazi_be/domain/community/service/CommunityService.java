@@ -14,6 +14,7 @@ import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.User;
+import chungbazi.chungbazi_be.domain.user.repository.UserBlockRepository.UserBlockRepository;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
@@ -25,6 +26,7 @@ import chungbazi.chungbazi_be.global.utils.PaginationUtil;
 import chungbazi.chungbazi_be.global.utils.PopularSearch;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -46,28 +48,30 @@ public class CommunityService {
     private final HeartRepository heartRepository;
     private final PopularSearch popularSearch;
     private final UserRepository userRepository;
+    private final UserBlockRepository userBlockRepository;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
         List<Post> posts;
 
+        User user = userHelper.getAuthenticatedUser();
+        List<Long> blockedUserIds = userBlockRepository.findBlockedUserIdsByBlocker(user.getId());
+
         if (category == null || category.toString().isEmpty()){ // 전체 게시글 조회
             posts = (cursor == 0)
-                    ? postRepository.findByStatusOrderByIdDesc(ContentStatus.VISIBLE,pageable).getContent()
-                    : postRepository.findByStatusAndIdLessThanOrderByIdDesc(ContentStatus.VISIBLE,cursor, pageable).getContent();
+                    ? postRepository.findByStatusAndAuthorIdNotInOrderByIdDesc(ContentStatus.VISIBLE,blockedUserIds,pageable).getContent()
+                    : postRepository.findByStatusAndAuthorIdNotInAndIdLessThanOrderByIdDesc(ContentStatus.VISIBLE,blockedUserIds,cursor, pageable).getContent();
         } else { // 카테고리별 게시글 조회
             posts = (cursor == 0)
-                    ? postRepository.findByCategoryAndStatusOrderByIdDesc(category, ContentStatus.VISIBLE, pageable).getContent()
-                    : postRepository.findByCategoryAndStatusAndIdLessThanOrderByIdDesc(category, ContentStatus.VISIBLE, cursor, pageable).getContent();
+                    ? postRepository.findByCategoryAndStatusAndAuthorIdNotInOrderByIdDesc(category, ContentStatus.VISIBLE, blockedUserIds,pageable).getContent()
+                    : postRepository.findByCategoryAndStatusAndAuthorIdNotInAndIdLessThanOrderByIdDesc(category, ContentStatus.VISIBLE, blockedUserIds,cursor, pageable).getContent();
         }
 
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
         posts = paginationResult.getItems();
 
-        Long currentUserId = isLogin();
-
-        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,currentUserId);
-        Long totalPostCount = postRepository.countPostByCategoryAndStatus(category,ContentStatus.VISIBLE);
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,user.getId(),blockedUserIds);
+        Long totalPostCount = postRepository.countPostByCategoryAndStatusAndAuthorIdNotIn(category,ContentStatus.VISIBLE,blockedUserIds);
 
         return CommunityConverter.toTotalPostListDto(
                 totalPostCount,
@@ -76,13 +80,13 @@ public class CommunityService {
                 paginationResult.isHasNext());
     }
     public CommunityResponseDTO.UploadAndGetPostDto uploadPost(CommunityRequestDTO.UploadPostDto uploadPostDto, List<MultipartFile> imageList){
+        User user = userHelper.getAuthenticatedUser();
 
         // 파일 수 검증
         if (imageList != null && imageList.size() > 10) {
             throw new BadRequestHandler(ErrorStatus.FILE_COUNT_EXCEEDED);
         }
-        // 유저 조회
-        User user = userHelper.getAuthenticatedUser();
+
         // 파일 업로드
         List<String> uploadedUrls = (imageList != null && !imageList.isEmpty())
                 ? s3Manager.uploadMultipleFiles(imageList, "post-images") : new ArrayList<>();
@@ -100,7 +104,7 @@ public class CommunityService {
                 .build();
         postRepository.save(post);
 
-        Long commentCount = commentRepository.countByPostIdAndStatus(post.getId(),ContentStatus.VISIBLE);
+        long commentCount = 0L;
 
         rewardService.checkRewards();
 
@@ -111,11 +115,12 @@ public class CommunityService {
         Post post = postRepository.getReferenceById(postId);
         // 자신의 조회는 조회수 증가 제외
         User user = userHelper.getAuthenticatedUser();
+        List<Long> blockedUserIds = userBlockRepository.findBlockedUserIdsByBlocker(user.getId());
 
         if(!post.getAuthor().getId().equals(user.getId())){
             post.incrementViews(); // 조회수 증가
         }
-        Long commentCount = commentRepository.countByPostIdAndStatus(postId,ContentStatus.VISIBLE);
+        Long commentCount = commentRepository.countByPostIdAndStatusAndAuthorIdNotIn(postId,ContentStatus.VISIBLE,blockedUserIds);
 
         boolean isMine = post.getAuthor().equals(user);
 
@@ -150,19 +155,20 @@ public class CommunityService {
     public CommunityResponseDTO.CommentListDto getComments(Long postId, Long cursor, int size){
         Pageable pageable = PageRequest.of(0, size + 1);
 
+        User user = userHelper.getAuthenticatedUser();
+        List<Long> blockedUserIds = userBlockRepository.findBlockedUserIdsByBlocker(user.getId());
+
         List<Comment> comments;
         if (cursor == 0) {
-            comments = commentRepository.findByStatusAndPostIdOrderByIdAsc(ContentStatus.VISIBLE,postId, pageable).getContent();
+            comments = commentRepository.findByStatusAndAuthorIdNotInAndPostIdOrderByIdAsc(ContentStatus.VISIBLE,blockedUserIds,postId, pageable).getContent();
         } else {
-            comments = commentRepository.findByStatusAndPostIdAndIdGreaterThanOrderByIdAsc(ContentStatus.VISIBLE,postId, cursor, pageable).getContent();
+            comments = commentRepository.findByStatusAndAuthorIdNotInAndPostIdAndIdGreaterThanOrderByIdAsc(ContentStatus.VISIBLE,blockedUserIds,postId, cursor, pageable).getContent();
         }
 
         PaginationResult<Comment> paginationResult = PaginationUtil.paginate(comments, size);
         comments = paginationResult.getItems();
 
-        Long currentUserId = isLogin();
-
-        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments, currentUserId);
+        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments, user.getId());
 
         return CommunityConverter.toGetCommentsListDto(
                 commentsList,
@@ -212,6 +218,9 @@ public class CommunityService {
         List<Post> posts;
         LocalDateTime startDate = getStartDateByPeriod(period);
 
+        User user = userHelper.getAuthenticatedUser();
+        List<Long> blockedUserIds = userBlockRepository.findBlockedUserIdsByBlocker(user.getId());
+
         if(!filter.equals("title") && !filter.equals("content")){
             throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
         }
@@ -219,12 +228,12 @@ public class CommunityService {
 
         if (searchField.equals("title")) { // 제목으로 검색
             posts = (cursor == 0)
-                    ? postRepository.findByStatusAndTitleContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus.VISIBLE,query, startDate, pageable).getContent()
-                    : postRepository.findByStatusAndTitleContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus.VISIBLE,query, startDate, cursor, pageable).getContent();
+                    ? postRepository.findByStatusAndAuthorIdNotInAndTitleContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus.VISIBLE,blockedUserIds,query, startDate, pageable).getContent()
+                    : postRepository.findByStatusAndAuthorIdNotInAndTitleContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus.VISIBLE,blockedUserIds,query, startDate, cursor, pageable).getContent();
         } else { // 내용으로 검색
             posts = (cursor == 0)
-                    ? postRepository.findByStatusAndContentContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus.VISIBLE,query, startDate, pageable).getContent()
-                    : postRepository.findByStatusAndContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus.VISIBLE,query, startDate, cursor, pageable).getContent();
+                    ? postRepository.findByStatusAndAuthorIdNotInAndContentContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus.VISIBLE,blockedUserIds,query, startDate, pageable).getContent()
+                    : postRepository.findByStatusAndAuthorIdNotInAndContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus.VISIBLE,blockedUserIds,query, startDate, cursor, pageable).getContent();
         }
 
         popularSearch.updatePopularSearch(query, "community");
@@ -232,9 +241,7 @@ public class CommunityService {
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
         posts = paginationResult.getItems();
 
-        Long currentUserId = isLogin();
-
-        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,currentUserId);
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,user.getId(),blockedUserIds);
 
         return CommunityConverter.toTotalPostListDto(
                 null,
@@ -251,17 +258,6 @@ public class CommunityService {
             case "6m": return LocalDateTime.now().minusMonths(6);
             case "1y": return LocalDateTime.now().minusYears(1);
             default: return LocalDateTime.of(2025, 1, 1, 0, 0); // 전체 조회
-        }
-    }
-
-    private Long isLogin() {
-        Long currentUserId = null;
-        try {
-            return currentUserId = userHelper.getAuthenticatedUser().getId();
-        } catch (NotFoundHandler e) {
-            return currentUserId = null;
-        } catch (Exception e) {
-            return currentUserId = null;
         }
     }
 
