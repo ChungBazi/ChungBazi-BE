@@ -45,5 +45,4 @@ public class UserBlockService {
         return userBlockRepository.existsBlockBetweenUsers(currentUser.getId(), targetUserId);
     }
 
-
 }
