@@ -69,7 +69,7 @@ public class ReportService {
                 post.increaseReportCount();
 
                 if(post.getReportCount() >= POST_REPORT_THRESHOLD) {
-                    post.delete(reason);
+                    post.autoHide();
                 }
 
                 post.getAuthor().increaseReportCount();
@@ -88,7 +88,7 @@ public class ReportService {
 
                 comment.increaseReportCount();
                 if (comment.getReportCount() >= COMMENT_REPORT_THRESHOLD) {
-                    comment.delete(reason);
+                    comment.autoHide();
 
                 }
 

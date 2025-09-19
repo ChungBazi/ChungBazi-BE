@@ -73,6 +73,10 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Notification> notifications=new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ContentStatus status = ContentStatus.VISIBLE;
+
     @Column(columnDefinition = "integer default 0")
     private Integer reportCount = 0;
 
@@ -84,8 +88,17 @@ public class Post extends BaseTimeEntity {
         this.reportCount++;
     }
 
-    public void delete(ReportReason reason) {
+    public void deleteByAdmin(ReportReason reason) {
+        this.status = ContentStatus.DELETED;
         this.reportReason = reason;
+    }
+
+    public void autoHide() {
+        this.status = ContentStatus.HIDDEN;
+    }
+
+    public boolean isHiddenOrDeleted() {
+        return status != ContentStatus.VISIBLE;
     }
 
     public String getThumbnailUrl() {

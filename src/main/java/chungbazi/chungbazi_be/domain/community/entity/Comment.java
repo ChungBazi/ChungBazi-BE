@@ -39,12 +39,25 @@ public class Comment extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ReportReason reportReason;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ContentStatus status = ContentStatus.VISIBLE;
+
     public void increaseReportCount() {
         this.reportCount++;
     }
 
-    public void delete(ReportReason reason) {
+    public void deleteAdmin(ReportReason reason) {
         this.reportReason = reason;
+        this.status = ContentStatus.DELETED;
+    }
+
+    public void autoHide() {
+        this.status = ContentStatus.HIDDEN;
+    }
+
+    public boolean isHiddenOrDeleted() {
+        return status != ContentStatus.VISIBLE;
     }
 
     public String getFormattedCreatedAt() {
