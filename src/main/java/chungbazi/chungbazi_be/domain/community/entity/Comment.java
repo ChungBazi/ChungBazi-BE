@@ -32,6 +32,7 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @Builder.Default
     @Column(columnDefinition = "integer default 0")
     private Integer reportCount = 0;
 
@@ -41,7 +42,7 @@ public class Comment extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ContentStatus status = ContentStatus.VISIBLE;
+    private ContentStatus status;
 
     public void increaseReportCount() {
         this.reportCount++;

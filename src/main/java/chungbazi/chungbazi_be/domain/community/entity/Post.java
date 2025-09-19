@@ -75,8 +75,9 @@ public class Post extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ContentStatus status = ContentStatus.VISIBLE;
+    private ContentStatus status;
 
+    @Builder.Default
     @Column(columnDefinition = "integer default 0")
     private Integer reportCount = 0;
 

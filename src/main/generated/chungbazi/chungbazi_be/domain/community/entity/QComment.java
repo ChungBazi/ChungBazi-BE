@@ -35,6 +35,12 @@ public class QComment extends EntityPathBase<Comment> {
 
     public final QPost post;
 
+    public final NumberPath<Integer> reportCount = createNumber("reportCount", Integer.class);
+
+    public final EnumPath<chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason> reportReason = createEnum("reportReason", chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason.class);
+
+    public final EnumPath<ContentStatus> status = createEnum("status", ContentStatus.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 

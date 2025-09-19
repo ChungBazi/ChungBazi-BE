@@ -96,6 +96,7 @@ public class CommunityService {
                 .postLikes(0)
                 .imageUrls(uploadedUrls)
                 .anonymous(uploadPostDto.isAnonymous())
+                .status(ContentStatus.VISIBLE)
                 .build();
         postRepository.save(post);
 
@@ -132,6 +133,7 @@ public class CommunityService {
                 content(uploadCommentDto.getContent())
                 .author(user)
                 .post(post)
+                .status(ContentStatus.VISIBLE)
                 .build();
 
         commentRepository.save(comment);

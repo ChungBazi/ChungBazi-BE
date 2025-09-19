@@ -15,9 +15,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     // 무한 스크롤
     Page<Comment> findByStatusAndPostIdAndIdGreaterThanOrderByIdAsc(ContentStatus status,Long postId, Long lastCommentId, Pageable pageable);
 
-    @Query("SELECT COUNT(c) FROM Comment c WHERE c.post.id = :postId")
-    Long countByPostIdAndStatus(@Param("postId") Long postId,ContentStatus status);
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.post.id = :postId AND c.status = :status")
+    Long countByPostIdAndStatus(@Param("postId") Long postId,@Param("status") ContentStatus status);
 
-    @Query("SELECT COUNT(c) FROM Comment c WHERE c.author.id= :authorId")
-    int countCommentByAuthorIdAndStatus(@Param("authorId") Long authorId, ContentStatus status);
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.author.id= :authorId AND c.status = :status")
+    int countCommentByAuthorIdAndStatus(@Param("authorId") Long authorId,@Param("status") ContentStatus status);
 }

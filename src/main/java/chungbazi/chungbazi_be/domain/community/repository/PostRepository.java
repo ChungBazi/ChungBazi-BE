@@ -25,8 +25,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByCategoryAndStatusAndIdLessThanOrderByIdDesc( Category category, ContentStatus status,Long lastPostId, Pageable pageable);
 
     // 카테고리별 게시글 수
-    @Query("SELECT COUNT(p) FROM Post p WHERE (:category IS NULL OR p.category = :category)")
-    Long countPostByCategoryAndStatus(@Param("category") Category category,ContentStatus status);
+    @Query("SELECT COUNT(p) FROM Post p WHERE (:category IS NULL OR p.category = :category) AND p.status = :status")
+    Long countPostByCategoryAndStatus(@Param("category") Category category, @Param("status") ContentStatus status);
 
     //user의 게시글 수
     @Query("SELECT  COUNT(p) FROM Post p WHERE p.author.id= :authorId ")

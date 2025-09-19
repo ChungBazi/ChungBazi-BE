@@ -22,6 +22,10 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
+    public final DateTimePath<java.time.LocalDateTime> blacklistedAt = createDateTime("blacklistedAt", java.time.LocalDateTime.class);
+
+    public final EnumPath<chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason> blacklistReason = createEnum("blacklistReason", chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason.class);
+
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel> characterImg = createEnum("characterImg", chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel.class);
 
     public final ListPath<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter> characters = this.<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter>createList("characters", chungbazi.chungbazi_be.domain.character.entity.Character.class, chungbazi.chungbazi_be.domain.character.entity.QCharacter.class, PathInits.DIRECT2);
@@ -40,6 +44,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Income> income = createEnum("income", chungbazi.chungbazi_be.domain.user.entity.enums.Income.class);
 
+    public final BooleanPath isBlacklisted = createBoolean("isBlacklisted");
+
     public final BooleanPath isDeleted = createBoolean("isDeleted");
 
     public final ListPath<chungbazi.chungbazi_be.domain.chat.entity.Message, chungbazi.chungbazi_be.domain.chat.entity.QMessage> messages = this.<chungbazi.chungbazi_be.domain.chat.entity.Message, chungbazi.chungbazi_be.domain.chat.entity.QMessage>createList("messages", chungbazi.chungbazi_be.domain.chat.entity.Message.class, chungbazi.chungbazi_be.domain.chat.entity.QMessage.class, PathInits.DIRECT2);
@@ -57,6 +63,8 @@ public class QUser extends EntityPathBase<User> {
     public final ListPath<chungbazi.chungbazi_be.domain.community.entity.Post, chungbazi.chungbazi_be.domain.community.entity.QPost> posts = this.<chungbazi.chungbazi_be.domain.community.entity.Post, chungbazi.chungbazi_be.domain.community.entity.QPost>createList("posts", chungbazi.chungbazi_be.domain.community.entity.Post.class, chungbazi.chungbazi_be.domain.community.entity.QPost.class, PathInits.DIRECT2);
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.Region> region = createEnum("region", chungbazi.chungbazi_be.domain.user.entity.enums.Region.class);
+
+    public final NumberPath<Integer> reportCount = createNumber("reportCount", Integer.class);
 
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel> reward = createEnum("reward", chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel.class);
 
