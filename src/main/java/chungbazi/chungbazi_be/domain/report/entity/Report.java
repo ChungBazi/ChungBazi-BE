@@ -32,4 +32,7 @@ public class Report extends BaseTimeEntity {
     @JoinColumn(name = "reporter_id", nullable = false)
     private User reporter;
 
+    public boolean isOtherReason() {
+        return this.reportReason == ReportReason.OTHER;
+    }
 }

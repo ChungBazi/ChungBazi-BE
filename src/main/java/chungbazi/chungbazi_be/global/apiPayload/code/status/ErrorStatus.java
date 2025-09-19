@@ -26,7 +26,6 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_FOUND_DOCUMENT(HttpStatus.NOT_FOUND, "DOCUMENT401", "해당 문서를 찾을 수 없습니다."),
     NOT_FOUND_CART(HttpStatus.NOT_FOUND, "CART401", "해당 장바구니를 찾을 수 없습니다."),
     NOT_FOUND_LIKE(HttpStatus.NOT_FOUND, "LIKE404", "해당 좋아요를 찾을 수 없습니다."),
-    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND,"COMMENT404","해당 댓글을 찾을 수 없습니다."),
 
     // User 관련 에러
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "닉네임은 필수입니다."),
@@ -99,6 +98,7 @@ public enum ErrorStatus implements BaseErrorCode {
     //신고 관련 에러
     ALREADY_REPORT(HttpStatus.BAD_REQUEST,"REPORT6001","이미 신고한 id입니다."),
     UNABLE_REPORT_MYSELF(HttpStatus.BAD_REQUEST,"REPORT6002","자기 자신을 신고할 수 없습니다"),
+    DESCRIPTION_REQUIRED(HttpStatus.BAD_REQUEST,"REPORT6003","신고 옵션이 기타인 경우, 사유를 필수로 추가해주셔야합니다."),
     ;
 
 

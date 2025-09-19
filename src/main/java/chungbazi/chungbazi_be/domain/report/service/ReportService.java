@@ -28,8 +28,8 @@ public class ReportService {
     private final UserHelper userHelper;
 
     // 신고 임계값 설정
-    private static final int POST_REPORT_THRESHOLD = 5;
-    private static final int USER_REPORT_THRESHOLD = 10;
+    private static final int POST_REPORT_THRESHOLD = 3;
+    private static final int USER_REPORT_THRESHOLD = 5;
     private static final int COMMENT_REPORT_THRESHOLD = 3;
 
     public void reportPost(Long postId, ReportRequest.ReportRequestDto dto) {
@@ -48,6 +48,10 @@ public class ReportService {
     }
 
     public void report(ReportType reportType,Long targetId, User reporter, ReportReason reason, String description) {
+
+        if (reason == ReportReason.OTHER && (description == null || description.trim().isEmpty())) {
+            throw new GeneralException(ErrorStatus.DESCRIPTION_REQUIRED);
+        }
 
         if(reportRepository.existsByReporterAndReportTypeAndTargetId(reporter, reportType, targetId)) {
             throw new GeneralException(ErrorStatus.ALREADY_REPORT);

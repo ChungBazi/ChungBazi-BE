@@ -6,7 +6,7 @@ import lombok.Getter;
 public class ReportRequest {
 
     @Getter
-    public class ReportRequestDto{
+    public static class ReportRequestDto{
         private ReportReason reason;
         private String description;
     }
