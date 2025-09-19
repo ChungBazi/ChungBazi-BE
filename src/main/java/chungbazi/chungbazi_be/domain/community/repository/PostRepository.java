@@ -14,30 +14,30 @@ import org.springframework.data.repository.query.Param;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     // 전체 게시글 처음 요청
-    Page<Post> findByStatusAndAuthorIdNotInOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, Pageable pageable);
+    Page<Post> findByStatusAndAuthorIdNotInAndIdNotInOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds,List<Long> excludedPostIds, Pageable pageable);
 
     // 전체 게시글 무한 스크롤
-    Page<Post> findByStatusAndAuthorIdNotInAndIdLessThanOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, Long lastPostId, Pageable pageable);
+    Page<Post> findByStatusAndAuthorIdNotInAndIdNotInAndIdLessThanOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds,List<Long> excludedPostIds, Long lastPostId, Pageable pageable);
 
     // 카테고리별 처음 요청
-    Page<Post> findByCategoryAndStatusAndAuthorIdNotInOrderByIdDesc(Category category, ContentStatus status, List<Long> excludedAuthorIds,Pageable pageable);
+    Page<Post> findByCategoryAndStatusAndAuthorIdNotInAndIdNotInOrderByIdDesc(Category category, ContentStatus status, List<Long> excludedAuthorIds,List<Long> excludedPostIds, Pageable pageable);
 
     // 카테고리별 무한 스크롤
-    Page<Post> findByCategoryAndStatusAndAuthorIdNotInAndIdLessThanOrderByIdDesc(Category category, ContentStatus status, List<Long> excludedAuthorIds, Long lastPostId, Pageable pageable);
+    Page<Post> findByCategoryAndStatusAndAuthorIdNotInAndIdNotInAndIdLessThanOrderByIdDesc(Category category, ContentStatus status, List<Long> excludedAuthorIds,List<Long> excludedPostIds, Long lastPostId, Pageable pageable);
 
     // 카테고리별 게시글 수
-    @Query("SELECT COUNT(p) FROM Post p WHERE (:category IS NULL OR p.category = :category) AND p.status = :status AND p.author.id NOT IN :excludedAuthorIds")
-    Long countPostByCategoryAndStatusAndAuthorIdNotIn(@Param("category") Category category, @Param("status") ContentStatus status, @Param("excludedAuthorIds") List<Long> excludedAuthorIds);
+    @Query("SELECT COUNT(p) FROM Post p WHERE (:category IS NULL OR p.category = :category) AND p.status = :status AND p.author.id NOT IN :excludedAuthorIds AND p.id NOT IN :excludedPostIds")
+    Long countPostByCategoryAndStatusAndAuthorIdNotInAndIdNotIn(@Param("category") Category category, @Param("status") ContentStatus status, @Param("excludedAuthorIds") List<Long> excludedAuthorIds,@Param("excludedPostIds") List<Long> excludedPostIds);
 
     //user의 게시글 수
     @Query("SELECT  COUNT(p) FROM Post p WHERE p.author.id= :authorId ")
     int countPostByAuthorId(@Param("authorId") Long authorId);
     //제목으로 검색
-    Page<Post> findByStatusAndAuthorIdNotInAndTitleContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, String title, LocalDateTime startDate, Pageable pageable);
-    Page<Post> findByStatusAndAuthorIdNotInAndTitleContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, String title, LocalDateTime startDate, Long cursor, Pageable pageable);
+    Page<Post> findByStatusAndAuthorIdNotInAndIdNotInAndTitleContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, List<Long> excludedPostIds, String title, LocalDateTime startDate, Pageable pageable);
+    Page<Post> findByStatusAndAuthorIdNotInAndIdNotInAndTitleContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, List<Long> excludedPostIds, String title, LocalDateTime startDate, Long cursor, Pageable pageable);
     //내용으로 검색
-    Page<Post> findByStatusAndAuthorIdNotInAndContentContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, String title, LocalDateTime startDate, Pageable pageable);
-    Page<Post> findByStatusAndAuthorIdNotInAndContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, String title, LocalDateTime startDate, Long cursor, Pageable pageable);
+    Page<Post> findByStatusAndAuthorIdNotInAndIdNotInAndContentContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, List<Long> excludedPostIds, String title, LocalDateTime startDate, Pageable pageable);
+    Page<Post> findByStatusAndAuthorIdNotInAndIdNotInAndContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, List<Long> excludedPostIds, String title, LocalDateTime startDate, Long cursor, Pageable pageable);
 
 
 }

@@ -18,9 +18,9 @@ public class CommunityConverter {
                 .hasNext(hasNext)
                 .build();
     }
-    public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts, CommentRepository commentRepository, Long currentUserId, List<Long> blockedUserIds) {
+    public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts, CommentRepository commentRepository, Long currentUserId, List<Long> blockedUserIds,List<Long> reportedCommentIds) {
         return posts.stream().map(post ->{
-            Long commentCount = commentRepository.countByPostIdAndStatusAndAuthorIdNotIn(post.getId(), ContentStatus.VISIBLE, blockedUserIds);
+            Long commentCount = commentRepository.countByPostIdAndStatusAndAuthorIdNotInAndIdNotIn(post.getId(), ContentStatus.VISIBLE, blockedUserIds,reportedCommentIds);
             boolean isMine = false;
             if (currentUserId != null && post.getAuthor() != null) {
                 isMine = currentUserId.equals(post.getAuthor().getId());
