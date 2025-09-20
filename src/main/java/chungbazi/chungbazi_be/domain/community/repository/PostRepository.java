@@ -39,5 +39,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByStatusAndAuthorIdNotInAndIdNotInAndContentContainingAndCreatedAtAfterOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, List<Long> excludedPostIds, String title, LocalDateTime startDate, Pageable pageable);
     Page<Post> findByStatusAndAuthorIdNotInAndIdNotInAndContentContainingAndCreatedAtAfterAndIdLessThanOrderByIdDesc(ContentStatus status, List<Long> excludedAuthorIds, List<Long> excludedPostIds, String title, LocalDateTime startDate, Long cursor, Pageable pageable);
 
-
 }

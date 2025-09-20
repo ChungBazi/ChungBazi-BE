@@ -27,14 +27,17 @@ import chungbazi.chungbazi_be.global.utils.PaginationUtil;
 import chungbazi.chungbazi_be.global.utils.PopularSearch;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -57,6 +60,13 @@ public class CommunityService {
         User user = userHelper.getAuthenticatedUser();
         List<Long> blockedUserIds = userBlockRepository.findBlockedUserIdsByBlocker(user.getId());
         List<Long> reportedPostIds = reportRepository.findReportedTargetIdsByReporterAndType(user.getId(), ReportType.POST);
+
+        if (blockedUserIds.isEmpty()) {
+            blockedUserIds = Arrays.asList(-1L);
+        }
+        if (reportedPostIds.isEmpty()) {
+            reportedPostIds = Arrays.asList(-1L);
+        }
 
         if (category == null || category.toString().isEmpty()){ // 전체 게시글 조회
             posts = (cursor == 0)
@@ -119,6 +129,12 @@ public class CommunityService {
         List<Long> blockedUserIds = userBlockRepository.findBlockedUserIdsByBlocker(user.getId());
         List<Long> reportedCommentIds = reportRepository.findReportedTargetIdsByReporterAndType(user.getId(), ReportType.COMMENT);
 
+        if (blockedUserIds.isEmpty()) {
+            blockedUserIds = Arrays.asList(-1L);
+        }
+        if (reportedCommentIds.isEmpty()) {
+            reportedCommentIds = Arrays.asList(-1L);
+        }
 
         if(!post.getAuthor().getId().equals(user.getId())){
             post.incrementViews(); // 조회수 증가
@@ -161,6 +177,13 @@ public class CommunityService {
         User user = userHelper.getAuthenticatedUser();
         List<Long> blockedUserIds = userBlockRepository.findBlockedUserIdsByBlocker(user.getId());
         List<Long> reportedCommentIds = reportRepository.findReportedTargetIdsByReporterAndType(user.getId(), ReportType.COMMENT);
+
+        if (blockedUserIds.isEmpty()) {
+            blockedUserIds = Arrays.asList(-1L);
+        }
+        if (reportedCommentIds.isEmpty()) {
+            reportedCommentIds = Arrays.asList(-1L);
+        }
 
         List<Comment> comments;
         if (cursor == 0) {
@@ -225,6 +248,13 @@ public class CommunityService {
         User user = userHelper.getAuthenticatedUser();
         List<Long> blockedUserIds = userBlockRepository.findBlockedUserIdsByBlocker(user.getId());
         List<Long> reportedPostIds = reportRepository.findReportedTargetIdsByReporterAndType(user.getId(), ReportType.POST);
+
+        if (blockedUserIds.isEmpty()) {
+            blockedUserIds = Arrays.asList(-1L);
+        }
+        if (reportedPostIds.isEmpty()) {
+            reportedPostIds = Arrays.asList(-1L);
+        }
 
         if(!filter.equals("title") && !filter.equals("content")){
             throw new BadRequestHandler(ErrorStatus._BAD_REQUEST);
