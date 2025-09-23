@@ -1,13 +1,12 @@
 package chungbazi.chungbazi_be.domain.report.entity.enums;
 
 public enum ReportReason {
-    SPAM("스팸"),
-    INAPPROPRIATE_CONTENT("부적절한 내용"),
-    HARASSMENT("괴롭힘"),
-    HATE_SPEECH("혐오 발언"),
-    COPYRIGHT_VIOLATION("저작권 침해"),
-    MISINFORMATION("거짓 정보"),
-    OTHER("기타");
+    DOES_NOT_APPEAL("마음에 들지 않아요"),
+    SPAM("스팸이에요"),
+    SEXUAL_CONTENT("선정적이에요"),
+    HATE_SPEECH("혐오 발언이에요"),
+    FALSE_INFORMATION("허위 정보에요"),
+    OTHER("기타 (직접 입력)");
 
     private final String description;
 
