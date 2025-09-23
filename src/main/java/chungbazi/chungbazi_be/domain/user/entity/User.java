@@ -120,9 +120,6 @@ public class User {
     @Column(columnDefinition = "integer default 0")
     private Integer reportCount = 0;
 
-    @Column(name ="blacklist_reason")
-    private ReportReason blacklistReason;
-
     @Column(columnDefinition = "boolean default false")
     private boolean isBlacklisted=false;
 
@@ -134,9 +131,8 @@ public class User {
     }
 
     // 블랙리스트 처리
-    public void blacklist(ReportReason reason) {
+    public void blacklist() {
         this.isBlacklisted = true;
-        this.blacklistReason = reason;
         this.blacklistedAt = LocalDateTime.now();
     }
 
