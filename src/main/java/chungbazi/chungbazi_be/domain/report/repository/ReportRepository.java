@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.report.repository;
 
+import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.report.entity.Report;
 import chungbazi.chungbazi_be.domain.report.entity.enums.ReportType;
 import chungbazi.chungbazi_be.domain.user.entity.User;
@@ -16,4 +17,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     @Query("SELECT r.targetId FROM Report r WHERE r.reporter.id = :reporterId AND r.reportType = :reportType")
     List<Long> findReportedTargetIdsByReporterAndType(@Param("reporterId") Long reporterId, @Param("reportType") ReportType reportType);
+
+
+    Report findByTargetIdAndReportType(Long targetId, ReportType reportType);
 }
