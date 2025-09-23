@@ -27,6 +27,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -80,7 +82,7 @@ public class CommunityService {
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
         posts = paginationResult.getItems();
 
-        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,user.getId(),blockedUserIds,reportedPostIds);
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,heartRepository,blockedUserIds,reportedPostIds,user);
         Long totalPostCount = postRepository.countPostByCategoryAndStatusAndAuthorIdNotInAndIdNotIn(category,ContentStatus.VISIBLE,blockedUserIds,reportedPostIds);
 
         return CommunityConverter.toTotalPostListDto(
@@ -118,7 +120,7 @@ public class CommunityService {
 
         rewardService.checkRewards();
 
-        return CommunityConverter.toUploadAndGetPostDto(post, commentCount, true);
+        return CommunityConverter.toUploadAndGetPostDto(post, commentCount, true,false);
     }
 
     public CommunityResponseDTO.UploadAndGetPostDto getPost(Long postId) {
@@ -141,8 +143,9 @@ public class CommunityService {
         Long commentCount = commentRepository.countByPostIdAndStatusAndAuthorIdNotInAndIdNotIn(postId,ContentStatus.VISIBLE,blockedUserIds,reportedCommentIds);
 
         boolean isMine = post.getAuthor().equals(user);
+        boolean isLikedByUser = heartRepository.existsByUserAndPost(user, post);
 
-        return CommunityConverter.toUploadAndGetPostDto(post, commentCount, isMine);
+        return CommunityConverter.toUploadAndGetPostDto(post, commentCount, isMine,isLikedByUser);
     }
 
     public CommunityResponseDTO.UploadAndGetCommentDto uploadComment(CommunityRequestDTO.UploadCommentDto uploadCommentDto) {
@@ -166,8 +169,7 @@ public class CommunityService {
         }
         rewardService.checkRewards();
 
-
-        return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId());
+        return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(),false);
     }
 
     public CommunityResponseDTO.CommentListDto getComments(Long postId, Long cursor, int size){
@@ -194,7 +196,14 @@ public class CommunityService {
         PaginationResult<Comment> paginationResult = PaginationUtil.paginate(comments, size);
         comments = paginationResult.getItems();
 
-        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments, user.getId());
+        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = comments.stream()
+                .map(comment -> {
+                    boolean isLikedByUser = commentHeartRepository.existsByUserAndComment(user, comment);
+                    return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(), isLikedByUser);
+                })
+                .collect(Collectors.toList());
+
+        //List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments, user.getId());
 
         return CommunityConverter.toGetCommentsListDto(
                 commentsList,
@@ -275,7 +284,7 @@ public class CommunityService {
         PaginationResult<Post> paginationResult = PaginationUtil.paginate(posts, size);
         posts = paginationResult.getItems();
 
-        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,user.getId(),blockedUserIds,reportedPostIds);
+        List<CommunityResponseDTO.PostListDto> postList = CommunityConverter.toPostListDto(posts, commentRepository,heartRepository,blockedUserIds,reportedPostIds,user);
 
         return CommunityConverter.toTotalPostListDto(
                 null,
