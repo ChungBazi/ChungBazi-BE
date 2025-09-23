@@ -48,6 +48,10 @@ public class Comment extends BaseTimeEntity {
         this.reportCount++;
     }
 
+    public void decreaseReportCount() {
+        this.reportCount--;
+    }
+
     public void deleteAdmin(ReportReason reason) {
         this.reportReason = reason;
         this.status = ContentStatus.DELETED;
