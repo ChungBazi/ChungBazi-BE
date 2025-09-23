@@ -33,6 +33,8 @@ public class QComment extends EntityPathBase<Comment> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final NumberPath<Integer> likesCount = createNumber("likesCount", Integer.class);
+
     public final QPost post;
 
     public final NumberPath<Integer> reportCount = createNumber("reportCount", Integer.class);

@@ -44,6 +44,17 @@ public class Comment extends BaseTimeEntity {
     @Column(nullable = false)
     private ContentStatus status;
 
+    @Builder.Default
+    @Column(columnDefinition = "integer default 0")
+    private Integer likesCount = 0;
+
+    public void incrementLike(){this.likesCount = this.likesCount + 1;}
+
+    public void decrementLike(){
+        if(this.likesCount > 0) {
+            this.likesCount -= 1;}
+    }
+
     public void increaseReportCount() {
         this.reportCount++;
     }

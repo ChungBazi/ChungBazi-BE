@@ -26,6 +26,7 @@ public class CommunityResponseDTO {
         Integer views;
         Long commentCount;
         Integer postLikes;
+        boolean isLikedByUser;
 
         Long userId;
         String userName;
@@ -55,6 +56,7 @@ public class CommunityResponseDTO {
         Category category;
         String formattedCreatedAt;
         boolean isMine;
+        boolean isLikedByUser;
 
         boolean anonymous;
 
@@ -84,6 +86,8 @@ public class CommunityResponseDTO {
         String userName;
         RewardLevel reward;
         RewardLevel characterImg;
+        Integer likesCount;
+        boolean isLikedByUser;
         boolean isMine;
     }
 
