@@ -125,7 +125,7 @@ public class ReportService {
 
     private void checkAndBlacklistUser(User user) {
         if (!user.isBlacklisted() && user.getReportCount() >= USER_REPORT_THRESHOLD) {
-            user.blacklist(ReportReason.HARASSMENT);
+            user.blacklist();
         }
     }
 }

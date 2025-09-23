@@ -24,8 +24,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final DateTimePath<java.time.LocalDateTime> blacklistedAt = createDateTime("blacklistedAt", java.time.LocalDateTime.class);
 
-    public final EnumPath<chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason> blacklistReason = createEnum("blacklistReason", chungbazi.chungbazi_be.domain.report.entity.enums.ReportReason.class);
-
     public final EnumPath<chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel> characterImg = createEnum("characterImg", chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel.class);
 
     public final ListPath<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter> characters = this.<chungbazi.chungbazi_be.domain.character.entity.Character, chungbazi.chungbazi_be.domain.character.entity.QCharacter>createList("characters", chungbazi.chungbazi_be.domain.character.entity.Character.class, chungbazi.chungbazi_be.domain.character.entity.QCharacter.class, PathInits.DIRECT2);
