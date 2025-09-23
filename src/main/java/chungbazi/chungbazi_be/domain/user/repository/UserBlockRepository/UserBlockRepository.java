@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface UserBlockRepository extends JpaRepository<UserBlock, Long>,UserBlockRepositoryCustom {
 
-    @Query("SELECT ub.blocked.id FROM UserBlock ub WHERE ub.blocker.id = :blockerId")
+    @Query("SELECT ub.blocked.id FROM UserBlock ub WHERE ub.blocker.id = :blockerId AND ub.isActive = true")
     List<Long> findBlockedUserIdsByBlocker(@Param("blockerId") Long blockerId);
 }

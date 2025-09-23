@@ -15,8 +15,11 @@ import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static chungbazi.chungbazi_be.domain.report.entity.enums.ReportType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +47,7 @@ public class ReportService {
 
     public void reportComment(Long commentId, ReportRequest.ReportRequestDto dto) {
         User reporter  = userHelper.getAuthenticatedUser();
-        report(ReportType.COMMENT, commentId, reporter, dto.getReason(), dto.getDescription());
+        report(COMMENT, commentId, reporter, dto.getReason(), dto.getDescription());
     }
 
     public void report(ReportType reportType,Long targetId, User reporter, ReportReason reason, String description) {
@@ -123,9 +126,48 @@ public class ReportService {
         reportRepository.save(report);
     }
 
+
+
     private void checkAndBlacklistUser(User user) {
         if (!user.isBlacklisted() && user.getReportCount() >= USER_REPORT_THRESHOLD) {
             user.blacklist();
+        }
+    }
+
+    @Transactional
+    public void reportDelete(Long id, ReportType reportType) {
+        Report report = null;
+        switch (reportType){
+            case POST :
+                Post post = postRepository.findById(id)
+                        .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+                post.decreaseReportCount();
+
+                report = reportRepository.findByTargetIdAndReportType(post.getId(), POST);
+                reportRepository.delete(report);
+                break;
+
+            case COMMENT :
+                Comment comment = commentRepository.findById(id)
+                        .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_COMMENT));
+
+                comment.decreaseReportCount();
+
+                report = reportRepository.findByTargetIdAndReportType(comment.getId(), COMMENT);
+                reportRepository.delete(report);
+                break;
+
+            case USER:
+                User user = userRepository.findById(id)
+                        .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+                user.decreaseReportCount();
+
+                report = reportRepository.findByTargetIdAndReportType(user.getId(), USER);
+                reportRepository.delete(report);
+                break;
+
         }
     }
 }

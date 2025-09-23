@@ -66,6 +66,7 @@ public class UserBlockRepositoryCustomImpl implements UserBlockRepositoryCustom 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(qUserBlock.blocker.id.eq(blockerId));
         booleanBuilder.and(qUserBlock.blocked.id.eq(blockedId));
+        booleanBuilder.and(qUserBlock.isActive.eq(true));
 
         queryFactory
                 .update(qUserBlock)

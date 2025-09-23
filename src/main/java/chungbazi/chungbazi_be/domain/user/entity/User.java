@@ -130,6 +130,10 @@ public class User {
         this.reportCount++;
     }
 
+    public void decreaseReportCount() {
+        this.reportCount--;
+    }
+
     // 블랙리스트 처리
     public void blacklist() {
         this.isBlacklisted = true;
