@@ -43,7 +43,7 @@ spring:
           write timeout: 5000
 
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: ${RABBITMQ_USER}
     password: ${RABBITMQ_PASSWORD}

@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.domain.community.controller;
 
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
+import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.service.CommunityService;
 import chungbazi.chungbazi_be.domain.policy.dto.PopularSearchResponse;
@@ -103,6 +104,21 @@ public class CommunityController {
         communityService.unlikePost(postId);
         return ApiResponse.onSuccess(null);
     }
+
+    @PostMapping("likes/{commentId}")
+    @Operation(summary = "댓글 좋아요 API", description = "댓글에 좋아요를 누르는 API입니다")
+    public ApiResponse<String> likeComment(@PathVariable Long commentId){
+        communityService.likeComment(commentId);
+        return ApiResponse.onSuccess("댓글에 좋아요를 누르셨습니다.");
+    }
+
+    @DeleteMapping("likes/{commentId}")
+    @Operation(summary = "댓글 좋아요 취소 API", description = "댓글에 좋아요를 취소하는 API입니다")
+    public ApiResponse<String> unlikeComment(@PathVariable Long commentId){
+        communityService.unlikeComment(commentId);
+        return ApiResponse.onSuccess("댓글 좋아요를 취소했습니다.");
+    }
+
     @GetMapping("/search")
     @Operation(summary = "커뮤니티 검색 API", description = "커뮤니티 검색 API")
     public ApiResponse<CommunityResponseDTO.TotalPostListDto> getSearchPost(

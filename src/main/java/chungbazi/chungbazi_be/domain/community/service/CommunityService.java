@@ -3,10 +3,8 @@ package chungbazi.chungbazi_be.domain.community.service;
 import chungbazi.chungbazi_be.domain.community.converter.CommunityConverter;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityRequestDTO;
 import chungbazi.chungbazi_be.domain.community.dto.CommunityResponseDTO;
-import chungbazi.chungbazi_be.domain.community.entity.Comment;
-import chungbazi.chungbazi_be.domain.community.entity.ContentStatus;
-import chungbazi.chungbazi_be.domain.community.entity.Heart;
-import chungbazi.chungbazi_be.domain.community.entity.Post;
+import chungbazi.chungbazi_be.domain.community.entity.*;
+import chungbazi.chungbazi_be.domain.community.repository.CommentHeartRepository;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.HeartRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
@@ -52,6 +50,7 @@ public class CommunityService {
     private final PopularSearch popularSearch;
     private final ReportRepository reportRepository;
     private final UserBlockRepository userBlockRepository;
+    private final CommentHeartRepository commentHeartRepository;
 
     public CommunityResponseDTO.TotalPostListDto getPosts(Category category, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -223,7 +222,7 @@ public class CommunityService {
         Post post = postRepository.getReferenceById(postId);
 
         Heart heart = heartRepository.findByUserAndPost(user,post)
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_LIKE));
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST_LIKE));
         heartRepository.delete(heart);
 
         post.decrementLike();
@@ -322,4 +321,36 @@ public class CommunityService {
         commentRepository.delete(comment);
     }
 
+    public void likeComment(Long commentId) {
+        User user = userHelper.getAuthenticatedUser();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_COMMENT));
+
+        //이미 좋아요한 경우
+        if(commentHeartRepository.existsByUserAndComment(user, comment)) {
+            throw new BadRequestHandler(ErrorStatus.ALREADY_LIKED);
+        }
+        CommentHeart commentHeart = CommentHeart.builder()
+                .user(user)
+                .comment(comment)
+                .build();
+        commentHeartRepository.save(commentHeart);
+
+        comment.incrementLike();
+        commentRepository.save(comment);
+    }
+
+    public void unlikeComment(Long commentId){
+        User user = userHelper.getAuthenticatedUser();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_COMMENT));
+
+        CommentHeart commentHeart = commentHeartRepository.findByUserAndComment(user,comment)
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_COMMENT_LIKE));
+        commentHeartRepository.delete(commentHeart);
+
+        comment.decrementLike();
+        commentRepository.save(comment);
+
+    }
 }
