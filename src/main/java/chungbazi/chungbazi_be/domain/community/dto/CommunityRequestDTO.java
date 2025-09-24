@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.community.dto;
 
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -37,5 +38,8 @@ public class CommunityRequestDTO {
         @NotBlank
         @Size(min = 1, max = 100, message = "댓글은 100자 이하")
         String content;
+
+        @Schema(description = "대댓글일 때의, 부모 댓글 id", example = "안녕하세요")
+        private Long parentCommentId;
     }
 }

@@ -91,6 +91,7 @@ public class CommunityConverter {
                 .characterImg(comment.getAuthor().getCharacterImg())
                 .commentId(comment.getId())
                 .isLikedByUser(isLikedByUser)
+                .parentCommentId(comment.getParentComment()!=null ? comment.getParentComment().getId() : null)
                 .build();
     }
 //    public static List<CommunityResponseDTO.UploadAndGetCommentDto> toListCommentDto(List<Comment> comments, Long currentUserId) {

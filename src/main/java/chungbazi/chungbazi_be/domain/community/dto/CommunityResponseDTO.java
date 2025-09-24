@@ -89,6 +89,7 @@ public class CommunityResponseDTO {
         Integer likesCount;
         boolean isLikedByUser;
         boolean isMine;
+        Long parentCommentId;
     }
 
     @Getter
