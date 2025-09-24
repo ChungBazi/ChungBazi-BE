@@ -153,6 +153,13 @@ public class CommunityService {
         Post post = postRepository.findById(uploadCommentDto.getPostId())
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
 
+        //부모 댓글이 있는지 확인
+        Comment parentComment = null;
+        if (uploadCommentDto.getParentCommentId() !=null){
+            parentComment = commentRepository.findById(uploadCommentDto.getParentCommentId())
+                    .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_COMMENT));
+        }
+
         // 유저 조회
         User user = userHelper.getAuthenticatedUser();
         Comment comment = Comment.builder().
@@ -160,6 +167,7 @@ public class CommunityService {
                 .author(user)
                 .post(post)
                 .status(ContentStatus.VISIBLE)
+                .parentComment(parentComment)
                 .build();
 
         commentRepository.save(comment);
@@ -327,7 +335,8 @@ public class CommunityService {
             throw new BadRequestHandler(ErrorStatus.UNABLE_TO_DELETE_COMMENT);
         }
 
-        commentRepository.delete(comment);
+        comment.markAsDeleted();
+        commentRepository.save(comment);
     }
 
     public void likeComment(Long commentId) {

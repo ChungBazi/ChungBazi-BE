@@ -11,6 +11,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -47,6 +50,19 @@ public class Comment extends BaseTimeEntity {
     @Builder.Default
     @Column(columnDefinition = "integer default 0")
     private Integer likesCount = 0;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "parent_comment_id")
+    private Comment parentComment;
+
+    @OneToMany(mappedBy = "parentComment", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Comment> childComments = new ArrayList<>();
+
+    private boolean isDeleted = false;
+
+    public void markAsDeleted() {
+        isDeleted = true;
+    }
 
     public void incrementLike(){this.likesCount = this.likesCount + 1;}
 
