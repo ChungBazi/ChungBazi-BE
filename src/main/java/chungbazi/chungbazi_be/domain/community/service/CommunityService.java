@@ -335,7 +335,8 @@ public class CommunityService {
             throw new BadRequestHandler(ErrorStatus.UNABLE_TO_DELETE_COMMENT);
         }
 
-        commentRepository.delete(comment);
+        comment.markAsDeleted();
+        commentRepository.save(comment);
     }
 
     public void likeComment(Long commentId) {

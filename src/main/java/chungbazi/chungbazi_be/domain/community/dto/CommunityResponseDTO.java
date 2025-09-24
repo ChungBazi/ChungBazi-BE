@@ -90,6 +90,7 @@ public class CommunityResponseDTO {
         boolean isLikedByUser;
         boolean isMine;
         Long parentCommentId;
+        boolean isDeleted;
     }
 
     @Getter

@@ -58,6 +58,12 @@ public class Comment extends BaseTimeEntity {
     @OneToMany(mappedBy = "parentComment", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Comment> childComments = new ArrayList<>();
 
+    private boolean isDeleted = false;
+
+    public void markAsDeleted() {
+        isDeleted = true;
+    }
+
     public void incrementLike(){this.likesCount = this.likesCount + 1;}
 
     public void decrementLike(){
