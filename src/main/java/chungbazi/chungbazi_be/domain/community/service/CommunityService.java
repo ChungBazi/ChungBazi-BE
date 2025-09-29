@@ -175,6 +175,23 @@ public class CommunityService {
         if(user.getNotificationSetting().isCommunityAlarm() && !user.getId().equals(post.getAuthor().getId())){
             sendCommunityNotification(post.getId());
         }
+        if (parentComment != null) {
+            User parentAuthor = parentComment.getAuthor();
+            // 부모 댓글 작성자가 댓글 작성자 자신이 아닐 때만 알림
+            if (user.getNotificationSetting().isCommunityAlarm()
+                    && !parentAuthor.getId().equals(user.getId())) {
+                String message = user.getName() + "님이 회원님의 댓글에 답글을 달았습니다.";
+                notificationService.sendNotification(
+                        parentAuthor,
+                        NotificationType.COMMUNITY_ALARM,
+                        message,
+                        post,
+                        null,
+                        null,
+                        null
+                );
+            }
+        }
         rewardService.checkRewards();
 
         return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(),false);
@@ -233,7 +250,12 @@ public class CommunityService {
 
         post.incrementLike();
         postRepository.save(post);
+
+        if (user.getNotificationSetting().isCommunityAlarm() && !user.getId().equals(post.getAuthor().getId())){
+            sendPostLikeNotification(postId);
+        }
     }
+
     public void unlikePost(Long postId){
         User user = userHelper.getAuthenticatedUser();
         Post post = postRepository.getReferenceById(postId);
@@ -254,8 +276,32 @@ public class CommunityService {
         User author=post.getAuthor();
         String message=user.getName()+"님이 회원님의 게시글에 댓글을 달았습니다.";
 
-        notificationService.sendNotification(author, NotificationType.COMMUNITY_ALARM, message, post, null,null);
+        notificationService.sendNotification(author, NotificationType.COMMUNITY_ALARM, message, post, null,null,null);
     }
+
+    public void sendPostLikeNotification(Long postId){
+        User user = userHelper.getAuthenticatedUser();
+
+        Post post = postRepository.getReferenceById(postId);
+
+        User author=post.getAuthor();
+        String message = user.getName()+"님이 회원님의 게시글에 좋아요를 누르셨습니다.";
+
+        notificationService.sendNotification(author,NotificationType.COMMUNITY_ALARM, message, post, null,null,null);
+    }
+
+    public void sendCommentLikeNotification(Long commentId){
+        User user = userHelper.getAuthenticatedUser();
+
+        Comment comment = commentRepository.getReferenceById(commentId);
+
+        Post post = comment.getPost();
+        User author=comment.getAuthor();
+        String message = user.getName()+"님이 회원님의 댓글에 좋아요를 누르셨습니다.";
+
+        notificationService.sendNotification(author,NotificationType.COMMUNITY_ALARM, message, post, null,null,comment);
+    }
+
     public CommunityResponseDTO.TotalPostListDto getSearchPost(String query, String filter, String period, Long cursor, int size) {
         Pageable pageable = PageRequest.of(0, size + 1);
         List<Post> posts;
@@ -356,6 +402,10 @@ public class CommunityService {
 
         comment.incrementLike();
         commentRepository.save(comment);
+
+        if (user.getNotificationSetting().isCommunityAlarm() && !user.getId().equals(comment.getAuthor().getId())){
+            sendCommentLikeNotification(commentId);
+        }
     }
 
     public void unlikeComment(Long commentId){

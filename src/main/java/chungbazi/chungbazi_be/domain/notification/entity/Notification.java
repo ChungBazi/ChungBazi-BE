@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.notification.entity;
 
 import chungbazi.chungbazi_be.domain.chat.entity.Message;
+import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.global.utils.TimeFormatter;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
@@ -40,6 +41,10 @@ public class Notification extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
 
     // 정책 알림인 경우 (선택적)
     @ManyToOne(fetch = FetchType.LAZY)
