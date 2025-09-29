@@ -1,6 +1,7 @@
 package chungbazi.chungbazi_be.domain.notification.service;
 
 import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
+import chungbazi.chungbazi_be.domain.community.entity.Comment;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.notification.converter.NotificationConverter;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
@@ -43,7 +44,7 @@ public class NotificationService {
     private final NotificationSettingRepository notificationSettingRepository;
     private final UserHelper userHelper;
 
-    public NotificationResponseDTO.responseDto sendNotification(User user, NotificationType type, String message, Post post, Policy policy, chungbazi.chungbazi_be.domain.chat.entity.Message chat) {
+    public NotificationResponseDTO.responseDto sendNotification(User user, NotificationType type, String message, Post post, Policy policy, chungbazi.chungbazi_be.domain.chat.entity.Message chat, Comment comment) {
         Notification notification=Notification.builder()
                 .user(user)
                 .type(type)
@@ -52,6 +53,7 @@ public class NotificationService {
                 .post(post)
                 .policy(policy)
                 .chat(chat)
+                .comment(comment)
                 .build();
 
         notificationRepository.save(notification);
@@ -62,8 +64,9 @@ public class NotificationService {
             Long policyId = (policy != null) ? policy.getId() : null;
             Long postId = (post != null) ? post.getId() : null;
             Long chatId = (chat != null) ? chat.getId() : null;
+            Long commentId = (comment != null) ? comment.getId() : null;
 
-            pushFCMNotification(fcmToken,message,policyId, postId, chatId,type);
+            pushFCMNotification(fcmToken,message,policyId, postId, chatId,commentId,type);
         }
         return NotificationResponseDTO.responseDto.builder()
                 .notificationId(notification.getId())
@@ -72,7 +75,7 @@ public class NotificationService {
     }
 
     //fcm한테 알림 요청
-    public void pushFCMNotification(String fcmToken,String message,Long policyId, Long postId, Long chatId, NotificationType type) {
+    public void pushFCMNotification(String fcmToken,String message,Long policyId, Long postId, Long chatId, Long commentId,NotificationType type) {
         try {
             com.google.firebase.messaging.Notification notification =
                     com.google.firebase.messaging.Notification.builder()
@@ -89,6 +92,9 @@ public class NotificationService {
             }
             if (chatId != null) {
                 data.put("chatId", chatId.toString());
+            }
+            if (commentId != null) {
+                data.put("commentId", commentId.toString());
             }
             data.put("notificationType", type.toString());
 

@@ -118,7 +118,7 @@ public class ChatService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
         if(chatRoomSettingService.getChatRoomSettingIsEnabled(receiverId,chat.getChatRoom().getId())){
             String message = chat.getSender().getName() + "님이 쪽지를 보내셨습니다.";
-            notificationService.sendNotification(receiver, NotificationType.CHAT_ALARM,message,null,null,chat);
+            notificationService.sendNotification(receiver, NotificationType.CHAT_ALARM,message,null,null,chat,null);
         }
     }
 
