@@ -8,6 +8,7 @@ import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.HeartRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommunityConverter {
@@ -93,6 +94,7 @@ public class CommunityConverter {
                 .isLikedByUser(isLikedByUser)
                 .parentCommentId(comment.getParentComment()!=null ? comment.getParentComment().getId() : null)
                 .isDeleted(comment.isDeleted())
+                .comments(new ArrayList<>())
                 .build();
     }
 //    public static List<CommunityResponseDTO.UploadAndGetCommentDto> toListCommentDto(List<Comment> comments, Long currentUserId) {

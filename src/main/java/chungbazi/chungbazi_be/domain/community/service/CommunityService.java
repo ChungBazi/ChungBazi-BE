@@ -24,9 +24,7 @@ import chungbazi.chungbazi_be.global.utils.PaginationResult;
 import chungbazi.chungbazi_be.global.utils.PaginationUtil;
 import chungbazi.chungbazi_be.global.utils.PopularSearch;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -221,17 +219,33 @@ public class CommunityService {
         PaginationResult<Comment> paginationResult = PaginationUtil.paginate(comments, size);
         comments = paginationResult.getItems();
 
-        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = comments.stream()
-                .map(comment -> {
-                    boolean isLikedByUser = commentHeartRepository.existsByUserAndComment(user, comment);
-                    return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(), isLikedByUser);
-                })
-                .collect(Collectors.toList());
+        List<CommunityResponseDTO.UploadAndGetCommentDto> responseList = new ArrayList<>();
+        Map<Long, CommunityResponseDTO.UploadAndGetCommentDto> responseMap = new HashMap<>();
 
-        //List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = CommunityConverter.toListCommentDto(comments, user.getId());
+        comments.forEach(comment -> {
+            boolean isLikedByUser = commentHeartRepository.existsByUserAndComment(user, comment);
+            CommunityResponseDTO.UploadAndGetCommentDto dto = CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(), isLikedByUser);
+            responseMap.put(comment.getId(), dto);
+
+            Optional.ofNullable(comment.getParentComment())
+                    .map(parent -> responseMap.get(parent.getId()))
+                    .ifPresent(parent -> parent.getComments().add(dto));
+
+            if (comment.getParentComment() ==null){
+                responseList.add(dto);
+            }
+        });
+
+//        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = comments.stream()
+//                .map(comment -> {
+//                    boolean isLikedByUser = commentHeartRepository.existsByUserAndComment(user, comment);
+//                    return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(), isLikedByUser);
+//                })
+//                .collect(Collectors.toList());
+
 
         return CommunityConverter.toGetCommentsListDto(
-                commentsList,
+                responseList,
                 paginationResult.getNextCursor(),
                 paginationResult.isHasNext());
     }

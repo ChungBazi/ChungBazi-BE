@@ -3,6 +3,8 @@ package chungbazi.chungbazi_be.domain.community.dto;
 import chungbazi.chungbazi_be.domain.community.entity.ContentStatus;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
 import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
+
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -91,6 +93,8 @@ public class CommunityResponseDTO {
         boolean isMine;
         Long parentCommentId;
         boolean isDeleted;
+
+        List<UploadAndGetCommentDto> comments = new ArrayList<>();
     }
 
     @Getter
