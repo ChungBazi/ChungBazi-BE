@@ -175,7 +175,23 @@ public class CommunityService {
         if(user.getNotificationSetting().isCommunityAlarm() && !user.getId().equals(post.getAuthor().getId())){
             sendCommunityNotification(post.getId());
         }
-
+        if (parentComment != null) {
+            User parentAuthor = parentComment.getAuthor();
+            // 부모 댓글 작성자가 댓글 작성자 자신이 아닐 때만 알림
+            if (user.getNotificationSetting().isCommunityAlarm()
+                    && !parentAuthor.getId().equals(user.getId())) {
+                String message = user.getName() + "님이 회원님의 댓글에 답글을 달았습니다.";
+                notificationService.sendNotification(
+                        parentAuthor,
+                        NotificationType.COMMUNITY_ALARM,
+                        message,
+                        post,
+                        null,
+                        null,
+                        null
+                );
+            }
+        }
         rewardService.checkRewards();
 
         return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(),false);
