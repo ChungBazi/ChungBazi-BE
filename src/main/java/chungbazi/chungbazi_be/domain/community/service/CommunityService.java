@@ -192,7 +192,7 @@ public class CommunityService {
         }
         rewardService.checkRewards();
 
-        return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(),false);
+        return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(),false,0);
     }
 
     public CommunityResponseDTO.CommentListDto getComments(Long postId, Long cursor, int size){
@@ -222,9 +222,19 @@ public class CommunityService {
         List<CommunityResponseDTO.UploadAndGetCommentDto> responseList = new ArrayList<>();
         Map<Long, CommunityResponseDTO.UploadAndGetCommentDto> responseMap = new HashMap<>();
 
+        //각 부모 댓글의 대댓글 수 계산
+        Map<Long, Integer> replyCountMap = new HashMap<>();
+        comments.forEach(comment -> {
+            if (comment.getParentComment() != null) {
+                Long parentId = comment.getParentComment().getId();
+                replyCountMap.put(parentId, replyCountMap.getOrDefault(parentId, 0) + 1);
+            }
+        });
+
         comments.forEach(comment -> {
             boolean isLikedByUser = commentHeartRepository.existsByUserAndComment(user, comment);
-            CommunityResponseDTO.UploadAndGetCommentDto dto = CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(), isLikedByUser);
+            int replyCount = replyCountMap.getOrDefault(comment.getId(), 0);
+            CommunityResponseDTO.UploadAndGetCommentDto dto = CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(), isLikedByUser, replyCount);
             responseMap.put(comment.getId(), dto);
 
             Optional.ofNullable(comment.getParentComment())
@@ -235,14 +245,6 @@ public class CommunityService {
                 responseList.add(dto);
             }
         });
-
-//        List<CommunityResponseDTO.UploadAndGetCommentDto> commentsList = comments.stream()
-//                .map(comment -> {
-//                    boolean isLikedByUser = commentHeartRepository.existsByUserAndComment(user, comment);
-//                    return CommunityConverter.toUploadAndGetCommentDto(comment, user.getId(), isLikedByUser);
-//                })
-//                .collect(Collectors.toList());
-
 
         return CommunityConverter.toGetCommentsListDto(
                 responseList,
