@@ -94,6 +94,7 @@ public class CommunityResponseDTO {
         Long parentCommentId;
         boolean isDeleted;
 
+        int replyCount;
         List<UploadAndGetCommentDto> comments = new ArrayList<>();
     }
 

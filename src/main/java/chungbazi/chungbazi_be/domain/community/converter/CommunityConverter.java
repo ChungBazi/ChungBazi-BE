@@ -75,7 +75,7 @@ public class CommunityConverter {
                 .build();
     }
 
-    public static CommunityResponseDTO.UploadAndGetCommentDto toUploadAndGetCommentDto(Comment comment, Long currentUserId,boolean isLikedByUser) {
+    public static CommunityResponseDTO.UploadAndGetCommentDto toUploadAndGetCommentDto(Comment comment, Long currentUserId,boolean isLikedByUser, int replyCount) {
         boolean isMine = false;
         if (currentUserId != null && comment.getAuthor() != null) {
             isMine = currentUserId.equals(comment.getAuthor().getId());
@@ -94,6 +94,7 @@ public class CommunityConverter {
                 .isLikedByUser(isLikedByUser)
                 .parentCommentId(comment.getParentComment()!=null ? comment.getParentComment().getId() : null)
                 .isDeleted(comment.isDeleted())
+                .replyCount(replyCount)
                 .comments(new ArrayList<>())
                 .build();
     }

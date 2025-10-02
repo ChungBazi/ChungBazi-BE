@@ -273,7 +273,9 @@ public class PolicyService {
 
         YearMonth parsedYearMonth = YearMonth.parse(yearMonth, DateTimeFormatter.ofPattern("yyyy-M"));
         int year = parsedYearMonth.getYear();
+        log.info("파싱 확인 year: "+year);
         int month = parsedYearMonth.getMonthValue();
+        log.info("파싱 확인 month: "+month);
 
         Long userId = SecurityUtils.getUserId();
         return cartService.findByUser_IdAndYearMonth(userId, year, month);
