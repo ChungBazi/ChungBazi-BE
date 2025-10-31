@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.auth.service;
 
+import chungbazi.chungbazi_be.domain.auth.dto.TokenRequestDTO;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
@@ -37,6 +38,24 @@ public class MailService {
     private final TokenAuthService tokenAuthService;
     private final UserHelper userHelper;
     private final JavaMailSender emailSender;
+
+    public void sendCodeToEmailWithNoAuthorization(String email) {
+        String title = "청바지 이메일 인증 번호";
+        String authCode = createCode();
+
+        try {
+            sendHtmlEmailWithCode(email, title, authCode);
+        } catch (Exception e) {
+            log.error("이메일 전송 실패: {}", e.getMessage());
+            throw new BadRequestHandler(ErrorStatus.UNABLE_TO_SEND_EMAIL);
+        }
+
+        tokenAuthService.setAuthCode(
+                AUTH_CODE_PREFIX + email,
+                authCode,
+                Duration.ofMillis(authCodeExpirationMillis)
+        );
+    }
 
     public void sendCodeToEmail() {
         User user = userHelper.getAuthenticatedUser();
@@ -129,12 +148,12 @@ public class MailService {
         }
     }
 
-    public void verifiedCode(String authCode) {
-        User user = userHelper.getAuthenticatedUser();
-        String email = user.getEmail();
+    public void verifiedCode(TokenRequestDTO.AuthCodeRequestDTO request) {
+        //User user = userHelper.getAuthenticatedUser();
+        String email = request.getEmail();
         String redisAuthCode = tokenAuthService.getAuthCode(AUTH_CODE_PREFIX + email);
         boolean authResult = tokenAuthService.checkExistsAuthCode(redisAuthCode)
-                && redisAuthCode.equals(authCode);
+                && redisAuthCode.equals(request.getAuthCode());
 
         if (!authResult) {
             throw new BadRequestHandler(ErrorStatus.INVALID_AUTHCODE);
