@@ -156,6 +156,10 @@ public class TokenRequestDTO {
         @NotBlank
         @Schema(example = "123456", description = "유효한 인증코드")
         private String authCode;
+
+        @NotBlank
+        @Schema(example = "이메일")
+        private String email;
     }
 
 
