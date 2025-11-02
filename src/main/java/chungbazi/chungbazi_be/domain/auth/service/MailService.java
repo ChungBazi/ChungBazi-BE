@@ -148,12 +148,12 @@ public class MailService {
         }
     }
 
-    public void verifiedCode(TokenRequestDTO.AuthCodeRequestDTO request) {
+    public void verifiedCode(String dtoEmail, String authCode) {
         //User user = userHelper.getAuthenticatedUser();
-        String email = request.getEmail();
+        String email = dtoEmail;
         String redisAuthCode = tokenAuthService.getAuthCode(AUTH_CODE_PREFIX + email);
         boolean authResult = tokenAuthService.checkExistsAuthCode(redisAuthCode)
-                && redisAuthCode.equals(request.getAuthCode());
+                && redisAuthCode.equals(authCode);
 
         if (!authResult) {
             throw new BadRequestHandler(ErrorStatus.INVALID_AUTHCODE);
