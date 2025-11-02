@@ -1,5 +1,6 @@
 package chungbazi.chungbazi_be.domain.auth.controller;
 
+import chungbazi.chungbazi_be.domain.auth.dto.ResetPasswordNoAuthRequestDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenRequestDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenResponseDTO;
@@ -85,4 +86,10 @@ public class AuthController {
         return ApiResponse.onSuccess("비밀번호가 성공적으로 변경되었습니다.");
     }
 
+    @PostMapping("/reset-password/no-auth")
+    @Operation(summary = "비밀번호 재설정 API(로그인X)", description = "이메일 + 인증번호 입력 후 비밀번호를 재설정한다.")
+    public ApiResponse<String> resetPasswordNoAuth(@RequestBody @Valid ResetPasswordNoAuthRequestDTO request) {
+        authService.resetPasswordWithEmailAndCode(request);
+        return ApiResponse.onSuccess("비밀번호가 성공적으로 변경되었습니다. 다시 로그인해주세요.");
+    }
 }

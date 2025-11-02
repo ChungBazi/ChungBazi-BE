@@ -5,6 +5,7 @@ import chungbazi.chungbazi_be.domain.auth.apple.ApplePublicKeyGenerator;
 import chungbazi.chungbazi_be.domain.auth.apple.ApplePublicKeys;
 import chungbazi.chungbazi_be.domain.auth.apple.AppleTokenParser;
 import chungbazi.chungbazi_be.domain.auth.converter.AuthConverter;
+import chungbazi.chungbazi_be.domain.auth.dto.ResetPasswordNoAuthRequestDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenRequestDTO;
 import chungbazi.chungbazi_be.domain.auth.dto.TokenResponseDTO;
@@ -16,13 +17,18 @@ import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.enums.OAuthProvider;
 import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
+import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import io.jsonwebtoken.Claims;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.security.PublicKey;
 
@@ -43,6 +49,7 @@ public class AuthService {
     private final AppleClient appleClient;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
     private final UserHelper userHelper;
+    private final MailService mailService;
 
     // 일반 회원가입
     public void registerUser(TokenRequestDTO.SignUpTokenRequestDTO request) {
@@ -259,4 +266,22 @@ public class AuthService {
         userRepository.save(user);
     }
 
+
+    public void resetPasswordWithEmailAndCode(ResetPasswordNoAuthRequestDTO request) {
+        mailService.verifiedCode(request.getEmail(),request.getEmail());
+
+        // 2) 사용자 존재 여부
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
+        // 3) 새 비밀번호가 기존과 동일한지 검사
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new BadRequestHandler(ErrorStatus.SAME_AS_OLD_PASSWORD);
+        }
+
+        // 4) 비밀번호 업데이트
+        user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+    }
 }
