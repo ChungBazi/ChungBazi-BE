@@ -268,7 +268,7 @@ public class AuthService {
 
 
     public void resetPasswordWithEmailAndCode(ResetPasswordNoAuthRequestDTO request) {
-        mailService.verifiedCode(request.getEmail(),request.getEmail());
+        mailService.verifiedCode(request.getEmail(),request.getAuthCode());
 
         // 2) 사용자 존재 여부
         User user = userRepository.findByEmail(request.getEmail())
