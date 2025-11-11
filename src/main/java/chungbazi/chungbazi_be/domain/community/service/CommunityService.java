@@ -8,6 +8,7 @@ import chungbazi.chungbazi_be.domain.community.repository.CommentHeartRepository
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.HeartRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
+import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequest;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.policy.entity.Category;
@@ -25,7 +26,6 @@ import chungbazi.chungbazi_be.global.utils.PaginationUtil;
 import chungbazi.chungbazi_be.global.utils.PopularSearch;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -179,15 +179,13 @@ public class CommunityService {
             if (user.getNotificationSetting().isCommunityAlarm()
                     && !parentAuthor.getId().equals(user.getId())) {
                 String message = user.getName() + "님이 회원님의 댓글에 답글을 달았습니다.";
-                notificationService.sendNotification(
-                        parentAuthor,
-                        NotificationType.COMMUNITY_ALARM,
-                        message,
-                        post,
-                        null,
-                        null,
-                        null
-                );
+                NotificationRequest request = NotificationRequest.builder()
+                        .user(user)
+                        .type(NotificationType.COMMUNITY_ALARM)
+                        .post(post)
+                        .build();
+
+                notificationService.sendNotification(request);
             }
         }
         rewardService.checkRewards();
@@ -292,7 +290,14 @@ public class CommunityService {
         User author=post.getAuthor();
         String message=user.getName()+"님이 회원님의 게시글에 댓글을 달았습니다.";
 
-        notificationService.sendNotification(author, NotificationType.COMMUNITY_ALARM, message, post, null,null,null);
+        NotificationRequest request = NotificationRequest.builder()
+                .user(author)
+                .type(NotificationType.COMMUNITY_ALARM)
+                .message(message)
+                .post(post)
+                .build();
+
+        notificationService.sendNotification(request);
     }
 
     public void sendPostLikeNotification(Long postId){
@@ -303,7 +308,14 @@ public class CommunityService {
         User author=post.getAuthor();
         String message = user.getName()+"님이 회원님의 게시글에 좋아요를 누르셨습니다.";
 
-        notificationService.sendNotification(author,NotificationType.COMMUNITY_ALARM, message, post, null,null,null);
+        NotificationRequest request = NotificationRequest.builder()
+                .user(author)
+                .type(NotificationType.COMMUNITY_ALARM)
+                .message(message)
+                .post(post)
+                .build();
+
+        notificationService.sendNotification(request);
     }
 
     public void sendCommentLikeNotification(Long commentId){
@@ -315,7 +327,15 @@ public class CommunityService {
         User author=comment.getAuthor();
         String message = user.getName()+"님이 회원님의 댓글에 좋아요를 누르셨습니다.";
 
-        notificationService.sendNotification(author,NotificationType.COMMUNITY_ALARM, message, post, null,null,comment);
+        NotificationRequest request = NotificationRequest.builder()
+                .user(author)
+                .type(NotificationType.COMMUNITY_ALARM)
+                .message(message)
+                .post(post)
+                .comment(comment)
+                .build();
+
+        notificationService.sendNotification(request);
     }
 
     public CommunityResponseDTO.TotalPostListDto getSearchPost(String query, String filter, String period, Long cursor, int size) {

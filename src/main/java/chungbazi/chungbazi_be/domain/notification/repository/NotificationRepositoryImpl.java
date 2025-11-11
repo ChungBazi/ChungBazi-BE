@@ -1,13 +1,12 @@
 package chungbazi.chungbazi_be.domain.notification.repository;
 
-import chungbazi.chungbazi_be.domain.notification.entity.Notification;
+import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
 import chungbazi.chungbazi_be.domain.notification.entity.QNotification;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
-import com.google.api.gax.paging.Page;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -41,31 +40,39 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
 
     //알림 조회
     @Override
-    public List<Notification> findNotificationsByUserIdAndNotificationType(Long userId, NotificationType type, Long cursor, int limit) {
+    public List<NotificationResponseDTO.notificationDto> findNotificationsByUserIdAndNotificationTypeDto(
+            Long userId, NotificationType type, Long cursor, int limit) {
 
-        QNotification qNotification=QNotification.notification;
+        QNotification qNotification = QNotification.notification;
 
-        BooleanBuilder booleanBuilder=new BooleanBuilder();
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(qNotification.user.id.eq(userId));
 
-        //타입필터
-        if(type!=null && !type.name().isEmpty()){
+        if (type != null) {
             booleanBuilder.and(qNotification.type.eq(type));
         }
-        if(cursor!=null && cursor!=0){
+        if (cursor != null && cursor != 0) {
             booleanBuilder.and(qNotification.id.lt(cursor));
         }
 
-        //페이징 조회
-        List<Notification> notifications=queryFactory
-                .selectFrom(qNotification)
+        List<NotificationResponseDTO.notificationDto> dtos = queryFactory
+                .select(Projections.constructor(
+                        NotificationResponseDTO.notificationDto.class,
+                        qNotification.id,
+                        qNotification.isRead,
+                        qNotification.message,
+                        qNotification.type,
+                        qNotification.policy.id,
+                        qNotification.post.id,
+                        qNotification.createdAt
+                ))
+                .from(qNotification)
                 .where(booleanBuilder)
                 .orderBy(qNotification.createdAt.desc())
-                .limit(limit+1)
+                .limit(limit + 1)
                 .fetch();
 
-        return notifications;
+        return dtos;
     }
-
 
 }

@@ -1,11 +1,10 @@
 package chungbazi.chungbazi_be.domain.notification.service;
 
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
-import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository.ChatRoomRepository;
-import chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting;
-import chungbazi.chungbazi_be.domain.notification.repository.ChatRoomSettingRepository;
+import chungbazi.chungbazi_be.domain.chat.service.ChatRoomService;
+import chungbazi.chungbazi_be.domain.chat.entity.ChatRoomSetting;
+import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomSettingRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
-import chungbazi.chungbazi_be.domain.user.repository.UserRepository;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class ChatRoomSettingService {
     private final ChatRoomSettingRepository chatRoomSettingRepository;
     private final UserHelper userHelper;
-    private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomService chatRoomService;
 
     public boolean getChatRoomSettingIsEnabled(Long userId, Long roomId) {
         ChatRoomSetting chatRoomSetting= chatRoomSettingRepository.findByUserIdAndChatRoomId(userId,roomId)
@@ -29,8 +28,7 @@ public class ChatRoomSettingService {
     public void setChatRoomSettingIsEnabled(Long chatRoomId, boolean enabled) {
         User user = userHelper.getAuthenticatedUser();
 
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
+        ChatRoom chatRoom = chatRoomService.getChatRoomById(chatRoomId);
 
         ChatRoomSetting chatRoomSetting= chatRoomSettingRepository.findByUserIdAndChatRoomId(user.getId(),chatRoomId)
                 .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOMSETTING));

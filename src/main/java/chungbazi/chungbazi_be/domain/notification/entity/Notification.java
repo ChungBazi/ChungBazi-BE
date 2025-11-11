@@ -8,7 +8,6 @@ import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
-import com.google.firebase.database.annotations.NotNull;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +26,7 @@ public class Notification extends BaseTimeEntity {
     private boolean isRead;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @Column(nullable = false)
     private NotificationType type;
 
     @Column(length = 1000)
@@ -65,4 +64,16 @@ public class Notification extends BaseTimeEntity {
         return TimeFormatter.formatCreatedAt(this.getCreatedAt());
     }
 
+    public Long getRelatedEntityId() {
+        switch (type) {
+            case POLICY_ALARM:
+                return policy != null ? policy.getId() : null;
+            case COMMUNITY_ALARM:
+                return post != null ? post.getId() : null;
+            case CHAT_ALARM:
+                return chat != null ? chat.getId() : null;
+            default:
+                return null;
+        }
+    }
 }

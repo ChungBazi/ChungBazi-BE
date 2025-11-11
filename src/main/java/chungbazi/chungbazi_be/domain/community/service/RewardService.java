@@ -5,9 +5,10 @@ import chungbazi.chungbazi_be.domain.character.entity.Character;
 import chungbazi.chungbazi_be.domain.community.entity.ContentStatus;
 import chungbazi.chungbazi_be.domain.community.repository.CommentRepository;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
+import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequest;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.repository.NotificationRepository;
-import chungbazi.chungbazi_be.domain.notification.service.FCMTokenService;
+import chungbazi.chungbazi_be.domain.notification.service.FCMService;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.entity.enums.RewardLevel;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class RewardService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
-    private final FCMTokenService fcmTokenService;
+    private final FCMService fcmService;
     private final NotificationService notificationService;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
@@ -59,7 +60,13 @@ public class RewardService {
         User user=userHelper.getAuthenticatedUser();
         String message = rewardLevel + "단계에 달성하여 캐릭터가 지급되었습니다.";
 
-        notificationService.sendNotification(user, NotificationType.REWARD_ALARM, message, null, null, null,null);
+        NotificationRequest request = NotificationRequest.builder()
+                .user(user)
+                .type(NotificationType.REWARD_ALARM)
+                .message(message)
+                .build();
+
+        notificationService.sendNotification(request);
     }
 
     public NextLevelInfo calNextLevelInfo(User user, Character character){

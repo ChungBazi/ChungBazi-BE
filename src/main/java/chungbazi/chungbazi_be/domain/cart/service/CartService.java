@@ -7,6 +7,7 @@ import chungbazi.chungbazi_be.domain.cart.dto.CartResponseDTO;
 import chungbazi.chungbazi_be.domain.cart.entity.Cart;
 import chungbazi.chungbazi_be.domain.cart.repository.CartRepository;
 import chungbazi.chungbazi_be.domain.document.repository.CalendarDocumentRepository;
+import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequest;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.policy.dto.PolicyCalendarResponse;
@@ -170,7 +171,15 @@ public class CartService {
         if (notificationDate.isAfter(LocalDate.now())) {
             taskScheduler.schedule(() -> {
                 String message = policy.getName() + "가 3일 뒤 마감됩니다!";
-                notificationService.sendNotification(user, NotificationType.POLICY_ALARM, message, null, policy,null,null);
+
+                NotificationRequest request = NotificationRequest.builder()
+                        .user(user)
+                        .type(NotificationType.POLICY_ALARM)
+                        .message(message)
+                        .policy(policy)
+                        .build();
+
+                notificationService.sendNotification(request);
             }, notificationDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         }
     }

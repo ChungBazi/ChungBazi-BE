@@ -1,7 +1,6 @@
 package chungbazi.chungbazi_be.domain.chat.entity;
 
 import chungbazi.chungbazi_be.domain.community.entity.Post;
-import chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
