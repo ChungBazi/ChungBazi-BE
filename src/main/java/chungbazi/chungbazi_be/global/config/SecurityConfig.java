@@ -1,5 +1,5 @@
 package chungbazi.chungbazi_be.global.config;
-;
+
 import chungbazi.chungbazi_be.domain.auth.exception.CustomAccessDeniedHandler;
 import chungbazi.chungbazi_be.domain.auth.exception.CustomAuthenticationEntryPoint;
 import chungbazi.chungbazi_be.domain.auth.exception.JwtExceptionFilter;
@@ -20,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -45,12 +47,8 @@ public class SecurityConfig {
                                 "/api/api-docs/**",
                                 "/api/swagger-ui/**",
                                 "/api/v3/api-docs/**"
-//                                "/auth/**",
-//                                "/user/**",
-//                                "/swagger-ui/**",
-//                                "/v3/api-docs/**"
                         ).permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
@@ -71,9 +69,10 @@ public class SecurityConfig {
 
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("*"); // 모든 도메인 허용
-        configuration.addAllowedMethod("*");       // 모든 HTTP 메서드 허용
-        configuration.addAllowedHeader("*");       // 모든 헤더 허용
+        configuration.setAllowedOrigins(List.of(
+                "https://chungbazi.shop"
+        ));        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(true);   // 자격 증명 허용
         configuration.addExposedHeader("Authorization"); // 노출할 헤더 추가
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
