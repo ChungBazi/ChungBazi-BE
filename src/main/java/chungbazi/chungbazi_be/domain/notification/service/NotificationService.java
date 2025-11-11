@@ -1,7 +1,5 @@
 package chungbazi.chungbazi_be.domain.notification.service;
 
-import chungbazi.chungbazi_be.domain.auth.jwt.SecurityUtils;
-import chungbazi.chungbazi_be.domain.notification.converter.NotificationConverter;
 import chungbazi.chungbazi_be.domain.notification.converter.NotificationFactory;
 import chungbazi.chungbazi_be.domain.notification.dto.*;
 import chungbazi.chungbazi_be.domain.notification.entity.Notification;
@@ -20,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j

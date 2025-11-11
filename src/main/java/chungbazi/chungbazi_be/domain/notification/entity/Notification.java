@@ -8,7 +8,6 @@ import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.policy.entity.Policy;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.global.entity.BaseTimeEntity;
-import com.google.firebase.database.annotations.NotNull;
 import jakarta.persistence.*;
 import lombok.*;
 

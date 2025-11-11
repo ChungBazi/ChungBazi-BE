@@ -1,15 +1,12 @@
 package chungbazi.chungbazi_be.domain.notification.repository;
 
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
-import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.QNotification;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
-import com.google.api.gax.paging.Page;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

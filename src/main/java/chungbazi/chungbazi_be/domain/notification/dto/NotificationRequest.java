@@ -15,8 +15,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static chungbazi.chungbazi_be.domain.policy.entity.QPolicy.policy;
-
 @Getter
 @Builder
 @NoArgsConstructor

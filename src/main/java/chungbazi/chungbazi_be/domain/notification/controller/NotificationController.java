@@ -1,6 +1,5 @@
 package chungbazi.chungbazi_be.domain.notification.controller;
 
-import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequestDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationResponseDTO;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingReqDto;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingResDto;
@@ -8,7 +7,6 @@ import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationSettingService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
-import chungbazi.chungbazi_be.global.apiPayload.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
