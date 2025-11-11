@@ -46,9 +46,10 @@ public class SecurityConfig {
                                 "/api/user/**",
                                 "/api/api-docs/**",
                                 "/api/swagger-ui/**",
-                                "/api/v3/api-docs/**"
+                                "/api/v3/api-docs/**",
+                                "/api/health-check"
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
