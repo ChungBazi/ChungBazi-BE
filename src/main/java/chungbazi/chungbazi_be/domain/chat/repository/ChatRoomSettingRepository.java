@@ -1,6 +1,6 @@
-package chungbazi.chungbazi_be.domain.notification.repository;
+package chungbazi.chungbazi_be.domain.chat.repository;
 
-import chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting;
+import chungbazi.chungbazi_be.domain.chat.entity.ChatRoomSetting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

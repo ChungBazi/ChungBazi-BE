@@ -2,8 +2,8 @@ package chungbazi.chungbazi_be.domain.notification.service;
 
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.service.ChatRoomService;
-import chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting;
-import chungbazi.chungbazi_be.domain.notification.repository.ChatRoomSettingRepository;
+import chungbazi.chungbazi_be.domain.chat.entity.ChatRoomSetting;
+import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomSettingRepository;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;

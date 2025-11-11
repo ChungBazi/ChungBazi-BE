@@ -2,6 +2,7 @@ package chungbazi.chungbazi_be.domain.notification.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import chungbazi.chungbazi_be.domain.chat.entity.ChatRoomSetting;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;

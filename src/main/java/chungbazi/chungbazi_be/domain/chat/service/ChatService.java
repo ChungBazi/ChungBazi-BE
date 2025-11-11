@@ -10,7 +10,7 @@ import chungbazi.chungbazi_be.domain.chat.repository.MessageRepository.MessageRe
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequest;
-import chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting;
+import chungbazi.chungbazi_be.domain.chat.entity.ChatRoomSetting;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.ChatRoomSettingService;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
