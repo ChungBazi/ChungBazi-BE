@@ -24,7 +24,7 @@ public class QChatRoom extends EntityPathBase<ChatRoom> {
 
     public final chungbazi.chungbazi_be.global.entity.QBaseTimeEntity _super = new chungbazi.chungbazi_be.global.entity.QBaseTimeEntity(this);
 
-    public final ListPath<ChatRoomSetting, chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting> chatRoomSettings = this.<ChatRoomSetting, chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting>createList("chatRoomSettings", ChatRoomSetting.class, chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting.class, PathInits.DIRECT2);
+    public final ListPath<ChatRoomSetting, QChatRoomSetting> chatRoomSettings = this.<ChatRoomSetting, QChatRoomSetting>createList("chatRoomSettings", ChatRoomSetting.class, QChatRoomSetting.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;

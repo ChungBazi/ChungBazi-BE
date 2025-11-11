@@ -2,7 +2,7 @@ package chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository;
 
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.entity.QChatRoom;
-import chungbazi.chungbazi_be.domain.notification.entity.QChatRoomSetting;
+import chungbazi.chungbazi_be.domain.chat.entity.QChatRoomSetting;
 import chungbazi.chungbazi_be.domain.user.entity.QUserBlock;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;

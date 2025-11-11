@@ -1,8 +1,7 @@
-package chungbazi.chungbazi_be.domain.notification.entity;
+package chungbazi.chungbazi_be.domain.chat.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import chungbazi.chungbazi_be.domain.chat.entity.ChatRoomSetting;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -17,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QChatRoomSetting extends EntityPathBase<ChatRoomSetting> {
 
-    private static final long serialVersionUID = 595988759L;
+    private static final long serialVersionUID = -941744630L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -25,7 +24,7 @@ public class QChatRoomSetting extends EntityPathBase<ChatRoomSetting> {
 
     public final chungbazi.chungbazi_be.global.entity.QBaseTimeEntity _super = new chungbazi.chungbazi_be.global.entity.QBaseTimeEntity(this);
 
-    public final chungbazi.chungbazi_be.domain.chat.entity.QChatRoom chatRoom;
+    public final QChatRoom chatRoom;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -57,7 +56,7 @@ public class QChatRoomSetting extends EntityPathBase<ChatRoomSetting> {
 
     public QChatRoomSetting(Class<? extends ChatRoomSetting> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.chatRoom = inits.isInitialized("chatRoom") ? new chungbazi.chungbazi_be.domain.chat.entity.QChatRoom(forProperty("chatRoom"), inits.get("chatRoom")) : null;
+        this.chatRoom = inits.isInitialized("chatRoom") ? new QChatRoom(forProperty("chatRoom"), inits.get("chatRoom")) : null;
         this.user = inits.isInitialized("user") ? new chungbazi.chungbazi_be.domain.user.entity.QUser(forProperty("user"), inits.get("user")) : null;
     }
 

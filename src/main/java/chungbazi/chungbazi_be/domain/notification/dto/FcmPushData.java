@@ -4,7 +4,7 @@ import chungbazi.chungbazi_be.domain.notification.entity.Notification;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import lombok.Getter;
 
-@Getter
+
 public record FcmPushData(String message, NotificationType type, Long policyId, Long postId, Long chatId,
                           Long commentId) {
     public static FcmPushData from(Notification notification) {
