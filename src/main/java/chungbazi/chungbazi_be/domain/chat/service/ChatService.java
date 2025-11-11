@@ -9,6 +9,7 @@ import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository.ChatRoom
 import chungbazi.chungbazi_be.domain.chat.repository.MessageRepository.MessageRepository;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
+import chungbazi.chungbazi_be.domain.notification.dto.NotificationRequest;
 import chungbazi.chungbazi_be.domain.notification.entity.ChatRoomSetting;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.ChatRoomSettingService;
@@ -118,7 +119,15 @@ public class ChatService {
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
         if(chatRoomSettingService.getChatRoomSettingIsEnabled(receiverId,chat.getChatRoom().getId())){
             String message = chat.getSender().getName() + "님이 쪽지를 보내셨습니다.";
-            notificationService.sendNotification(receiver, NotificationType.CHAT_ALARM,message,null,null,chat,null);
+
+            NotificationRequest request = NotificationRequest.builder()
+                    .user(receiver)
+                    .type(NotificationType.CHAT_ALARM)
+                    .message(message)
+                    .chat(chat)
+                    .build();
+
+            notificationService.sendNotification(request);
         }
     }
 

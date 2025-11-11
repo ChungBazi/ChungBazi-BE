@@ -6,6 +6,7 @@ import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingReqDto;
 import chungbazi.chungbazi_be.domain.notification.dto.NotificationSettingResDto;
 import chungbazi.chungbazi_be.domain.notification.entity.enums.NotificationType;
 import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
+import chungbazi.chungbazi_be.domain.notification.service.NotificationSettingService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/notifications")
 public class NotificationController {
     private final NotificationService notificationService;
+    private final NotificationSettingService notificationSettingService;
 
     @PatchMapping("/{notificationId}/read")
     @Operation(summary = "특정 알림 읽음 상태 변경 API")
@@ -49,14 +51,14 @@ public class NotificationController {
     public ApiResponse<NotificationSettingResDto.settingResDto> updateNotificationSetting(
             @RequestBody NotificationSettingReqDto request
     ) {
-        NotificationSettingResDto.settingResDto response=notificationService.setNotificationSetting(request);
+        NotificationSettingResDto.settingResDto response=notificationSettingService.setNotificationSetting(request);
         return ApiResponse.onSuccess(response);
     }
 
     @GetMapping("/settings")
     @Operation(summary = "알림 수신 설정 조회 api",description = "현재 유저의 알림 수신 설정을 조회하는 API입니다")
     public ApiResponse<NotificationSettingResDto.settingResDto> getNotificationSetting() {
-        NotificationSettingResDto.settingResDto response=notificationService.getNotificationSetting();
+        NotificationSettingResDto.settingResDto response=notificationSettingService.getNotificationSetting();
         return ApiResponse.onSuccess(response);
     }
 

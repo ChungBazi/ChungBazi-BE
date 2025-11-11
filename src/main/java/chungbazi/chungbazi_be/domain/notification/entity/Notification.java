@@ -27,7 +27,7 @@ public class Notification extends BaseTimeEntity {
     private boolean isRead;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @Column(nullable = false)
     private NotificationType type;
 
     @Column(length = 1000)
@@ -65,4 +65,16 @@ public class Notification extends BaseTimeEntity {
         return TimeFormatter.formatCreatedAt(this.getCreatedAt());
     }
 
+    public Long getRelatedEntityId() {
+        switch (type) {
+            case POLICY_ALARM:
+                return policy != null ? policy.getId() : null;
+            case COMMUNITY_ALARM:
+                return post != null ? post.getId() : null;
+            case CHAT_ALARM:
+                return chat != null ? chat.getId() : null;
+            default:
+                return null;
+        }
+    }
 }

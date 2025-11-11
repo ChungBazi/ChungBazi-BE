@@ -13,11 +13,11 @@ jobs:
 
     steps:
       # 저장소 코드 체크아웃
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # JDK 17 설정
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
           java-version: '17'
@@ -62,7 +62,7 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKER_REPO }}:$IMAGE_TAG
             cd /root
-            docker compose down --remove-orphans -v || true
+            docker compose down --remove-orphans || true
             IMAGE_TAG=$IMAGE_TAG docker compose up -d --force-recreate
             sudo docker image prune -f
       # jar 파일명 확인
