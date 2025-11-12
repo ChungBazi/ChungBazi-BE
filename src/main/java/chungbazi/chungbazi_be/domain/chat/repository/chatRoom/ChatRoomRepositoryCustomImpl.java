@@ -1,4 +1,4 @@
-package chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository;
+package chungbazi.chungbazi_be.domain.chat.repository.chatRoom;
 
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.entity.QChatRoom;

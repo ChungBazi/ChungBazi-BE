@@ -158,6 +158,10 @@ public class TokenRequestDTO {
         private String authCode;
 
         @NotBlank
+        @Pattern(
+                regexp = RegexConstants.EMAIL_REGEX,
+                message = "유효한 이메일 주소여야 합니다."
+        )
         @Schema(example = "이메일")
         private String email;
     }

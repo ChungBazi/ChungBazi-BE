@@ -26,6 +26,7 @@ public class ChatRoom extends BaseTimeEntity {
     private boolean isActive = true;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Message> messages = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)

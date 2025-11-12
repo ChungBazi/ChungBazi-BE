@@ -5,7 +5,7 @@ import chungbazi.chungbazi_be.domain.chat.dto.ChatRequestDTO;
 import chungbazi.chungbazi_be.domain.chat.dto.ChatResponseDTO;
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.entity.Message;
-import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository.ChatRoomRepository;
+import chungbazi.chungbazi_be.domain.chat.repository.chatRoom.ChatRoomRepository;
 import chungbazi.chungbazi_be.domain.chat.repository.MessageRepository.MessageRepository;
 import chungbazi.chungbazi_be.domain.community.entity.Post;
 import chungbazi.chungbazi_be.domain.community.repository.PostRepository;
@@ -75,7 +75,7 @@ public class ChatService {
     }
 
     @Transactional
-    public ChatResponseDTO.messageResponse sendMessage(Long chatRoomId,ChatRequestDTO.messagedto dto){
+    public ChatResponseDTO.messageResponse sendMessage(Long chatRoomId, ChatRequestDTO.MessageDto dto){
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
 
