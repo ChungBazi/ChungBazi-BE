@@ -73,6 +73,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_SUCH_ALGORITHM(HttpStatus.BAD_REQUEST,"TOKEN4022","인증 코드 생성 중 문제가 발생했습니다."),
     INVALID_AUTHCODE(HttpStatus.BAD_REQUEST,"TOKEN4023","인증코드가 불일치 합니다."),
     UNABLE_TO_READ_EMAIL_TEMPLATE(HttpStatus.BAD_REQUEST,"TOKEN4024","이메일 템플릿을 읽어올 수 없습니다."),
+    ACCOUNT_LOCKED(HttpStatus.FORBIDDEN,"AUTH4025" ,"계정 접근이 금지되었습니다." ),
 
 
     //s3 관련 에러

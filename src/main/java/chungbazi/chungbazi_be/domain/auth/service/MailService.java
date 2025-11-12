@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,12 @@ import java.util.Random;
 @Transactional
 @RequiredArgsConstructor
 public class MailService {
+
+    private static final String AUTH_ATTEMPT_PREFIX = "auth:attempt:";
+    private static final int MAX_ATTEMPTS = 5;
+    private static final Duration ATTEMPT_TTL = Duration.ofMinutes(30);
+
+    private final RedisTemplate<String, String> redisTemplate;
 
     private static final String AUTH_CODE_PREFIX = "AuthCode ";
     private static final long authCodeExpirationMillis = 1000 * 60 * 30;
@@ -149,14 +156,25 @@ public class MailService {
     }
 
     public void verifiedCode(String dtoEmail, String authCode) {
-        //User user = userHelper.getAuthenticatedUser();
         String email = dtoEmail;
+
+        String key = AUTH_ATTEMPT_PREFIX + email;
+
+        Integer attempts = redisTemplate.opsForValue().get(key) != null ?
+                Integer.parseInt(redisTemplate.opsForValue().get(key)) : 0;
+
+        if (attempts >= MAX_ATTEMPTS) {
+            throw new BadRequestHandler(ErrorStatus.ACCOUNT_LOCKED);
+        }
+
         String redisAuthCode = tokenAuthService.getAuthCode(AUTH_CODE_PREFIX + email);
-        boolean authResult = tokenAuthService.checkExistsAuthCode(redisAuthCode)
-                && redisAuthCode.equals(authCode);
+        boolean authResult = redisAuthCode != null && redisAuthCode.equals(authCode);
 
         if (!authResult) {
+            redisTemplate.opsForValue().set(key, String.valueOf(attempts + 1), ATTEMPT_TTL);
             throw new BadRequestHandler(ErrorStatus.INVALID_AUTHCODE);
         }
+
+        redisTemplate.delete(key);
     }
 }

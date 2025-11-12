@@ -79,13 +79,17 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
 
-        User sender = userRepository.findById(dto.getSenderId())
-                .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+        User sender = userHelper.getAuthenticatedUser();
 
         if (!chatRoom.isParticipant(sender)) {
             throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
         }
-        if (userBlockRepository.existsBlockBetweenUsers(dto.getSenderId(), dto.getReceiverId())){
+
+        if (!getOtherUser(chatRoom, sender).getId().equals(dto.getReceiverId())) {
+            throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
+        }
+
+        if (userBlockRepository.existsBlockBetweenUsers(sender.getId(), dto.getReceiverId())){
             throw new GeneralException(ErrorStatus.BLOCKED_CHATROOM);
         }
 
@@ -108,6 +112,7 @@ public class ChatService {
                 .content(dto.getContent())
                 .isRead(message.isRead())
                 .build();
+
         simpMessagingTemplate.convertAndSend("/topic/chat.room." + chatRoomId, response);
 
         return response;
@@ -176,7 +181,7 @@ public class ChatService {
         if (updatedCount>0){
             User receiver = getOtherUser(chatRoom,currentUser);
 
-            simpMessagingTemplate.convertAndSend(
+            simpMessagingTemplate.convertAndSendToUser(
                     receiver.getId().toString(),
                     "/queue/message-read",
                     Map.of("chatRoomId",chatRoom.getId(),"readCount",updatedCount));
@@ -187,17 +192,18 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(charRoomId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM));
 
-        User receiver = getOtherUser(chatRoom,userHelper.getAuthenticatedUser());
+        User currentUser = userHelper.getAuthenticatedUser();
 
-        if (chatRoom.isParticipant(receiver)){
+        if (!chatRoom.isParticipant(currentUser)){
             throw new GeneralException(ErrorStatus.ACCESS_DENIED_CHATROOM);
         }
 
         chatRoom.setIsActive(false);
         chatRoomRepository.save(chatRoom);
 
+        User receiver = getOtherUser(chatRoom,userHelper.getAuthenticatedUser());
 
-        simpMessagingTemplate.convertAndSend(
+        simpMessagingTemplate.convertAndSendToUser(
                 receiver.getId().toString(),
                 "/queue/chat-room-left",
                 Map.of("chatRoomId",charRoomId,"message", "상대방이 채팅방을 나갔습니다")
