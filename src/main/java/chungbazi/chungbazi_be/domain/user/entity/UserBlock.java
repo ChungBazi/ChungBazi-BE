@@ -26,7 +26,7 @@ public class UserBlock extends BaseTimeEntity {
     @JoinColumn(name = "blocked_id", nullable = false)
     private User blocked;
 
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     @Builder.Default
     private boolean isActive = true;
 

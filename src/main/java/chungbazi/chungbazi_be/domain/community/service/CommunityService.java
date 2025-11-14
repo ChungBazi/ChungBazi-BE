@@ -138,7 +138,7 @@ public class CommunityService {
         if(!post.getAuthor().getId().equals(user.getId())){
             post.incrementViews(); // 조회수 증가
         }
-        Long commentCount = commentRepository.countByPostIdAndStatusAndAuthorIdNotInAndIdNotIn(postId,ContentStatus.VISIBLE,blockedUserIds,reportedCommentIds);
+        Long commentCount = commentRepository.countCommentsWithFilters(postId,ContentStatus.VISIBLE,blockedUserIds,reportedCommentIds);
 
         boolean isMine = post.getAuthor().equals(user);
         boolean isLikedByUser = heartRepository.existsByUserAndPost(user, post);
@@ -208,11 +208,8 @@ public class CommunityService {
         }
 
         List<Comment> comments;
-        if (cursor == 0) {
-            comments = commentRepository.findByStatusAndAuthorIdNotInAndIdNotInAndPostIdOrderByIdAsc(ContentStatus.VISIBLE,blockedUserIds,reportedCommentIds,postId, pageable).getContent();
-        } else {
-            comments = commentRepository.findByStatusAndAuthorIdNotInAndIdNotInAndPostIdAndIdGreaterThanOrderByIdAsc(ContentStatus.VISIBLE,blockedUserIds,reportedCommentIds,postId, cursor, pageable).getContent();
-        }
+
+        comments = commentRepository.findCommentsWithFilters(ContentStatus.VISIBLE,blockedUserIds,reportedCommentIds,postId, cursor, pageable).getContent();
 
         PaginationResult<Comment> paginationResult = PaginationUtil.paginate(comments, size);
         comments = paginationResult.getItems();
