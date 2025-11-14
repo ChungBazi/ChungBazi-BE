@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -100,24 +102,34 @@ public class YouthPolicyResponse {
 
     @JsonSetter("bizPrdBgngYmd")
     public void setBizPrdBgngYmd(String bizPrdBgngYmd) {
-        this.bizPrdBgngYmd = bizPrdBgngYmd;
-        if (isValidDate(bizPrdBgngYmd)) {
+        LocalDate parsedStart = parseDate(bizPrdEndYmd);
+        if (parsedStart != null) {
             this.startDate = LocalDate.parse(bizPrdBgngYmd, FORMATTER);
         }
     }
 
     @JsonSetter("bizPrdEndYmd")
     public void setBizPrdEndYmd(String bizPrdEndYmd) {
-        this.bizPrdEndYmd = bizPrdEndYmd;
-        if (isValidDate(bizPrdEndYmd)) {
+        LocalDate parsedEnd = parseDate(bizPrdEndYmd);
+        if (parsedEnd != null) {
             this.endDate = LocalDate.parse(bizPrdEndYmd, FORMATTER);
         }
     }
 
-    private boolean isValidDate(String value) {
-        return value != null &&
-                !value.trim().isEmpty() &&
-                !value.trim().equals("        ");
+    private LocalDate parseDate(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty() || value.trim().equals("        ")) {
+            return null;
+        }
+
+        try {
+             return LocalDate.parse(trimmed, FORMATTER);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
 
