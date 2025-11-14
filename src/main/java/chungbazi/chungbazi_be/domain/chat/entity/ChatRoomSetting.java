@@ -10,6 +10,12 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(
+        name = "chat_room_setting",
+        indexes = {
+                @Index(name = "idx_user_id_chat_room_id", columnList = "user_id, chat_room_id")
+        }
+)
 public class ChatRoomSetting extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
