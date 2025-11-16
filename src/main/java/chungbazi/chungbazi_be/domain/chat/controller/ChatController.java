@@ -23,8 +23,8 @@ public class ChatController {
 
     @PostMapping("/chat/{postId}/create-room")
     @Operation(summary = "채팅방 생성 API", description = "채팅방을 생성하는 API입니다.")
-    public ChatResponseDTO.createChatRoomResponse createChatRoom(@PathVariable Long postId){
-        return chatService.createChatRoom(postId);
+    public ChatResponseDTO.createChatRoomResponse createChatRoom(@PathVariable Long postId, @RequestParam Long receiverId){
+        return chatService.createChatRoom(postId,receiverId);
     }
 
     @MessageMapping("/chat.message.{chatRoomId}")

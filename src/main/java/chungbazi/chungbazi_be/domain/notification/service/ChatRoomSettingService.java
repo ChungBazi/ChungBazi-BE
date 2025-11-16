@@ -20,7 +20,7 @@ public class ChatRoomSettingService {
 
     public boolean getChatRoomSettingIsEnabled(Long userId, Long roomId) {
         ChatRoomSetting chatRoomSetting= chatRoomSettingRepository.findByUserIdAndChatRoomId(userId,roomId)
-                .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOMSETTING));
+                .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM_SETTING));
 
         return chatRoomSetting.isEnabled();
     }
@@ -31,7 +31,7 @@ public class ChatRoomSettingService {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(chatRoomId);
 
         ChatRoomSetting chatRoomSetting= chatRoomSettingRepository.findByUserIdAndChatRoomId(user.getId(),chatRoomId)
-                .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOMSETTING));
+                .orElseThrow(()->new NotFoundHandler(ErrorStatus.NOT_FOUND_CHATROOM_SETTING));
 
         chatRoomSetting.updateChatNotification(enabled);
         chatRoomSettingRepository.save(chatRoomSetting);

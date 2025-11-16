@@ -21,6 +21,7 @@ import chungbazi.chungbazi_be.domain.user.service.UserBlockService;
 import chungbazi.chungbazi_be.domain.user.utils.UserHelper;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.GeneralException;
+import chungbazi.chungbazi_be.global.apiPayload.exception.handler.BadRequestHandler;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import chungbazi.chungbazi_be.global.utils.PaginationResult;
 import chungbazi.chungbazi_be.global.utils.PaginationUtil;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,19 +50,25 @@ public class ChatService {
     private final ChatRoomSettingService chatRoomSettingService;
 
     @Transactional
-    public ChatResponseDTO.createChatRoomResponse createChatRoom(Long postId){
+    public ChatResponseDTO.createChatRoomResponse createChatRoom(Long postId, Long receiverId){
         User sender = userHelper.getAuthenticatedUser();
+
+        User receiver = userRepository.findById(receiverId)
+                .orElseThrow(()-> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_POST));
+
+        if (sender.getId().equals(receiverId)){
+            throw new BadRequestHandler(ErrorStatus.CAN_NOT_CHATTING_MYSELF);
+        }
 
         ChatRoom chatRoom=ChatRoom.builder()
                 .post(post)
                 .isActive(true)
                 .build();
 
-        //chatRoomRepository.save(chatRoom);
-
-        List<User> participants = List.of(sender, post.getAuthor());
+        List<User> participants = List.of(sender, receiver);
         participants.forEach(user -> {
             ChatRoomSetting setting = ChatRoomSetting.builder()
                     .user(user)
@@ -151,9 +159,11 @@ public class ChatService {
 
         boolean chatRoomIsEnabled= chatRoomSettingService.getChatRoomSettingIsEnabled(currentUser.getId(), chatRoom.getId());
 
+
         if (userBlockRepository.existsBlockBetweenUsers(currentUser.getId(), other.getId())){
             throw new GeneralException(ErrorStatus.BLOCKED_CHATROOM);
         }
+
 
         markMessagesAsRead(chatRoom,currentUser);
 
