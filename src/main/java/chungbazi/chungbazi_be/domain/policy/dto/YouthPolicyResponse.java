@@ -102,9 +102,9 @@ public class YouthPolicyResponse {
 
     @JsonSetter("bizPrdBgngYmd")
     public void setBizPrdBgngYmd(String bizPrdBgngYmd) {
-        LocalDate parsedStart = parseDate(bizPrdEndYmd);
+        LocalDate parsedStart = parseDate(bizPrdBgngYmd);
         if (parsedStart != null) {
-            this.startDate = LocalDate.parse(bizPrdBgngYmd, FORMATTER);
+            this.startDate = parsedStart;
         }
     }
 
@@ -112,7 +112,7 @@ public class YouthPolicyResponse {
     public void setBizPrdEndYmd(String bizPrdEndYmd) {
         LocalDate parsedEnd = parseDate(bizPrdEndYmd);
         if (parsedEnd != null) {
-            this.endDate = LocalDate.parse(bizPrdEndYmd, FORMATTER);
+            this.endDate = parsedEnd;
         }
     }
 

@@ -8,14 +8,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-//@Table(
-//        name = "report",
-//        indexes = {
-//                @Index(name = "idx_report_reporter_type_target", columnList = "reporter_id, report_type, target_id"),
-//                @Index(name = "idx_report_reporter_type",       columnList = "reporter_id, report_type"),
-//                @Index(name = "idx_report_target_type",          columnList = "target_id, report_type")
-//        }
-//) 추후에 데이터 많아지면 반영
+@Table(
+        name = "report",
+        indexes = {
+                @Index(name = "idx_report_reporter_type_target", columnList = "reporter_id, report_type, target_id"),
+                @Index(name = "idx_report_reporter_type",       columnList = "reporter_id, report_type"),
+                @Index(name = "idx_report_target_type",          columnList = "target_id, report_type")
+        }
+)
 @Getter
 @Builder
 @AllArgsConstructor
@@ -28,6 +28,7 @@ public class Report extends BaseTimeEntity {
     private ReportReason reportReason;
 
     @Enumerated(EnumType.STRING)
+    @Column(name="report_type")
     private ReportType reportType;
 
     @Column(length = 200)
