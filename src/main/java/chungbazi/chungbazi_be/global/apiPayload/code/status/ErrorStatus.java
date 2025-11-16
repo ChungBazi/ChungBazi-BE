@@ -73,6 +73,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_SUCH_ALGORITHM(HttpStatus.BAD_REQUEST,"TOKEN4022","인증 코드 생성 중 문제가 발생했습니다."),
     INVALID_AUTHCODE(HttpStatus.BAD_REQUEST,"TOKEN4023","인증코드가 불일치 합니다."),
     UNABLE_TO_READ_EMAIL_TEMPLATE(HttpStatus.BAD_REQUEST,"TOKEN4024","이메일 템플릿을 읽어올 수 없습니다."),
+    ACCOUNT_LOCKED(HttpStatus.FORBIDDEN,"AUTH4025" ,"계정 접근이 금지되었습니다." ),
 
 
     //s3 관련 에러
@@ -106,6 +107,11 @@ public enum ErrorStatus implements BaseErrorCode {
     ALREADY_REPORT(HttpStatus.BAD_REQUEST,"REPORT6001","이미 신고한 id입니다."),
     UNABLE_REPORT_MYSELF(HttpStatus.BAD_REQUEST,"REPORT6002","자기 자신을 신고할 수 없습니다"),
     DESCRIPTION_REQUIRED(HttpStatus.BAD_REQUEST,"REPORT6003","신고 옵션이 기타인 경우, 사유를 필수로 추가해주셔야합니다."),
+
+    //챗봇 관련 에러
+    OPENAI_API_ERROR(HttpStatus.BAD_GATEWAY, "OPENAI4001", "OpenAI API 호출 중 오류가 발생했습니다."),
+    OPENAI_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "OPENAI4002", "OpenAI API 응답이 지연되었습니다."),
+    OPENAI_INVALID_RESPONSE(HttpStatus.INTERNAL_SERVER_ERROR, "OPENAI4003", "OpenAI API 응답 포맷이 올바르지 않습니다."),
     ;
 
 

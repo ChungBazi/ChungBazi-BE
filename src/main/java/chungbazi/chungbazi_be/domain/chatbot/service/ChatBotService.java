@@ -53,7 +53,8 @@ public class ChatBotService {
             return ChatBotConverter.toChatDto("죄송해요, 정책과 관련된 질문을 해주세요.");
         }
         String systemPrompt = "당신은 청년 정책을 설명해주는 챗봇입니다."; // 프롬프트 정적 지정
-        String answer = chatGptClient.askChatGpt(userMessage, systemPrompt);
+        String answer = chatGptClient.askChatGpt(userMessage, systemPrompt)
+                .block();
         return ChatBotConverter.toChatDto(answer);
     }
 

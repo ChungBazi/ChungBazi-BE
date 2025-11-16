@@ -24,7 +24,7 @@ public class CommunityConverter {
     }
     public static List<CommunityResponseDTO.PostListDto> toPostListDto(List<Post> posts, CommentRepository commentRepository, HeartRepository heartRepository, List<Long> blockedUserIds, List<Long> reportedCommentIds, User user) {
         return posts.stream().map(post ->{
-            Long commentCount = commentRepository.countByPostIdAndStatusAndAuthorIdNotInAndIdNotIn(post.getId(), ContentStatus.VISIBLE, blockedUserIds,reportedCommentIds);
+            Long commentCount = commentRepository.countCommentsWithFilters(post.getId(), ContentStatus.VISIBLE, blockedUserIds,reportedCommentIds);
             boolean isMine = false;
             boolean isLikedByUser = heartRepository.existsByUserAndPost(user, post);
             if (user.getId() != null && post.getAuthor() != null) {

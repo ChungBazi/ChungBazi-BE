@@ -56,7 +56,6 @@ public class PolicyService {
 
     private final WebClient webclient;
     private final PolicyRepository policyRepository;
-    private final RedisTemplate<String, String> redisTemplate;
     private final CartService cartService;
     private final CalendarDocumentService calendarDocumentService;
     private final PopularSearch popularSearch;
@@ -119,16 +118,20 @@ public class PolicyService {
                         validPolicies.add(policy);
                     }
 
+                    // 마지막 정책 마감날짜
+                    YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
+                            .get(policies.getResult().getYouthPolicyList().size() - 1);
+
                     if (validPolicies.isEmpty()) {
-                        log.info("✅ 유효한 정책이 없어서 종료 (pageIndex={})", pageIndex);
-                        break;
+                        if (!isDateAvail(lastPolicy, twoMonthAgo)) {
+                            log.info("✅ 유효한 정책이 없어서 종료 (pageIndex={})", pageIndex);
+                            break;
+                        }
+                        pageIndex++;
+                        continue;
                     }
 
                     savePolicies(validPolicies);
-
-                    // 마지막 정책 마감날짜
-                    YouthPolicyResponse lastPolicy = policies.getResult().getYouthPolicyList()
-                        .get(policies.getResult().getYouthPolicyList().size() - 1);
 
                     if (!isDateAvail(lastPolicy, twoMonthAgo)) {
                         log.info("✅ 마지막 정책의 유효기간이 지남 → 루프 종료 (pageIndex={})", pageIndex);

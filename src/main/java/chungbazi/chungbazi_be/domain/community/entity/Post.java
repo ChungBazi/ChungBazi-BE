@@ -75,7 +75,8 @@ public class Post extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ContentStatus status;
+    @Builder.Default
+    private ContentStatus status = ContentStatus.VISIBLE;
 
     @Builder.Default
     @Column(columnDefinition = "integer default 0")
@@ -90,7 +91,9 @@ public class Post extends BaseTimeEntity {
     }
 
     public void decreaseReportCount() {
-        this.reportCount--;
+        if (this.reportCount > 0) {
+            this.reportCount--;
+        }
     }
 
     public void deleteByAdmin(ReportReason reason) {

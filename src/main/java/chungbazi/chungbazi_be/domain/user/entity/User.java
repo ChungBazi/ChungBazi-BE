@@ -37,7 +37,7 @@ public class User {
     private Long id;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = false, unique = true)
@@ -109,14 +109,17 @@ public class User {
     private NotificationSetting notificationSetting;
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
+    @Builder.Default
     private List<ChatRoomSetting> chatRoomSettings = new ArrayList<>();
 
     //채팅 관련
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Message> messages= new ArrayList<>();
 
     //신고 관련
     @Column(columnDefinition = "integer default 0")
+    @Builder.Default
     private Integer reportCount = 0;
 
     @Column(columnDefinition = "boolean default false")
@@ -126,6 +129,9 @@ public class User {
 
     //신고 횟수 증가
     public void increaseReportCount() {
+        if (this.reportCount == null) {
+            this.reportCount = 0;
+        }
         this.reportCount++;
     }
 

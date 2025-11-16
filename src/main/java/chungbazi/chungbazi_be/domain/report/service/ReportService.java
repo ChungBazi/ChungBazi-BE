@@ -102,7 +102,8 @@ public class ReportService {
                 break;
 
             case USER:
-                User user = userHelper.getAuthenticatedUser();
+                User user = userRepository.findById(targetId)
+                        .orElseThrow(() -> new NotFoundHandler(ErrorStatus.NOT_FOUND_USER));
 
                 if (user.equals(reporter)) {
                     throw new GeneralException(ErrorStatus.UNABLE_REPORT_MYSELF);
