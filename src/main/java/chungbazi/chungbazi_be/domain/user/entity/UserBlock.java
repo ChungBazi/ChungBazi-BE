@@ -9,6 +9,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(indexes = {
+        @Index(name = "idx_blocker_id_is_active", columnList = "blocker_id,is_active")
+})
 public class UserBlock extends BaseTimeEntity {
 
     @Id
@@ -23,7 +26,7 @@ public class UserBlock extends BaseTimeEntity {
     @JoinColumn(name = "blocked_id", nullable = false)
     private User blocked;
 
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     @Builder.Default
     private boolean isActive = true;
 

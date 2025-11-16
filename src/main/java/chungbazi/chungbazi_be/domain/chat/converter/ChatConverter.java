@@ -5,8 +5,6 @@ import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.entity.Message;
 import chungbazi.chungbazi_be.domain.user.entity.User;
 
-import java.util.Optional;
-
 public class ChatConverter {
 
     public static ChatResponseDTO.createChatRoomResponse toChatRoomDTO(ChatRoom chatRoom,Long senderId, Long authorId) {
@@ -32,7 +30,7 @@ public class ChatConverter {
     public static ChatResponseDTO.chatRoomListResponse toChatRoomListResponse(ChatRoom chatRoom, Message lastMessage, User receiver) {
         return ChatResponseDTO.chatRoomListResponse.builder()
                 .chatRoomId(chatRoom.getId())
-                .postTile(chatRoom.getPost().getTitle())
+                .postTitle(chatRoom.getPost().getTitle())
                 .lastMessage(lastMessage != null ? lastMessage.getContent() : "")
                 .lastMessageTime(lastMessage != null ? lastMessage.getCreatedAt() : null)
                 .receiverName(receiver.getName())

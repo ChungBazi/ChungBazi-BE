@@ -2,25 +2,17 @@ package chungbazi.chungbazi_be.domain.chat.controller;
 
 import chungbazi.chungbazi_be.domain.chat.dto.ChatRequestDTO;
 import chungbazi.chungbazi_be.domain.chat.dto.ChatResponseDTO;
-import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
 import chungbazi.chungbazi_be.domain.chat.service.ChatService;
 import chungbazi.chungbazi_be.domain.notification.service.ChatRoomSettingService;
-import chungbazi.chungbazi_be.domain.notification.service.NotificationService;
 import chungbazi.chungbazi_be.global.apiPayload.ApiResponse;
-import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
-import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-
-import static chungbazi.chungbazi_be.domain.chat.entity.QChatRoom.chatRoom;
 
 @Slf4j
 @RestController
@@ -36,7 +28,7 @@ public class ChatController {
     }
 
     @MessageMapping("/chat.message.{chatRoomId}")
-    public void sendMessage(@DestinationVariable Long chatRoomId, ChatRequestDTO.messagedto dto) {
+    public void sendMessage(@DestinationVariable Long chatRoomId, ChatRequestDTO.MessageDto dto) {
         log.info("sendMessage: chatRoomId={}, message={}", chatRoomId, dto.getContent());
         chatService.sendMessage(chatRoomId, dto);
 

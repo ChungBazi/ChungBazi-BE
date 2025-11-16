@@ -1,7 +1,8 @@
 package chungbazi.chungbazi_be.domain.chat.service;
 
 import chungbazi.chungbazi_be.domain.chat.entity.ChatRoom;
-import chungbazi.chungbazi_be.domain.chat.repository.ChatRoomRepository.ChatRoomRepository;
+
+import chungbazi.chungbazi_be.domain.chat.repository.chatRoom.ChatRoomRepository;
 import chungbazi.chungbazi_be.global.apiPayload.code.status.ErrorStatus;
 import chungbazi.chungbazi_be.global.apiPayload.exception.handler.NotFoundHandler;
 import lombok.RequiredArgsConstructor;

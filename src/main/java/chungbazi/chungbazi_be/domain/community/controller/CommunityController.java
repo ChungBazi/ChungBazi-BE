@@ -107,14 +107,14 @@ public class CommunityController {
 
     @PostMapping("likes/{commentId}")
     @Operation(summary = "댓글 좋아요 API", description = "댓글에 좋아요를 누르는 API입니다")
-    public ApiResponse<String> likeComment(@PathVariable Long commentId){
+    public ApiResponse<String> likeComment(@PathVariable @ExistEntity(entityType = Comment.class) Long commentId){
         communityService.likeComment(commentId);
         return ApiResponse.onSuccess("댓글에 좋아요를 누르셨습니다.");
     }
 
     @DeleteMapping("likes/{commentId}")
     @Operation(summary = "댓글 좋아요 취소 API", description = "댓글에 좋아요를 취소하는 API입니다")
-    public ApiResponse<String> unlikeComment(@PathVariable Long commentId){
+    public ApiResponse<String> unlikeComment(@PathVariable @ExistEntity(entityType = Comment.class) Long commentId){
         communityService.unlikeComment(commentId);
         return ApiResponse.onSuccess("댓글 좋아요를 취소했습니다.");
     }
@@ -140,14 +140,14 @@ public class CommunityController {
 
     @DeleteMapping("/posts/{postId}")
     @Operation(summary = "게시글 삭제 API", description = "해당하는 id의 게시글을 삭제하는 API입니다.")
-    public ApiResponse<String> deletePost(@PathVariable Long postId){
+    public ApiResponse<String> deletePost(@PathVariable @ExistEntity(entityType = Post.class) Long postId){
         communityService.deletePost(postId);
         return ApiResponse.onSuccess("해당 게시글이 삭제되었습니다.");
     }
 
     @DeleteMapping("/comments/{commentId}")
     @Operation(summary = "댓글 삭제 API", description = "해당하는 id의 댓글을 삭제하는 API입니다.")
-    public ApiResponse<String> deleteComment(@PathVariable Long commentId){
+    public ApiResponse<String> deleteComment(@PathVariable @ExistEntity(entityType = Comment.class) Long commentId){
         communityService.deleteComment(commentId);
         return ApiResponse.onSuccess("해당 댓글이 삭제되었습니다.");
     }

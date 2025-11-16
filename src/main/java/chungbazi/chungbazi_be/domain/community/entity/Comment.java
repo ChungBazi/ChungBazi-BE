@@ -76,20 +76,13 @@ public class Comment extends BaseTimeEntity {
     }
 
     public void decreaseReportCount() {
-        this.reportCount--;
-    }
-
-    public void deleteAdmin(ReportReason reason) {
-        this.reportReason = reason;
-        this.status = ContentStatus.DELETED;
+        if (this.reportCount > 0) {
+            this.reportCount--;
+        }
     }
 
     public void autoHide() {
         this.status = ContentStatus.HIDDEN;
-    }
-
-    public boolean isHiddenOrDeleted() {
-        return status != ContentStatus.VISIBLE;
     }
 
     public String getFormattedCreatedAt() {

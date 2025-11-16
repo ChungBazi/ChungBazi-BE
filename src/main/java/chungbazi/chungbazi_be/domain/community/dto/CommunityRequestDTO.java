@@ -39,7 +39,7 @@ public class CommunityRequestDTO {
         @Size(min = 1, max = 100, message = "댓글은 100자 이하")
         String content;
 
-        @Schema(description = "대댓글일 때의, 부모 댓글 id", example = "안녕하세요")
+        @Schema(description = "대댓글일 때의, 부모 댓글 id", example = "1")
         private Long parentCommentId;
     }
 }

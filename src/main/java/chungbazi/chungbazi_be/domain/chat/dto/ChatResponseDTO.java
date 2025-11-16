@@ -1,6 +1,5 @@
 package chungbazi.chungbazi_be.domain.chat.dto;
 
-import chungbazi.chungbazi_be.domain.chat.entity.Message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,7 +59,7 @@ public class ChatResponseDTO {
     @AllArgsConstructor
     public static class chatRoomListResponse{
         Long chatRoomId;
-        String postTile;
+        String postTitle;
         String receiverName;
         Long receiverId;
         String lastMessage;
