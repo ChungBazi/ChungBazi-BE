@@ -35,7 +35,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/ws/**"))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 비활성화
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
@@ -47,7 +47,8 @@ public class SecurityConfig {
                                 "/api/api-docs/**",
                                 "/api/swagger-ui/**",
                                 "/api/v3/api-docs/**",
-                                "/api/health-check"
+                                "/api/health-check",
+                                "/api/ws/**"
                         ).permitAll()
                         .anyRequest().permitAll()
                 )
