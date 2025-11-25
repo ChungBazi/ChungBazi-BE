@@ -195,7 +195,7 @@ public class AuthService {
 
     // JWT 토큰 관련 처리
     public TokenDTO recreateAccessToken(String refreshToken) {
-        Long userId = jwtProvider.getUserIdFromToken(refreshToken);
+        Long userId = jwtProvider.getUserIdParsingFromToken(refreshToken);
         tokenAuthService.validateRefreshToken(userId, refreshToken);
 
         User user = getUserById(userId);
