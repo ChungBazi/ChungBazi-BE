@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Prod CI/CD Pipeline
 
 on:
   push:
@@ -23,10 +23,9 @@ jobs:
           java-version: '17'
 
       # application.yml 파일 생성
-      - name: Make application.yml
+      - name: Make application-prod.yml
         run: |
           cd ./src/main/resources
-          touch ./application.yml
           echo "${{ secrets.APPLICATION_PROD_YML }}" > ./application-prod.yml
         shell: bash
 
@@ -65,8 +64,8 @@ jobs:
             
             export IMAGE_TAG=$IMAGE_TAG
             
-            docker compose down --remove-orphans || true
-            docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
+            sudo docker compose down --remove-orphans || true
+            sudo docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
             
             sudo docker image prune -a --filter "until=72h" -f
             sudo docker container prune --filter "until=72h" -f
