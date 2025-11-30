@@ -1,0 +1,17 @@
+package chungbazi.chungbazi_be.domain.user.repository.UserBlockRepository;
+
+import chungbazi.chungbazi_be.domain.user.entity.UserBlock;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface UserBlockRepository extends JpaRepository<UserBlock, Long>,UserBlockRepositoryCustom {
+
+    @Query("SELECT ub.blocked.id FROM UserBlock ub WHERE ub.blocker.id = :blockerId AND ub.isActive = true")
+    List<Long> findBlockedUserIdsByBlocker(@Param("blockerId") Long blockerId);
+}
