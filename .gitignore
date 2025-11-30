@@ -1,6 +1,5 @@
 serviceAccountKey.json
 docker-compose.yml
-src/main/resources/application.yml
 
 HELP.md
 .gradle
@@ -40,5 +39,7 @@ out/
 ### VS Code ###
 .vscode/
 src/main/resources/serviceAccountKey.json
+src/main/resources/application.yml
+src/main/resources/application-local.yml
 application.yml
 .DS_Store
