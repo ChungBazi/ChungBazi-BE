@@ -1,27 +1,17 @@
 package chungbazi.chungbazi_be.global.config;
 
-import chungbazi.chungbazi_be.global.infra.StompAuthChannelInterceptor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.ChannelRegistration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 @Configuration
-@EnableWebSocketMessageBroker
-@RequiredArgsConstructor
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+@Profile("prod")
+public class WebSocketProdConfig implements WebSocketMessageBrokerConfigurer{
 
-    private final StompAuthChannelInterceptor stompAuthChannelInterceptor;
     @Value("${spring.rabbitmq.host}")
     private String rabbitHost;
-
-    @Value("${spring.rabbitmq.port}")
-    private int rabbitPort;
 
     @Value("${spring.rabbitmq.username}")
     private String rabbitUsername;
@@ -42,17 +32,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setSystemPasscode(rabbitPassword)
                 .setVirtualHost("/");
     }
-
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*");
-                //.withSockJS();
-    }
-
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompAuthChannelInterceptor);
-    }
-
 }
