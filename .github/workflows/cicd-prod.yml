@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ develop ]  # develop 브랜치에 push가 일어날 때 실행
+    branches: [ main ]  # main 브랜치에 push가 일어날 때 실행
 
 permissions:
   contents: read
@@ -27,7 +27,7 @@ jobs:
         run: |
           cd ./src/main/resources
           touch ./application.yml
-          echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+          echo "${{ secrets.APPLICATION_PROD_YML }}" > ./application.yml
         shell: bash
 
       # serviceAccountKey.json 파일 생성
@@ -46,8 +46,8 @@ jobs:
       - name: Docker build & push to Docker Hub
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build --no-cache -t ${{ secrets.DOCKER_REPO }}:${{ github.sha }}  .
-          docker push ${{ secrets.DOCKER_REPO }}:${{ github.sha }} 
+          docker build --no-cache -t ${{ secrets.DOCKER_REPO }}-prod:${{ github.sha }}  .
+          docker push ${{ secrets.DOCKER_REPO }}-prod:${{ github.sha }} 
 
       # 서버 배포
       - name: Deploy to server with Docker
@@ -60,13 +60,12 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: IMAGE_TAG
           script: |
-            sudo docker pull ${{ secrets.DOCKER_REPO }}:$IMAGE_TAG
+            sudo docker pull ${{ secrets.DOCKER_REPO }}-prod:$IMAGE_TAG
             cd /root
             docker compose down --remove-orphans || true
-            IMAGE_TAG=$IMAGE_TAG docker compose up -d --force-recreate
+            IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
             
             sudo docker image prune -a --filter "until=72h" -f
-            
             sudo docker container prune --filter "until=72h" -f
                         sudo docker network prune --filter "until=72h" -f
       # jar 파일명 확인
