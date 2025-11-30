@@ -79,7 +79,6 @@ jobs:
                 echo "Dev Environment Deployed at dev.chungbazi.shop"
             
             elif [ "${{ github.event.inputs.action }}" == "stop" ]; then
-#                Dev 환경 종료
                 docker compose -f docker-compose.base.yml -f docker-compose.dev.yml down
                 echo "Dev Environment Stopped"
             fi
