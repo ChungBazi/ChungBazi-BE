@@ -39,9 +39,7 @@ out/
 ### VS Code ###
 .vscode/
 src/main/resources/serviceAccountKey.json
-src/main/resources/application.yml
 src/main/resources/application-local.yml
 src/main/resources/application-dev.yml
 src/main/resources/application-prod.yml
-application.yml
 .DS_Store
