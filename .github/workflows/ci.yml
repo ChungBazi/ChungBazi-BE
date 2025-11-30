@@ -1,4 +1,4 @@
-name: Teamficial CI with Gradle
+name: Chungbazi CI with Gradle
 
 on:
   pull_request:
