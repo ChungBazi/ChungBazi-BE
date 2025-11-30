@@ -71,9 +71,11 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKER_REPO }}-dev:$IMAGE_TAG
             cd /root
+                    
+            export IMAGE_TAG=$IMAGE_TAG
             
             if [ "${{ github.event.inputs.action }}" == "deploy" ]; then
-                IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.base.yml -f docker-compose.dev.yml up -d
+                docker compose -f docker-compose.base.yml -f docker-compose.dev.yml up -d
                 echo "Dev Environment Deployed at dev.chungbazi.shop"
             
             elif [ "${{ github.event.inputs.action }}" == "stop" ]; then

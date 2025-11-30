@@ -62,8 +62,11 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKER_REPO }}-prod:$IMAGE_TAG
             cd /root
+            
+            export IMAGE_TAG=$IMAGE_TAG
+            
             docker compose down --remove-orphans || true
-            IMAGE_TAG=$IMAGE_TAG docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.base.yml -f docker-compose.prod.yml up -d
             
             sudo docker image prune -a --filter "until=72h" -f
             sudo docker container prune --filter "until=72h" -f
