@@ -63,22 +63,20 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.sha }}
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST_DEV }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: IMAGE_TAG
           script: |
             sudo docker pull ${{ secrets.DOCKER_REPO }}-dev:$IMAGE_TAG
             cd /root
-                    
-            export IMAGE_TAG=$IMAGE_TAG
             
             if [ "${{ github.event.inputs.action }}" == "deploy" ]; then
-                sudo docker compose -f docker-compose.base.yml -f docker-compose.dev.yml up -d
-                echo "Dev Environment Deployed at dev.chungbazi.shop"
+                docker compose down --remove-orphans || true
+                IMAGE_TAG=$IMAGE_TAG docker compose up -d --force-recreate
             
             elif [ "${{ github.event.inputs.action }}" == "stop" ]; then
-                sudo docker compose -f docker-compose.base.yml -f docker-compose.dev.yml down
+                sudo docker compose -f down
                 echo "Dev Environment Stopped"
             fi
             
