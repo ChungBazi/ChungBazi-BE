@@ -2,7 +2,6 @@ package chungbazi.chungbazi_be.global.logging.masking;
 
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import org.springframework.context.annotation.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Profile("prod")
 public class MaskingPatternLayout extends PatternLayout {
 
     private final List<String> maskPatterns = new ArrayList<>();

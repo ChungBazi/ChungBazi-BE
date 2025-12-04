@@ -10,12 +10,23 @@ public class LayoutWrappingEncoder<E> extends EncoderBase<E> {
     protected Layout<E> layout;
     private Charset charset;
 
+    public void setLayout(Layout<E> layout) {
+        this.layout = layout;
+    }
+
+    public void setCharset(Charset charset) {
+        this.charset = charset;
+    }
+
     @Override
     public byte[] headerBytes() {
         return new byte[0];
     }
 
     public byte[] encode(E e) {
+        if (layout == null) {
+            return null;
+        }
         String text = layout.doLayout(e);
         return convertToBytes(text);
     }
