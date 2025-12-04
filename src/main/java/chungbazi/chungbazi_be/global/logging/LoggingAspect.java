@@ -36,7 +36,7 @@ public class LoggingAspect {
 
         long endTime = System.currentTimeMillis();
         long timeinMs = endTime - startTime;
-        log.info("✅SUCCESS | method = {}.{} | result = {} | time = {}ms", packageName, methodName, result,timeinMs);
+        log.info("✅SUCCESS | method = {}.{} | time = {}ms", packageName, methodName,timeinMs);
         return result;
     }
 
