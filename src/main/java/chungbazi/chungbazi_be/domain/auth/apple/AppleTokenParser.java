@@ -9,7 +9,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Base64Utils;
+//import org.springframework.util.Base64Utils;
+import java.util.Base64;
 
 import java.security.PublicKey;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class AppleTokenParser {
     public Map parseHeader(final String appleToken) {
         try {
             final String encodedHeader = appleToken.split(IDENTITY_TOKEN_VALUE_DELIMITER)[HEADER_INDEX];
-            final String decodedHeader = new String(Base64Utils.decodeFromUrlSafeString(encodedHeader));
+            final String decodedHeader = new String(Base64.getUrlDecoder().decode(encodedHeader));
             return objectMapper.readValue(decodedHeader, Map.class);
         } catch (JsonMappingException e) {
             throw new RuntimeException("appleToken 값이 jwt 형식인지, 값이 정상적인지 확인해주세요.");
