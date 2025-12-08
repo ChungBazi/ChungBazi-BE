@@ -40,7 +40,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
 
     //알림 조회
     @Override
-    public List<NotificationResponseDTO.notificationDto> findNotificationsByUserIdAndNotificationTypeDto(
+    public List<NotificationResponseDTO.notificationsDto> findNotificationsByUserIdAndNotificationTypeDto(
             Long userId, NotificationType type, Long cursor, int limit) {
 
         QNotification qNotification = QNotification.notification;
@@ -55,9 +55,9 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
             booleanBuilder.and(qNotification.id.lt(cursor));
         }
 
-        List<NotificationResponseDTO.notificationDto> dtos = queryFactory
+        List<NotificationResponseDTO.notificationsDto> dtos = queryFactory
                 .select(Projections.constructor(
-                        NotificationResponseDTO.notificationDto.class,
+                        NotificationResponseDTO.notificationsDto.class,
                         qNotification.id,
                         qNotification.isRead,
                         qNotification.message,

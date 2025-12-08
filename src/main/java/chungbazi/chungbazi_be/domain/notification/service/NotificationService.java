@@ -60,9 +60,9 @@ public class NotificationService {
         //알림 읽음 처리
         notificationRepository.markAllAsRead(user.getId(), type);
 
-        List<NotificationResponseDTO.notificationDto> notificationDtos = notificationRepository.findNotificationsByUserIdAndNotificationTypeDto(user.getId(), type, cursor, limit + 1);
+        List<NotificationResponseDTO.notificationsDto> notificationDtos = notificationRepository.findNotificationsByUserIdAndNotificationTypeDto(user.getId(), type, cursor, limit + 1);
 
-        PaginationResult<NotificationResponseDTO.notificationDto> paginationResult =
+        PaginationResult<NotificationResponseDTO.notificationsDto> paginationResult =
                 PaginationUtil.paginate(notificationDtos, limit);
 
         return NotificationResponseDTO.notificationListDto.builder()
