@@ -25,6 +25,20 @@ public class NotificationResponseDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class notificationsDto {
+        private Long notificationId;
+        private boolean isRead;
+        private String message;
+        private NotificationType type;
+        private Long policyId;
+        private Long postId;
+        private LocalDateTime formattedCreatedAt;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class notificationDto {
         private Long notificationId;
         private boolean isRead;
@@ -40,7 +54,7 @@ public class NotificationResponseDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class notificationListDto{
-        private List<notificationDto> notifications;
+        private List<notificationsDto> notifications;
         private Long nextCursor;
         private boolean hasNext;
     }

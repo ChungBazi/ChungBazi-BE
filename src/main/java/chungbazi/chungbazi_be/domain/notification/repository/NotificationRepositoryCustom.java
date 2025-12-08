@@ -12,6 +12,6 @@ public interface NotificationRepositoryCustom {
 
     void markAllAsRead(Long userId,NotificationType type);
 
-    List<NotificationResponseDTO.notificationDto> findNotificationsByUserIdAndNotificationTypeDto(Long userId, NotificationType type, Long cursor, int limit);
+    List<NotificationResponseDTO.notificationsDto> findNotificationsByUserIdAndNotificationTypeDto(Long userId, NotificationType type, Long cursor, int limit);
 
 }
